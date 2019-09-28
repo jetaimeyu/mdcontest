@@ -1,0 +1,75 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>查看订单</title>
+</block>
+<block name="body">
+
+<form id="myform" class="easyui-form myform" data-options="novalidate:false" method="post">
+	<table>
+		<tr>
+			<td class="text_right" style="width:80px">所选题目：</td>
+			<td style="word-break: break-all">{$data.title}</td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px">姓名：</td>
+			<td style="word-break: break-all">{$data.name}</td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px">手机号：</td>
+			<td style="word-break: break-all">{$data.tel}</td>
+		</tr>
+		<!-- <tr>
+			<td class="text_right" style="width:80px">证件类型：</td>
+			<td>
+				<eq name='data.ID_type' value='1'>身份证</eq>
+				<eq name='data.ID_type' value='2'>护照</eq>
+				<eq name='data.ID_type' value='3'>台胞证</eq>
+			</td>
+		</tr> -->
+		<tr>
+			<td class="text_right" style="width:80px">身份证号码：</td>
+			<td style="word-break: break-all">{$data.ID_num}</td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px">省份：</td>
+			<td style="word-break: break-all">{$data.province}</td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px">城市：</td>
+			<td style="word-break: break-all">{$data.city}</td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px">邮箱：</td>
+			<td style="word-break: break-all">{$data.email}</td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px">工作单位：</td>
+			<td style="word-break: break-all">{$data.company}</td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px">毕业学校：</td>
+			<td style="word-break: break-all">{$data.school}</td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px">作品描述：</td>
+			<td style="word-break: break-all">{$data.file_description}</td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px">作品链接：</td>
+			<td style="word-break: break-all"><a target='_blank' href="__UPLOADS__{$data.file_url}">{$data.file_name}</a></td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px">创建时间：</td>
+			<td>{$data.create_time}</td>
+		</tr>
+	</table>
+</form>
+</block>
+<block name="script">
+<script type="text/javascript">
+	$(function(){
+		
+});
+
+	</script>
+</block>

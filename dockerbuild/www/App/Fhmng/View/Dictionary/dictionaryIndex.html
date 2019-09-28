@@ -1,0 +1,550 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>字典管理</title>
+</block>
+<block name="body">
+	<div class="main-page">
+		<div class="easyui-layout" data-options="fit:true">
+			<div data-options="title:'字典类型',region:'west',width:330,split:true,collapsible:true">
+				<table id="dicTypeGrid"></table>
+				<!--grid工具栏 -->
+				<div id="dictype_toolbar" >
+					<div style="display:inline-block;">
+						<a id="btn_typeadd" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-add'">新增</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_typeedit" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-edit'">修改</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_typedel" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-del'">删除</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_typeenable" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-enable'">启用</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_typedisable" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-disable'">禁用</a>
+					</div>
+				</div>
+			</div>
+			<div data-options="region:'center',title:'数据字典'">
+				<table id="treegrid"></table>
+				
+				<!--grid工具栏 -->
+				<div id="toolbar">
+					<div style="display:inline-block;">
+						<a id="btn_add" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-add'">新增</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_edit" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-edit'">修改</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_del" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-del'">删除</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_enable" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-enable'">启用</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_disable" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-disable'">禁用</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_refresh" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'pagination-load'">刷新</a>
+						<input id="hdnTypeCode" value="" type="hidden">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		//字典类型表格
+		$("#dicTypeGrid").datagrid({
+			border:false,
+			fit:true,
+			url:"{:U('DictionaryType/getDicTypeList')}",
+			striped:true,//是否显示斑马线效果
+			nowrap:true,//单元格不换行
+			singleSelect:true,
+			toolbar:"#dictype_toolbar",
+			remoteSort:false,
+			columns:[[
+			    {title:"类型名称",field:"type_name",width:120,sortable:true,formatter:function(value,row,index){
+					return "<span class='span-ellipsis' title='"+ value+"'>"+ value +"</span>";
+				}},
+			    {title:"类型编码",field:"type_code",width:100,sortable:true,formatter:function(value,row,index){
+					return "<span class='span-ellipsis' title='"+ value+"'>"+ value +"</span>";
+				}},
+				{title:"状态",field:"status",width:60,align:"center",sortable:true,formatter:function(value,row,index){
+					if(value==1){
+						return "<span style='color:green;font-weight:bold'>启用</span>";
+					}else{
+						return "<span style='color:gray;font-weight:bold'>禁用</span>";
+					}
+				}}
+			]],
+			onLoadSuccess:function(data){
+				$("#dicTypeGrid").datagrid('selectRow',0);
+			},
+			onSelect:function(index,row){
+				var type_code = row.type_code;
+				$("#hdnTypeCode").val(type_code);
+				var url = "{:U('Fhmng/Dictionary/getDictionaryTreeList')}";
+				$("#treegrid").treegrid('options').url = url;
+				$("#treegrid").treegrid('load',{
+					"type_code":type_code
+				});
+			}
+		});
+		
+		//字典类型新增
+		$("#btn_typeadd").click(function(){
+			openDialog({
+				windowId:"window",
+				title:"添加字典类型",
+				href:"{:U('DictionaryType/addDicTypePage')}",
+				width:550,
+				height:200,
+				buttons:[
+					{
+						id:"btnSubmit",
+						text:"提交",
+						iconCls:"icon-ok",
+						handler:function(){
+							submitForm("myform");
+						}
+					},
+					{
+						text:"取消",
+iconCls:"icon-cancel",
+handler:function(){
+		closeDialog();
+}
+					}
+				]
+			});
+		});
+		
+		//修改
+		$("#btn_typeedit").click(function(){
+			//取得选中的记录
+			var selections = $("#dicTypeGrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			var id = selections[0].id;
+			openDialog({
+				windowId:"window",
+				title:"编辑字典类型",
+				href:"{:U('DictionaryType/editDicTypePage')}?id="+id,
+				width:550,
+				height:200,
+				buttons:[
+					{
+						text:"提交",
+						iconCls:"icon-ok",
+						handler:function(){
+							submitForm("myform");
+						}
+					},
+					{
+						text:"取消",
+iconCls:"icon-cancel",
+handler:function(){
+		closeDialog();
+}
+					}
+				]
+			});
+		});
+		
+		//删除
+		$("#btn_typedel").click(function(){
+			//取得选中的记录
+			var selections = $("#dicTypeGrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			confirm('温馨提示','确定删除？',function(flag){    
+			    if (flag){ 
+			    	var id = selections[0].id;
+			    	var type_code = selections[0].type_code;
+					$.ajax({
+						url:"{:U('DictionaryType/delDicType')}",
+						type:"post",
+						data:{
+							"id":id,
+							"type_code":type_code
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#dicTypeGrid").datagrid("reload");
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }    
+			});  
+		});
+		
+		//字典类型启用
+		$("#btn_typeenable").click(function(){
+			//取得选中的记录
+			var selections = $("#dicTypeGrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			confirm('温馨提示','确定启用？',function(flag){    
+			    if (flag){ 
+			    	var id = selections[0].id;
+					$.ajax({
+						url:"{:U('DictionaryType/setDicTypeStatus')}",
+						type:"post",
+						data:{
+							"id":id,
+							"status":1
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#dicTypeGrid").datagrid("reload");
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }    
+			}); 
+		});
+		
+		//禁用
+		$("#btn_typedisable").click(function(){
+			//取得选中的记录
+			var selections = $("#dicTypeGrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			confirm('温馨提示','确定禁用？',function(flag){    
+			    if (flag){ 
+			    	var id = selections[0].id;
+					$.ajax({
+						url:"{:U('DictionaryType/setDicTypeStatus')}",
+						type:"post",
+						data:{
+							"id":id,
+							"status":0
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#dicTypeGrid").datagrid("reload");
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }    
+			}); 
+		});
+		
+/*=================================================================================*/		
+		//treegrid字典表格
+		$("#treegrid").treegrid({
+			border:false,
+			fit:true,
+			//url:"{:U('Fhmng/Dictionary/getDictionaryTreeList')}",
+			striped:true,//是否显示斑马线效果
+			nowrap:true,//单元格不换行
+			rownumbers:true,//行号
+			toolbar:"#toolbar",
+			remoteSort:false,
+			idField:'dic_key',
+			treeField:'dic_value',
+			frozenColumns:[[
+				{title:"值",field:"dic_value",width:180,sortable:true}
+			]],
+			columns:[[
+			    {title:"键",field:"dic_key",width:150,sortable:true},
+			    {title:"父键",field:"pid_key",width:100,sortable:true},
+			    {title:"类型编码",field:"type_code",width:120,sortable:true},
+			    {title:"排序号",field:"order_no",width:80,sortable:true},
+				{title:"状态",field:"status",width:60,align:"center",sortable:true,formatter:function(value,row,index){
+					if(value==1){
+						return "<span style='color:green;font-weight:bold'>启用</span>";
+					}else{
+						return "<span style='color:gray;font-weight:bold'>禁用</span>";
+					}
+				}},
+				{title:"描述",field:"description",width:230,sortable:true,formatter:function(value,row,index){
+					var html="<span class='span-ellipsis' title='"+ value+"'>"+ value+"</span>";
+					return html;
+				}},
+			]],
+			onExpand:function(row){
+				
+			}
+		});
+		//刷新
+		$("#btn_refresh").click(function(){
+			$("#treegrid").treegrid("reload");
+		});
+		
+		//新增
+		$("#btn_add").click(function(){
+			var type_code = $("#hdnTypeCode").val();
+			openDialog({
+				windowId:"window",
+				title:"添加字典",
+				href:"{:U('Dictionary/addDictionaryPage')}?type_code="+type_code,
+				width:550,
+				height:400,
+				buttons:[
+					{
+						id:"btnSubmit",
+						text:"提交",
+						iconCls:"icon-ok",
+						handler:function(){
+							submitForm("myform");
+						}
+					},
+					{
+						text:"取消",
+iconCls:"icon-cancel",
+handler:function(){
+		closeDialog();
+}
+					}
+				]
+			});
+		});
+		
+		//修改
+		$("#btn_edit").click(function(){
+			//取得选中的记录
+			var selections = $("#treegrid").treegrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			var id = selections[0].id;
+			var type_code = $("#hdnTypeCode").val();
+			openDialog({
+				windowId:"window",
+				title:"字典编辑",
+				href:"{:U('Dictionary/editDictionaryPage')}?id="+id+"&type_code="+type_code,
+				width:550,
+				height:400,
+				buttons:[
+					{
+						text:"提交",
+						iconCls:"icon-ok",
+						handler:function(){
+							submitForm("myform");
+						}
+					},
+					{
+						text:"取消",
+iconCls:"icon-cancel",
+handler:function(){
+		closeDialog();
+}
+					}
+				]
+			});
+		});
+		
+		//删除
+		$("#btn_del").click(function(){
+			//取得选中的记录
+			var selections = $("#treegrid").treegrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			confirm('温馨提示','确定删除？',function(flag){    
+			    if (flag){ 
+			    	var id = selections[0].id;
+			    	var dic_key = selections[0].dic_key;
+					$.ajax({
+						url:"{:U('Dictionary/delDic')}",
+						type:"post",
+						data:{
+							"id":id,
+							"dic_key":dic_key
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#treegrid").treegrid("reload");
+								$("#treegrid").treegrid("clearSelections");
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }    
+			});  
+		});
+		
+		//启用
+		$("#btn_enable").click(function(){
+			//取得选中的记录
+			var selections = $("#treegrid").treegrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			confirm('温馨提示','确定启用？',function(flag){    
+			    if (flag){ 
+			    	var id = selections[0].id;
+					$.ajax({
+						url:"{:U('Dictionary/setDicStatus')}",
+						type:"post",
+						data:{
+							"id":id,
+							"status":1
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#treegrid").treegrid("reload");
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }    
+			}); 
+		});
+		
+		//禁用
+		$("#btn_disable").click(function(){
+			//取得选中的记录
+			var selections = $("#treegrid").treegrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			
+			confirm('温馨提示','确定禁用？',function(flag){    
+			    if (flag){ 
+			    	var id = selections[0].id;
+					$.ajax({
+						url:"{:U('Dictionary/setDicStatus')}",
+						type:"post",
+						data:{
+							"id":id,
+							"status":0
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#treegrid").treegrid("reload");
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }     
+			}); 
+			
+		});
+	});
+	</script>
+</block>

@@ -1,0 +1,75 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>分配订单权限</title>
+</block>
+<block name="body">
+<div class="role_box">
+<form id="myform" class="easyui-form myform" data-options="novalidate:false" method="post">
+	<ul style='display: initial;white-space: nowrap;'>
+	<volist name="meeting_auth" id="vo" empty='暂无'>
+		<label><font color='#3380cc'>会议名称：{$vo.meeting_name}</font></label>
+			<li>
+				<input name="edit[{$vo.meeting_id}]" value="{$vo.meeting_id}" data-mid="{$vo.meeting_id}" type="checkbox" <eq name='vo.edit' value='true'>checked</eq>/> <label>编辑权限</label>
+				<input name="view[{$vo.meeting_id}]"  value="{$vo.meeting_id}" data-value="view_{$vo.meeting_id}" data-mid="{$vo.meeting_id}" type="checkbox" <eq name='vo.view' value='true'>checked</eq>/> <label>查看权限</label>
+				<input name="supplier[{$vo.meeting_id}]"  value="{$vo.meeting_id}" data-value="supplier_{$vo.meeting_id}" data-mid="{$vo.meeting_id}" type="checkbox" <eq name='vo.supplier' value='true'>checked</eq>/> <label>供应商权限</label>
+				<input name="audit[{$vo.meeting_id}]"  value="{$vo.meeting_id}" data-value="audit_{$vo.meeting_id}" data-mid="{$vo.meeting_id}" type="checkbox" <eq name='vo.audit' value='true'>checked</eq>/> <label>审核权限</label>
+			</li>
+	</volist>
+	</ul>
+	<input id="admin_id" type="hidden" name='admin_id' value="{$admin_id}">
+</form>
+</div>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		$("#myform").form({
+			url:"{:U('setUserOrderAuth')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var isValid  = $(this).form('validate');
+				if(isValid){
+					//验证通过提交，禁用提交按钮，防止多次提交
+					parent.$("#btnSubmit").linkbutton("disable");
+				}
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$.tipShow({
+						"message":"设置成功",
+						"color":"green",
+						"callback":function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":true,
+								"controlType":"datagrid",
+								"gridId":"dicTypeGrid"
+							});
+						}
+					});
+				}else{
+					$.tipShow({
+						"message":"操作失败",
+						"color":"red"
+					});
+					
+					parent.$("#btnSubmit").linkbutton("enable");
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败",
+					"color":"red"
+				});
+				parent.$("#btnSubmit").linkbutton("enable");
+			}
+		});
+		
+
+		
+	});
+	</script>
+</block>

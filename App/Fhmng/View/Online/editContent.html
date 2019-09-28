@@ -1,0 +1,232 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>修改会议</title>
+<style>
+.myform td{width: 120px;}
+#imgpropt{
+	color:red;
+	display: block;
+    position: relative;
+    float: right;
+    left: -100px;
+    top: 5px;
+}
+</style>
+</block>
+<block name="body">
+<form id="myform" class="easyui-form myform" data-options="novalidate:false" method="post">
+	<table>
+		<input id="contentid" name="id" type="hidden" value="{$content.id}"/>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>名称：</td>
+			<td><input name="title" value="{$content.title}" class="easyui-textbox" style="width:250px;" data-options="validateOnCreate:false,required:true,validType:['length[1,40]']"></td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>类型：</td>
+			<td>
+				<select name="type" value="{$content.type}" class="easyui-combobox" style="width:80px" data-options="validateOnCreate:false,editable:false,panelHeight:'auto',required:true" style="width:130px">
+					<option value="1" <eq name="content.type" value='1'>selected='true'</eq>>banner</option>
+					<option value="0" <eq name="content.type" value='0'>selected='true'</eq>>add</option>
+				</select>
+			</td>
+		</tr>
+		
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>url：</td>
+			<td>
+				<input name="url" class="easyui-numberbox" style="width:145px" data-options="value:'{$content.url}',validateOnCreate:false,required:true,validType:['length[1,40]']" >
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>开始时间：</td>
+			<td>
+				<input id="start_time" value="{$content.start_time}" class="easyui-datetimebox" name="start_time" data-options="validateOnCreate:false,required:true,editable:false,showSeconds:false" style="width:145px;"></td>
+		</tr>
+
+		<tr>
+			<td class="text_right"><span class="mark">*</span>结束时间：</td>
+			<td><input id="end_time"  value="{$content.end_time}" class="easyui-datetimebox" name="end_time" data-options="validateOnCreate:false,required:true,validType:['end_time'],editable:false,showSeconds:false" style="width:145px;"></td>
+		</tr>
+		
+		<tr>
+			<td class="text_right"><span class="mark">*</span>状态：</td>
+			<td>
+				<select name="status" value="{$content.status}" class="easyui-combobox" style="width:80px" data-options="validateOnCreate:false,editable:false,panelHeight:'auto',required:true" style="width:130px">
+					<option value="1" <eq name="content.status" value='1'>selected='true'</eq>>启用</option>
+					<option value="0" <eq name="content.status" value='0'>selected='true'</eq>>禁用</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>排序：</td>
+			<td>
+				<input  name="sort" class="easyui-numberspinner" style="width:100px;" required="required" data-options="value:'{$content.sort}',validateOnCreate:false,min:0,max:1000,editable:true,">
+				<span class="tip">（升序）</span>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px">内容图片：</td>
+			<td>
+			<div id="img_div" <empty name='content.img'>style='display: none;'</empty>>
+				<div class="upload-img-box">
+					<div class="upload-pre-item">
+						<span class="upload-img-remove" id='remove_img' title="点击删除"></span>
+						<img id="pic_img" <notempty name='content.img'>src="{:C('QINIU_DOMAIN').$content['img']}"</notempty>>
+					</div>
+				</div>
+			</div>
+			<input id="img" name="img" value="{$content.img}" type='hidden'/>
+			<label style="width:100px" for="file_hidden" class="easyui-linkbutton upload_button" data-options="plain:true,iconCls:'icon-extend-upload'">上传图片</label>
+			<input type='file' id="file_hidden" onchange="ajaxfileupload()" name="pic" class="file"/>
+			<label id="imgpropt" style="display:none">请上传图片</label>
+			</td>
+		</tr>
+	</table>
+</form>
+</block>
+<block name="script">
+	<script src="__PUBLIC__/system/js/ajaxfileupload.js"></script>
+	<script type="text/javascript">
+	$(function(){
+		$("#myform").form({
+			url:"{:U('Online/editContent')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var img = $('#img').val();
+				if(img == ''){
+					$('#imgpropt').attr('style', "display:block");
+					return false;
+				}
+				var isValid  = $(this).form('validate');
+				if(isValid){
+					//验证通过提交，禁用提交按钮，防止多次提交
+					parent.$("#btnSubmit").linkbutton("disable");
+				}else{
+					// $('.validatebox-invalid').trigger('mouseover');
+					$('.validatebox-invalid').trigger('mouseenter');
+				}
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$.tipShow({
+						"message":"操作成功",
+						"color":"green",
+						"callback":function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":true
+							});
+						}
+					});
+				}else{
+					$.tipShow({
+						"message":"操作失败",
+						"color":"red"
+					});
+					
+					parent.$("#btnSubmit").linkbutton("enable");
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败",
+					"color":"red"
+				});
+				parent.$("#btnSubmit").linkbutton("enable");
+			}
+		});
+		//验证结束日期不能小于开始日期
+		$.extend($.fn.validatebox.defaults.rules, {    
+		    end_time:{
+		    	validator:function(value,param){
+		    		 var starttime = $('input[name="start_time"]').val();
+		    		 starttime = starttime.substring(0,19);    
+					 starttime = starttime.replace(/-/g,'/'); 
+					 starttime = new Date(starttime).getTime();
+		    		 var endtime  = $('input[name="end_time"]').val().substring(0,19);    
+					 endtime = endtime.replace(/-/g,'/'); 
+					 endtime = new Date(endtime).getTime();
+		    		 var res = parseInt(starttime) < parseInt(endtime);
+		    		 return res;
+		    	},
+		    	message:"结束日期不能小于开始日期"
+		    }
+		}); 
+		
+		//删除图片
+		$("#remove_img").click(function(){
+			var path = $('#img').val();
+			var id = $('#id').val();
+			if(!path){
+				return;
+			}
+			confirm('温馨提示','确定删除该图片？',function(flag){
+				 if (flag){ 
+					 $.ajax({
+							type:"post",
+							data:{
+								"path":path,
+								'id':id
+							},
+							url:"{:U('removeImg')}",
+							success:function(response){
+								var result = $.parseJSON(response);
+								if(result.success){
+									$('#img_div').css('display','none');
+									$('#img').val('');
+									 $.tipShow({
+										"message":result.message,
+										"color":"green"
+									});
+								}else{
+									$.tipShow({
+										"message":result.message,
+										"color":"red"
+									});
+								}
+							}
+					  });
+				 }
+			});
+		})
+	});
+	function ajaxfileupload() {
+         $.ajaxFileUpload
+         (
+             {
+                 url: "{:U('Online/upload_pic')}", //用于文件上传的服务器端请求地址
+                 type: 'post',
+                 secureuri: false, //是否需要安全协议，一般设置为false
+                 fileElementId: 'file_hidden', //文件上传域的ID
+                 dataType: 'JSON', //返回值类型 一般设置为json
+                 success: function (response, status)  //服务器成功响应处理函数
+                 { 
+                     //清空上传表单
+					$("#file_form").form('reset');
+					var result = $.parseJSON(response);
+					
+					if(result.success){
+						$("#pic_img").attr('src',result.domain+result.file);
+						$('#img').val(result.file);
+						$("#img_div").css('display','block');
+						$('#imgpropt').attr('style', "display:none");
+					}else{
+						$.tipShow({
+							"message":result.message,
+							"color":"red"
+						});
+					}
+                 },
+                 error: function (data, status, e)//服务器响应失败处理函数
+                 {
+                     alert(e);
+                 }
+             }
+         )
+         return false;
+     }
+	</script>
+</block>

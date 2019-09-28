@@ -1,0 +1,95 @@
+.datadownloadTitle{
+    font-size: 20px;
+    color: #282D3C;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+.datadownload{
+    font-size: 14px;
+    overflow: hidden;
+}
+.dataDownloader{
+    float: left;
+    margin-bottom: 20px;
+}
+.dataDownloader_margin{
+    margin-right:20px;
+}
+.dataDownloader td{
+    padding-top: 2px;
+    padding-bottom:2px;
+}
+.dataDownlist{
+    padding-right:15px;
+    max-width: 151px;
+}
+.dataDownlist a{
+    color:#2B7DF2 ;
+    text-decoration:underline
+}
+.downbtn a{
+    color: #D14E4E;
+}
+.videoData{
+    margin-top: 16px;
+}
+.videoData_list{
+    overflow: hidden;
+}
+.videoData_li{
+    width: 350px;
+    height:280px;
+    overflow: hidden;
+    border-radius:11px;
+    position: relative;
+    float: left;
+    margin-bottom: 15px;
+}
+.videoData_ligap{
+    margin-right: 15px;
+}
+.videoData_libg{
+    position: absolute;
+    top:0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #000000;
+    -webkit-opacity: 0.2;
+    /* Netscape and Older than Firefox 0.9 */
+    -moz-opacity: 0.2;
+    /* Safari 1.x (pre WebKit!) 老式khtml内核的Safari浏览器*/
+    -khtml-opacity: 0.2;
+    /* IE9 + etc...modern browsers */
+    opacity: .2;
+    /* IE 4-9 */
+    filter:alpha(opacity=20);
+}
+.playvideoicon{
+    position: absolute;
+    display: block;
+    width:50px;
+    height: 50px;
+    top:91px;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+.videoDataList_content{
+    position: absolute;
+    color: #ffffff;
+    top:148px;
+    padding:13px 19px;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+.videoDataList_title{
+    text-align: center;
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+.videoDataList_detail{
+    font-size: 16px;
+    word-break: break-all;
+}

@@ -1,0 +1,232 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title></title>
+</block>
+<block name="body">
+<form id="myform" class="easyui-form myform" data-options="novalidate:false" method="post">
+	<table>
+		<input type='hidden' name='id' id='id' value="{$data.id}"/>
+	
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>标题：</td>
+			<td>
+				<input id="title"  name="title" value="{$data.title}" class="easyui-textbox" style="width:250px;" data-options="validateOnCreate:false,required:true" >
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>链接：</td>
+			<td><input id="link"  name="link" value="{$data.link}" class="easyui-textbox" style="width:250px" data-options="validateOnCreate:false,required:true,validType:['length[1,250]']" >
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>打开方式：</td>
+			<td><select name="target" value="{$data.target}" class="easyui-combobox" style="width:100px" data-options="validateOnCreate:false,editable:false,panelHeight:'auto',required:true" style="width:130px">
+					<option value="_blank" <eq name="data.target" value='_blank'>selected='true'</eq>>新页面打开</option>
+					<option value="_self" <eq name="data.target" value='_self'>selected='true'</eq>>本页面打开</option>
+				</select>
+			</td>
+		</tr>
+		
+		<tr>
+			<td class="text_right"><span class="mark">*</span>分类：</td>
+			<td>
+				<select name="pid" value="{$data.pid}" class="easyui-combobox" style="width:120px" data-options="validateOnCreate:false,editable:false,panelHeight:'auto',required:true,value:'{$data.pid}'" style="width:130px">
+					<volist name="section" id="vo">
+							<option value="{$vo.id}">{$vo.title}</option>
+					</volist>
+				</select>
+			
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>状态：</td>
+			<td>
+				<select name="status" value="{$data.status}" class="easyui-combobox" style="width:80px" data-options="validateOnCreate:false,editable:false,panelHeight:'auto',required:true" style="width:130px">
+					<option value="1" <eq name="data.status" value='1'>selected='true'</eq>>启用</option>
+					<option value="0" <eq name="data.status" value='0'>selected='true'</eq>>禁用</option>
+				</select>
+			</td>
+		</tr>
+	
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>图片：</td>
+					<td>
+						<div style="position:relative">
+						<input type="file" id="btn_upload">
+						<input id="hdnimg" type="hidden" name="img_url" value="{$data.img_url}">
+						<empty name="data.img_url">
+							<div class="upload-img-box" style="display:none;left: 0px;top: 35px;">
+								<div class="upload-pre-item">
+									<span class="upload-img-remove" title="点击删除" ></span>
+									<img id="imgPre">
+								</div>
+							</div>
+						<else/>
+							<div class="upload-img-box" style="display:block;left: 0px;top:35px;">
+								<div class="upload-pre-item">
+									<span class="upload-img-remove" title="点击删除" data="{$data.img_url}"></span>
+									<img id="imgPre" src="{:C('QINIU_DOMAIN')}{$data.img_url}">
+								</div>
+							</div>
+						</empty>
+						</div>
+					</td>
+				</tr>
+		<tr>
+			<td class="text_right" style="width:80px">描述：</td>
+			<td><textarea id="introduction"  name="desc" class="easyui-textarea" maxlength="200" style="width:250px;height: 73px;" data-options="validateOnCreate:false,validType:['length[0,200]']" >{$data.desc}</textarea>
+			</td>
+		</tr>
+	</table>
+</form>
+</block>
+<block name="script">
+<script type="text/javascript" src="__LOCALPUBLIC__/plugins/uploadify/jquery.uploadify.js"></script>
+<script type="text/javascript">
+	$(function(){
+		$("#myform").form({
+			url:"{:U('editadver')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var isValid  = $(this).form('validate');
+				var img = $('#hdnimg').val();
+				if(!img){
+					$.messager.alert('','请上传图片','warning');
+					isValid = false;
+				}
+				if(isValid){
+					//验证通过提交，禁用提交按钮，防止多次提交
+					parent.$("#btnSubmit").linkbutton("disable");
+				}
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$.tipShow({
+						"message":"操作成功",
+						"color":"green",
+						"callback":function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":true
+							});
+						}
+					});
+				}else{
+					$.tipShow({
+						"message":"操作失败",
+						"color":"red"
+					});
+					
+					parent.$("#btnSubmit").linkbutton("enable");
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败",
+					"color":"red"
+				});
+				parent.$("#btnSubmit").linkbutton("enable");
+			}
+		});
+		
+		
+	
+	
+	});
+
+    	var uploadify_onSelectError = function(file, errorCode, errorMsg){
+			var msgText="";
+	        switch (errorCode) {  
+	            case SWFUpload.QUEUE_ERROR.QUEUE_LIMIT_EXCEEDED:  
+	                //this.queueData.errorMsg = "每次最多上传 " + this.settings.queueSizeLimit + "个文件";  
+	                msgText += "每次最多上传 " + this.settings.queueSizeLimit + "个文件";  
+	                break;  
+	            case SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT:  
+	                msgText += "文件大小超过限制( " + this.settings.fileSizeLimit + " )";  
+	                break;  
+	            case SWFUpload.QUEUE_ERROR.ZERO_BYTE_FILE:  
+	                msgText += "文件大小为0";  
+	                break;  
+	            case SWFUpload.QUEUE_ERROR.INVALID_FILETYPE:  
+	                msgText += "文件格式不正确，仅限 " + this.settings.fileTypeExts;  
+	                break;  
+	            default:  
+	                msgText += "错误代码：" + errorCode + "\n" + errorMsg;  
+	        }  
+	        $.tipShow({
+				"message":msgText,
+				"color":"red"
+			});
+	    };  	   
+	    
+		//上传图片
+	    /* 初始化上传插件 */
+	    var sid = '{:session_id()}';
+		$("#btn_upload").uploadify({
+			"formData":{
+				"session_id":sid//需要传递session_id，否则火狐报302错误
+			},
+			"buttonClass":"btn-upload",
+	        "swf":"__LOCALPUBLIC__/plugins/uploadify/uploadify.swf",
+	        "buttonText":"上传图片",
+	        "uploader":"{:U('uploadImg')}",
+	        "width":100,
+	        "removeTimeout":1,
+	        "fileTypeExts":"*.jpg; *.png; *.gif;",
+	        "onSelectError":uploadify_onSelectError,
+	        "onUploadStart":function(file){
+	        	//文章id
+	        	var id = $("#hdnId").val();
+	        	$("#btn_upload").uploadify("settings","formData",{"id":id});
+	        	
+	        	var data = $(".upload-img-remove").attr("data");
+	        	//判断是否已经含有了原图片，如果有则需要先删除原图片
+	        	if(data){
+	        		$("#btn_upload").uploadify("settings","formData",{"path":data});
+	        	}
+	        	
+	        	//判断是否设置了上传图片的宽度和高度
+	        	var scaleWidth = $("#imgWidth").val();
+	        	var scaleHeight = $("#imgHeight").val();
+	        	if(scaleWidth&&scaleHeight){
+	        		$("#btn_upload").uploadify("settings","formData",{"scaleWidth":scaleWidth,"scaleHeight":scaleHeight});
+	        	}else{
+	        		$("#btn_upload").uploadify("settings","formData",{"scaleWidth":0,"scaleHeight":0});
+	        	}
+	        },
+	        "onUploadSuccess":function(file, data, response){
+	          	//var result = $.parseJSON(data);
+	        	var result = eval("("+ data +")");
+	        	if(result.status == 1){
+	        		var qiniuDomain = "{:C('QINIU_DOMAIN')}";
+	        		$("#hdnimg").val(result.file.old);
+	        		var imgSrc =qiniuDomain + result.file.old;
+	        		$("#imgPre").attr("src",imgSrc);
+	        		$(".upload-img-remove").attr("data",result.file.old);
+	        		$(".upload-img-box").slideDown();
+	        	}
+	        },
+	        'onFallback':function() {
+	            alert('未检测到兼容版本的Flash.');
+	        }
+	    });
+		//删除图片
+		$(".upload-img-remove").click(function(){
+			var id = $("#hdnId").val();
+			var path = $(this).attr("data");
+			if(!path){
+				return;
+			}
+			$(".upload-img-box").slideUp("normal",function(){$("#imglogoPre").attr("src","");});
+			$("#hdnimg").val("");
+		})
+
+	</script>
+	<style type="text/css">
+ .uploadify-queue{ display: none;
+    }
+	</style>
+</block>

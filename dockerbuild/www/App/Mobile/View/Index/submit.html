@@ -1,0 +1,436 @@
+<extend name="base/base" />
+<block name="content">
+    <form action="" style="height: 100%;padding-top: 20px;">
+        <div class="submit-form" style="position: relative;height:100%">
+            <div id="checkBlock" class="checkBlockTap">
+                <div class="blockTapInner">
+                    <div style="text-align: right;margin-right: 15px;font-size: 10px;color: #999999"><span class="submit-group-need">*</span>为必填项</div>
+                    <div class="submit-group">
+                        <span class="submit-group-title"><span class="submit-group-need">*</span>  请选择竞赛题目：<span style="color: #CB4040">（竞赛题目可多选）</span></span>
+                        <volist name="subject" id="item">
+                            <div class="checkBoxItem">
+                                <input type="checkbox" name="sid" class="sidCheck" value="{$item.id}" hidden>
+                                <img src="__PUBLIC__/mobile/images/nocheck.png" />
+                                <span style=":">{$item.title| cutStr=6}</span>
+                            </div>
+                        </volist>
+                    </div>
+                    <div class="submit-group">
+                        <span class="submit-group-title"><span class="submit-group-need">*</span>  手机号码：</span>
+                        <input type="text" id="phoneNumber" name="phoneNumber" maxlength="11" style="margin-bottom: 5px;" placeholder="手机号码">
+                        <span class="submit-group-title"><span class="submit-group-need">*</span>  图形验证码：</span>
+                        <div style="margin-top: 9px;box-sizing: border-box">
+                            <input type="text" id="firstVerifyCode" name="firstVerifyCode" maxlength="4" placeholder="右侧图片验证码" style=" float:left; width: 58%">
+                            <img id="verifycodeId" class="verify-img" src="/staticVerifyCode" style="float: left;width: 42%;padding-left: 10px;height: 38px;"/>
+                        </div>
+                        <span class="submit-group-title" style="clear: both;float: left"><span class="submit-group-need">*</span>  手机验证码：</span>
+                        <div style="margin-top: 0;box-sizing: border-box; clear: both">
+                            <input type="text" name="verifyCode" maxlength="6" placeholder="验证码" style=" width: 58%">
+                            <input id="getVerifyCode" type="button" style="width:40%;padding:10px 7px;height:39px;color: red;text-align: center;vertical-align: middle" onclick="return false;" value="获取验证码"/>
+                        </div>
+                    </div>
+                    <div class="submit-group">
+                        <div style="text-align: center;margin: 10px auto;">
+                            <input type="checkbox" name="agreement"><span style="margin-left: 10px;font-size: 14px;color: #666;" id="openAgreementContent">同意<span style="color:#3F89EC ">《用户协议》</span></span>
+                        </div>
+                    </div>
+                    <button  class="submit-group-button" style="width: 100%" id="checkBlockButton" onclick="return false">下一步</button>
+                </div>
+            </div>
+            <div id ="subinfo"  class="checkBlockTap">
+                <div  class="blockTapInner">
+                    <div style="text-align: right;margin-right: 15px;font-size: 10px;color: #999999"><span class="submit-group-need">*</span>为必填项</div>
+                    <div class="submit-group">
+                        <span class="submit-group-title"><span class="submit-group-need">*</span>  姓名：</span>
+                        <input type="text" name="username" maxlength="50" placeholder="姓名">
+                    </div>
+                    <div class="submit-group">
+                        <span class="submit-group-title"><span class="submit-group-need">*</span>  身份证：</span>
+                        <input type="text" name="cardNumber" placeholder="证件号码" maxlength="18" style="margin-bottom: 3px">
+                        <p class="submit-card-info">姓名及证件号码一旦提交将不可更改,此证件号只用于报名使用,不会泄露相关内容且不会涉及其他用途!</p>
+                    </div>
+                    <div class="submit-group">
+                        <span class="submit-group-title">电子邮件：</span>
+                        <input type="text" name="email" maxlength="50" placeholder="电子邮件">
+                    </div>
+                    <div class="submit-group">
+                        <span class="submit-group-title">  毕业学校：</span>
+                        <input type="text" maxlength="50" name="school" placeholder="毕业学校">
+                    </div>
+                    <div class="submit-group">
+                        <span class="submit-group-title">   工作单位：</span>
+                        <input type="text" maxlength="50" name="workPlace" placeholder="工作单位">
+                    </div>
+                    <div class="submit-group">
+                        <span class="submit-group-title"><span class="submit-group-need">*</span>  所在地点：</span>
+                        <div id="addressSelect" style="">
+                    </div>
+                </div>
+                    <button  class="submit-group-button" id="formSubmit"  style="width: 100%;" onclick="return false">确 认 报 名</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div id="agreementContent" class="submit-success-mask">
+        <div id="closeAgreementContent" style="position: fixed; top: 3%;right: 3%;z-index: 9999;"><img  style="width: 28px;height: 28px;" src="__PUBLIC__/mobile/images/closeagreement.png" alt=""></div>
+        <div class="mask-content" style="max-height: 96%;overflow: scroll;width: 96%;padding: 10px;top:50%;transform: translate(0, -50%);">
+            <div class="" style="padding:10px;clear: both;overflow: scroll">
+                {$agreement|htmlspecialchars_decode|html_entity_decode}
+            </div>
+        </div>
+    </div>
+    <div id="submit-mask" class="submit-success-mask">
+        <div class="mask-content">
+            <div class="mask-image-box">
+                <img class="mask-image" src="__PUBLIC__/mobile/images/submitsuccess.png" alt="">
+            </div>
+
+            <div class="mask-title"><b>恭喜您报名成功!</b></div>
+            <div class="mask-content-info" style="color: #666666;font-family:MicrosoftYaHei;">
+                <span>温馨提示：</span>
+                <!--<span>凭借手机号码可登录大赛网站。</span>-->
+                <div id="showSuccess" style="word-break: break-all">凭借手机号码可登录大赛网站<a href="http://shaangu.maidiyun.com" style="color: #D14E4E;text-decoration: underline;">2018.maidiyun.com</a>查看报名信息与竞赛作品提交。您已是设计宝用户，可直接登录设计宝建立设计群组，进行技术交流。再次感谢对本次大赛的鼎力支持，预祝您比赛顺利，金榜题名。</div>
+            </div>
+            <div class="mask-button-container">
+                <button id="mask-close-button" class="mask-content-button" onclick="return false;">我知道了</button>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var wait=60;
+        function time(o) {
+            if (wait == 0) {
+                o.removeAttribute("disabled");
+                o.value="获取验证码";
+                wait = 60;
+            } else {
+                o.setAttribute("disabled", true);
+                o.value="重新发送(" + wait + ")";
+                wait--;
+                setTimeout(function() {
+                    time(o)
+                }, 1000)
+            }
+        }
+    </script>
+    <script>
+        //验证身份证
+        function isCardNo(card)
+        {
+            // 身份证号码为15位或者18位，15位时全为数字，18位前17位为数字，最后一位是校验位，可能为数字或字符X
+            var reg =/^\d{6}(18|19|20)?\d{2}(0[1-9]|1[012])(0[1-9]|[12]\d|3[01])\d{3}(\d|[xX])$/;
+            return reg.test(card);
+        }
+        //验证手机号
+        function isPoneAvailable(phoneNumber) {
+            var myreg = /^[1][3,4,5,6,7,8,9][0-9]{9}$/;
+            return myreg.test(phoneNumber);
+        }
+        //验证姓名
+        function checkName(userName) {
+            var myreg = "^[a-zA-Z\u4e00-\u9fa5]+$";
+            var re = new RegExp(myreg);
+            return re.test(userName);
+        }
+        //验证手机号是否被注册
+        function isPhoneRegister(phoneNumber) {
+            var sid = getCheckedVal();
+            console.log(sid);
+            $.ajax({
+                type: "post",
+                url: "{:U('/isPhoneRegister')}",
+                data:{'phoneNumber':phoneNumber,'sid':sid},
+                cache:false,
+                async:false,
+                success: function(data){
+                    var data = JSON.parse(data);
+                   if (data.status == 1){
+                       mui.toast(data.title);
+                       $('#verifycodeId').click();
+                       return false;
+                   }else {
+                       sendVerifyCode(phoneNumber);
+                   }
+                }
+            });
+        }
+        /**
+         * 请求验证码接口
+         */
+        function sendVerifyCode(phoneNumber) {
+            time(document.getElementById("getVerifyCode"));
+            //调用获取验证码
+            $.post('{:U("/sendVerify")}', {'phoneNumber':phoneNumber}, function (data) {
+                var data =  JSON.parse(data);
+                if(data.State ==2){
+                    mui.toast('迈迪网验证码发送成功, 请注意查收')
+                }else{
+                    $('#verifycodeId').click();
+                    mui.toast(data.msg)
+                    return false;
+                }
+            })
+        }
+        /**
+         * 获取验证码
+         */
+        $('#getVerifyCode').click(function () {
+            var phoneNumer = $("#phoneNumber").val();
+            var firstVerifyCode = $("#firstVerifyCode").val();
+            if (!firstVerifyCode){
+                mui.toast('请先填写图片验证码',{ duration:'long', type:'div' })
+                return false;
+            }
+            if(!phoneNumer || phoneNumer == 'undefined'){
+                mui.toast('请输入手机号',{ duration:'long', type:'div' })
+                return false;
+            }
+            if(!isPoneAvailable(phoneNumer)){
+                mui.toast('手机号输入错误',{ duration:'long', type:'div' })
+                return false;
+            }
+            $.post("{:U('/checkPictureVerify')}", {'pictureVerify': firstVerifyCode}, function (data) {
+                if(data){
+                    isPhoneRegister(phoneNumer);
+                }else{
+                    mui.toast('图片验证码输入错误',{ duration:'long', type:'div' })
+                    $('#verifycodeId').click();
+                    return false;
+                }
+            })
+        });
+
+        //文档就绪
+        $(function() {
+
+            window.addEventListener("popstate", function(e) {
+                if ($("#agreementContent").css('display') == "block"){
+                    $("#agreementContent").hide();
+	            } else {
+		        history.back()
+	            }
+            }, false);
+            $("#checkBlock").show();
+            $("#checkBlock").siblings().hide();
+
+            //下一步操作
+            $("#checkBlockButton").click(function () {
+                var d = {};
+                var t = $('form').serializeArray();
+                $.each(t, function() {
+                    d[this.name] = this.value;
+                });
+                d['sid'] = getCheckedVal();
+                console.log(d);
+                if(d.sid.length == 0){
+                    mui.toast('请选择至少一个题目');
+                    return false;
+                }
+                if(!d.phoneNumber){
+                    mui.toast('手机号不能为空');
+                    return false;
+                }
+                if(!isPoneAvailable(d.phoneNumber)){
+                    mui.toast('手机号码格式错误');
+                    return false
+                }
+                if(!d.firstVerifyCode){
+                    mui.toast('图片验证码不能为空');
+                    return false
+                }
+                if(!d.verifyCode){
+                    mui.toast('验证码不能为空');
+                    return false
+                }
+                if(!d.agreement){
+                    mui.toast('用户协议未勾选');
+                    return false
+                }
+                $.post("{:U('/checkPhoneVerify')}",d,function(data){
+                    console.log(data)
+                    if(data.status == 1){
+                        mui.toast(data.error);
+                        return false
+                    }else if(data.status == 2){
+                        $('#submit-mask').css("display","block");
+                        $('html, body').css('overflow', 'hidden');
+                        $('html, body').css('height', '100%');
+                    }else{
+                        $("#checkBlock").hide();
+                        $("#checkBlock").siblings().show();
+                    }
+                },'json');
+            });
+            //题目多选 样式切换
+            $(".checkBoxItem").click(function () {
+                if($(this).hasClass('active')){
+                    $(this).children("input").click();
+                    $(this).removeClass('active');
+                    $(this).children("img").attr('src', "__PUBLIC__/mobile/images/nocheck.png");
+                }else{
+                    $(this).children("input").click();
+                    $(this).addClass('active');
+                    $(this).children("img").attr('src', "__PUBLIC__/mobile/images/checked.png");
+                }
+            });
+            /**
+             * 点击验证码自动刷新
+             */
+            $("#verifycodeId").click(function(){
+                var that = this;
+                that.src = that.src + "?timestamp=" + new Date().getTime();
+            })
+
+            //蒙版显示/隐藏
+            $('#mask-close-button').click(function () {
+                $('#submit-mask').hide();
+                window.location.href="{:U('Mobile/Index/index')}";
+            });
+
+            $('#openAgreementContent').click(function () {
+                $('#agreementContent').show();
+                pushHistory();
+            });
+            $('#closeAgreementContent').click(function () {
+                $('#agreementContent').hide();
+            });
+
+            var str = '<select name="province" id="province" style="width: 47%"></select><select name="city" id="city" style="width: 47%;margin-left: 10px"> </select>';
+            $('#addressSelect').html(str);
+            fillProvince();
+            fillCity();
+            $('#province').change(function () {
+                fillCity();
+            });
+//            表单提交
+            $('#formSubmit').click(function() {
+                var d = {};
+                var t = $('form').serializeArray();
+                $.each(t, function() {
+                    d[this.name] = this.value;
+                });
+                d['sid'] = getCheckedVal();
+                console.log(d);
+                if(!d.username){
+                    mui.toast('姓名不能为空');
+                    return false;
+                }
+                if(!checkName(d.username)){
+                    mui.toast('姓名只能包含字母汉字');
+                    return false;
+                }
+                if(!d.cardNumber){
+                    mui.toast('证件号码不能为空');
+                    return false;
+                }
+                if(!isCardNo(d.cardNumber)){
+                    mui.toast('身份证号码错误');
+                    return false
+                }
+//                if(!d.phoneNumber){
+//                    mui.toast('手机号不能为空');
+//                    return false;
+//                }
+//                if(!d.firstVerifyCode){
+//                    mui.toast('图片验证码不能为空');
+//                    return false
+//                }
+//                if(!isPoneAvailable(d.phoneNumber)){
+//                    mui.toast('手机号码格式错误');
+//                    return false
+//                }
+//                if(!d.verifyCode){
+//                    mui.toast('验证码不能为空');
+//                    return false
+//                }
+                if(d.email){
+                    var myReg = /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$/;
+                    if(!myReg.test(d.email)){
+                        mui.toast('邮箱格式不正确');
+                        return false
+                    }
+                }
+                d.provinceText = $('#province').find("option:selected").text();
+                d.cityText = $('#city').find("option:selected").text();
+                $.post("{:U('/getSubmit')}",d,function(data){
+                        if(data.status==1){
+                            if (data.isNew == 1){
+                                $("#showSuccess").html("凭借手机号码可登录大赛网站<a href=\"http://shaangu.maidiyun.com\" style=\"color: #D14E4E;text-decoration: underline;\">shaangu.maidiyun.com</a>查看报名信息与竞赛作品提交。同时凭借手机号登录今日制造（默认密码为报名手机号码），可建立设计群组，进行技术交流。再次感谢对本次大赛的鼎力支持，预祝您比赛顺利，金榜题名")
+                            }
+                            $('#submit-mask').css("display","block");
+                            $('html, body').css('overflow', 'hidden');
+                            $('html, body').css('height', '100%');
+                        }else{
+                            $('#firstVerifyCode').val('');
+                            $('#verifycodeId').click();
+                            if(data.error){
+                                mui.alert(data.error);
+                            }else{
+                                mui.alert('报名失败')
+                            }
+                        }
+                    },'json');
+            });
+        });
+
+        function pushHistory() {
+            var state = {
+                title: "title",
+                url: "#"
+            };
+            window.history.pushState(state, "title", "#");
+        }
+        //获取多选框的值
+        function getCheckedVal() {
+            obj = document.getElementsByName("sid");
+            check_val = [];
+            for(k in obj){
+                if(obj[k].checked)
+                    check_val.push(obj[k].value);
+            }
+           return check_val;
+        }
+
+        /**
+         * 省份填充
+         */
+        function fillProvince() {
+            $.post("{:U('/addressSelect')}", {'code':0}, function (data) {
+                var str = '';
+                for (var i=0; i<data.length; i++){
+                    var row = data[i];
+                    str = str + '<option value="'+row.dic_key+'">'+row.dic_value+'</option>'
+                }
+                $('#province').html(str);
+            },'json')
+        }
+
+        /**
+         * 城市填充
+         */
+        function fillCity() {
+            $('#city').attr('disabled',true);
+            var pCode = $('#province').val()? $('#province').val():'110000';
+            $.post("{:U('/addressSelect')}", {'code':pCode}, function (data) {
+                $('#city').html('');
+                var str = '';
+                for (var i=0; i<data.length; i++){
+                    var row = data[i];
+                    str = str + '<option value="'+row.dic_key+'">'+row.dic_value+'</option>'
+                }
+                $('#city').html(str);
+                $('#city').attr('disabled',false);
+            },'json')
+        }
+
+        /**
+         * 阻止蒙版滑动
+         */
+        $('#submit-mask').on("touchmove",function (event) {
+            event.preventDefault();
+        })
+        $('#openAgreementContent').on("touchmove",function (event) {
+            event.preventDefault();
+        })
+    </script>
+</block>

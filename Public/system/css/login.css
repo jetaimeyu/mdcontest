@@ -1,0 +1,61 @@
+/* CSS Document */
+body{background:#fff;font-family:"Microsoft YaHei";}
+*{margin:0; padding:0;}
+.clearfix { 
+  *zoom: 1; 
+} 
+.clearfix:before, 
+.clearfix:after { 
+  display: table; 
+  line-height: 0; 
+  content: ""; 
+} 
+.clearfix:after { 
+  clear: both; 
+}
+
+
+.sec{ width:100%; height:320px; position:absolute; top:50%; margin-top:-160px; background: url(../images/login-bj.jpg) no-repeat center;}
+.sec-c{ width:1000px; margin:0 auto;}
+.sec-title{ color:#1e6fbd;font-size:30px; margin-top:-45px;}
+.sec-title span{ color:#b3b3b3; font-size:14px; margin-left:5px;}
+.sec-detail{ box-shadow:0px 0px 6px 0px #d8d5d5; background:#fff; border:1px solid #d8d5d5; width:380px; height:370px; margin-top:-20px; float:right;}
+.sec-detail h2{color:#1e6fbd; font-size:20px; height:65px;border-bottom:1px solid #ccc; background:#f6f6f6;padding:15px 0 0 15px; font-weight:normal;}
+.sec-detail h2 p{font-size:12px;}
+.user-info,.password-info{ width:334px; margin:0 auto;}
+.user-info input,.password-info input{width:300px;border:1px solid #d0d0d0;background:url(../images/user.jpg) no-repeat 8px 8px; padding-left:26px; height:32px; line-height:32px;}
+.password-info input{background:url(../images/password.jpg) no-repeat 8px 8px; }
+.password-info{margin:20px auto 20px auto;}
+.other-info{ width:334px; margin:0 auto;}
+.member{ float:left;}
+.member input.old-input{ display:none;}
+.member input.old-input[type="checkbox"] + label{background: url("../images/checkbox-icons.png") no-repeat scroll 0px 0px;cursor: pointer;display: inline-block;height: 16px;margin-right: 5px;padding: 0;position: relative;top: 2px;width: 16px;}
+.member input.old-input[type="checkbox"]:checked + label{background: url("../images/checkbox-icons.png") no-repeat scroll -16px 0px;display: inline-block;height: 16px;padding: 0;width: 16px;}
+.member label{ font-size:13px; color:#888;}
+.other-info a{ color:#1e6fbd; float:right; font-size:13px; text-decoration:none;}
+.other-info a:hover{color:#3288db;}
+.sec-btn{ margin:30px auto 0 auto;width:284px;}
+.sec-btn a { display:block; width:284px; height:38px; border-radius:5px; background:#1e6fbd; text-align:center; line-height:38px; color:#fff; letter-spacing:15px; font-family:"micorsoft yahei"; text-decoration:none;}
+.sec-btn a:hover{color:#3288db;}
+
+.verify-info{ width:334px; margin:0 auto;}
+.verify-info input{
+	width:100px;
+	border:1px solid #d0d0d0;
+	background:url(../images/verify.png) no-repeat 8px 8px;
+	padding-left:26px;
+	height:32px; 
+	line-height:32px;
+}
+.verify-info img{
+	height: 36px;
+    vertical-align: top;
+	cursor:pointer;
+}
+.sectip{
+	font-size:14px;
+	margin: 10px auto;
+    width: 334px;
+	height:25px;
+	color:red;
+}

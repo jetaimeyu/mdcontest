@@ -1,0 +1,322 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>banner管理</title>
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/plugins/fancybox/jquery.fancybox.css"/>
+</block>
+<block name="body">
+	<div class="main-page">
+		<table id="datagrid"></table>
+		<!--grid工具栏 -->
+		<div id="toolbar">
+			<div style="display:inline-block;">
+				<a id="btn_del" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-del'">删除</a>
+				<div class="toolbar-separator"></div>
+				<a id="btn_refresh" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'pagination-load'">刷新</a>
+				<div class="toolbar-separator"></div>
+				<a id="btn_excel"  class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-excel'">导出</a>
+				<!-- <div class="toolbar-separator"></div> -->
+				<!-- <a id="btn_zip"  class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-zip'">批量导出作品</a> -->
+			</div>
+			<div style="display:inline-block;position:absolute;right:10px;top:3px">
+					题目：<input id="drMode" class="searchbox"> 
+					<input id="searchbox">
+					<div id="search_menu">
+						<div data-options="iconCls:'icon-extend-field'">姓名</div>
+						<div data-options="iconCls:'icon-extend-field'">手机号</div>
+					</div>
+					<input type="hidden" id="queryField" value=""/>
+					<input type="hidden" id="queryStr" value=""/>
+			</div>
+		</div>
+	</div>
+	
+</block>
+<block name="script">
+<script src="__PUBLIC__/plugins/fancybox/jquery.fancybox.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	$(function(){
+		//datagrid表格
+		$("#datagrid").datagrid({
+			border:true,
+			fit:true,
+			url:"{:U('getData')}",
+			pagination:true,
+			pageSize:20,//默认加载条数，必须是paseList内数据
+			pageList:[10,20,30,50],
+			striped:true,//是否显示斑马线效果
+			nowrap:true,//单元格不换行
+			rownumbers:true,//行号
+			singleSelect:false,
+			checkOnSelect:true,
+			toolbar:"#toolbar",
+			remoteSort:false,
+			columns:[[
+			    {title:"id",field:"id",checkbox:true},
+			    {title:"所选题目",field:"title",width:100,sortable:true},
+			    {title:"姓名",field:"name",width:100,sortable:true},
+			    {title:"手机号",field:"tel",width:100,sortable:true},
+			    // {title:"证件类型",field:"ID_type",width:100,sortable:true,formatter:function(value,row,index){
+				// 	if(value == 1){
+				// 		return '身份证';
+				// 	}else if(value == 2){
+				// 		return '护照';
+				// 	}else if(value == '3'){
+				// 		return '台胞证';
+				// 	}
+				// }},
+			    {title:"身份证号码",field:"ID_num",width:150,sortable:true},
+			    {title:"省份",field:"province",width:100,sortable:true},
+			    {title:"城市",field:"city",width:100,sortable:true},
+			    {title:"作品链接",field:"file_url",width:150,sortable:true,formatter:function(value,row,index){
+					if(value){
+						var html="<a target='_blank' href='"+ '__UPLOADS__' +value+"'>"+ row.file_name+"</a>";
+					}else{
+						var html = '';
+					}
+					return html;
+				}},
+				
+				// {title:"状态",field:"status",width:60,align:"center",sortable:true,formatter:function(value,row,index){
+				// 	if(value==1){
+				// 		return "<span style='color:green;font-weight:bold'>启用</span>";
+				// 	}else{
+				// 		return "<span style='color:gray;font-weight:bold'>禁用</span>";
+				// 	}
+				// }},
+				{title:"作品描述",field:"file_description",width:200,sortable:true,formatter:function(value,row,index){
+					if(value){
+						var html="<span class='span-ellipsis' title='"+ value+"'>"+ value+"</span>";
+					}else{
+						var html = '';
+					}
+					return html;
+				}},
+			    {title:"报名时间",field:"create_time",width:150,sortable:true},
+				{title:"操作",field:"cz",width:100,sortable:true,formatter:function(value,row,index){
+					var html="<a href='javascript:;' data-id='"+row.id+"' class='viewData'>查看</a>";
+					return html;
+				}},
+			]],
+			
+		});
+		$(document).on('click','.viewData',function(){
+			var id = $(this).data("id");
+			openDialog({
+				windowId:"window",
+				title:"查看报名",
+				href:"{:U('viewData')}?id="+id,
+				width:500,
+				height:450,
+				buttons:[
+					{
+						text:"关闭",
+						iconCls:"icon-cancel",
+						handler:function(){
+								closeDialog();
+						}
+					}
+				]
+			});
+		})
+			//状态下拉列表
+		$("#drMode").combobox({
+			width:100,
+			panelHeight:"auto",
+			valueField:'value',    
+			textField:'text',
+			editable:false,
+			value:"",
+			url:"{:U('getSubjects')}"
+		});
+		//查询框
+		$("#searchbox").searchbox({
+			menu:'#search_menu',
+			width:200,
+			searcher:function(value,name){
+				var queryField = "";
+				if(name=="姓名"){
+					queryField="name";
+					$('#queryField').val('name');
+				}else if(name=="手机号"){
+					queryField="tel";
+				}
+				$('#queryField').val(queryField)
+				$('#queryStr').val(value)
+				var sid = $('#drMode').combobox('getValue');
+				$("#datagrid").datagrid('load',{
+					queryField:queryField,
+					queryStr:$.trim(value),
+					'sid':sid
+				});
+			}
+		});
+		$('#btn_excel').on('click',function(){
+			var queryField = $('#queryField').val()
+			var queryStr = $('#queryStr').val()
+			var sid = $('#drMode').combobox('getValue');
+			var url = "{:U('export')}?queryField="+queryField+"&queryStr="+queryStr+'&sid='+sid;
+			window.location.href=url;
+		})
+		$('#btn_zip').on('click',function(){
+			var queryField = $('#queryField').val()
+			var queryStr = $('#queryStr').val()
+			var sid = $('#drMode').combobox('getValue');
+			var url = "{:U('exportFile')}?queryField="+queryField+"&queryStr="+queryStr+'&sid='+sid;
+			window.location.href=url;
+		})
+		$('#btn_refresh').on('click',function(){
+			$('#datagrid').datagrid('reload');
+		})
+	
+		
+		//删除
+		$("#btn_del").click(function(){
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			confirm('温馨提示','确定删除？',function(flag){    
+			    if (flag){ 
+			    	var ids = new Array();
+					$.each(selections,function(i,item){
+						ids.push(item.id);
+					});
+					
+					$.ajax({
+						url:"{:U('del')}",
+						type:"post",
+						data:{
+							"ids":ids.join(",")
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#datagrid").datagrid("reload");
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }    
+			});  
+		});
+		
+		
+		//启用
+		$("#btn_enable").click(function(){
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			
+			confirm('温馨提示','确定启用？',function(flag){    
+			    if (flag){ 
+			    	var ids = new Array();
+					$.each(selections,function(i,item){
+						ids.push(item.id);
+					});
+					
+					$.ajax({
+						url:"{:U('Banner/setStatus')}",
+						type:"post",
+						data:{
+							"ids":ids.join(","),
+							"status":1
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#datagrid").datagrid("reload");
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }    
+			}); 
+		});
+		
+		//禁用
+		$("#btn_disable").click(function(){
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			confirm('温馨提示','确定禁用？',function(flag){    
+			    if (flag){ 
+			    	var ids = new Array();
+					$.each(selections,function(i,item){
+						ids.push(item.id);
+					});
+					
+					$.ajax({
+						url:"{:U('Banner/setStatus')}",
+						type:"post",
+						data:{
+							"ids":ids.join(","),
+							"status":0
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#datagrid").datagrid("reload");
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }    
+			}); 
+		});
+		
+	});
+	</script>
+</block>

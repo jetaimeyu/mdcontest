@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>topList</title>
+    <link rel="stylesheet" href="__PUBLIC__/home/css/common.css?v={$version_no}">
+    <link rel="stylesheet" href="__PUBLIC__/home/css/work.css">
+    <style>
+        .pager{
+            text-align: center;
+        }
+        .pager span {
+            background: #3F4B5C;
+            color: #fff;
+            border: 1px solid #E0E0E0;
+            padding: 3px 10px;
+            margin-left: 8px;
+        }
+        .pager a {
+            border: 1px solid #666666;
+            padding: 3px 10px;
+            margin-left: 8px;
+            text-decoration: none;
+            color: #333;
+            outline: none;
+        }
+    </style>
+</head>
+<body style="overflow: hidden;width: 660px">
+<div class="contentInfo">
+    <volist  name="data" id="val">
+        <div class="infoBox">
+            <!--__UPLOADS__{$data['img']}-->
+            <img src="__UPLOADS__{$val.img}" alt="">
+            <div class="box-title">{$val.workname}</div>
+            <div class="box-describe">{$val.workdes}</div>
+        </div>
+    </volist>
+
+</div>
+<ul class="paginList pager"><!-- 分页显示 -->{$page}</ul>
+</body>
+</html>

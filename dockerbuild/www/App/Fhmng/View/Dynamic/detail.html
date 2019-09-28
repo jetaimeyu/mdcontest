@@ -1,0 +1,64 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title></title>
+</block>
+<block name="body">
+<form id="myform" class="easyui-form myform" data-options="novalidate:false" method="POST" >
+	<table>
+		<tr>
+			<td class="text_right" style="width:85px">专家：</td>
+			<td>
+				<label >{$data.name}</label>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:85px">标题：</td>
+			<td>
+			<label style="word-wrap: break-word;">{$data.title}</label>
+			</td>
+		</tr>
+		<if condition="$data['img'] neq '' ">
+		<tr>
+			<td class="text_right" style="width:85px">图片：</td>
+			<td>
+				<img src="{$data.img}" style="width:100px;height:100px"/>
+			</td>
+		</tr>
+		<else/>
+		
+		</if>
+		<tr>
+			<td class="text_right" style="width:85px">创建时间：</td>
+			<td>
+				<label >{$data.create_time}</label>
+			</td>
+		</tr>	
+<!-- 		</tr> -->
+<!-- 		<tr> -->
+<!-- 			<td class="text_right">排序：</td> -->
+<!-- 			<td> -->
+<!-- 				<input  name="order_no" class="easyui-numberspinner" style="width:145px;" required="required" > -->
+<!-- 				<span class="tip">（升序）</span> -->
+<!-- 			</td> -->
+<!-- 		</tr> -->
+<!-- 		<tr> -->
+<!-- 			<td class="text_right">状态：</td> -->
+<!-- 			<td> -->
+<!-- 				<select name="status" class="easyui-combobox" > -->
+<!-- 					<option value="1">已通过</option> -->
+<!-- 					<option value="0">未通过</option> -->
+<!-- 					<option value="5">启用</option> -->
+<!-- 					<option value="6">禁用</option> -->
+<!-- 				</select> -->
+<!-- 			</td> -->
+<!-- 		</tr> -->
+	</table>
+</form>
+</block>
+<block name="script">
+<script type="text/javascript">
+	$(function(){
+		//$(".dialog-button").style.display="none";
+	})	
+</script>
+</block>

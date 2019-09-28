@@ -1,0 +1,82 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title></title>
+</block>
+<block name="body">
+<form id="myform" class="easyui-form myform" data-options="novalidate:false" method="post">
+	<table>
+		<tr>
+			<td class="text_right" style="width:85px"><span class="mark">*</span>分类名称：</td>
+			<td><input id="type_name"  name="name" value="{$data.name}" class="easyui-textbox" style="width:250px" data-options="validateOnCreate:false,required:true,validType:['length[1,40]'],tipPosition:'right'" >
+				<input id="hdnId" name="id" type="hidden" value="{$data.id}">
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:85px"><span class="mark">*</span>关键字：</td>
+			<td><input id="type_code"  name="key" value="{$data.key}" class="easyui-textbox" style="width:250px" data-options="validateOnCreate:false,delay:850,required:true,validType:['length[1,40]']"></td>
+		</tr>
+		
+		
+		<!-- <tr>
+			<td class="text_right"><span class="mark">*</span>状态：</td>
+			<td>
+				<select name="status" class="easyui-combobox" data-options="value:'{:$data?$data['status']:1}',validateOnCreate:false,editable:false,panelHeight:'auto',required:true" style="width:145px">
+					<option value="1">启用</option>
+					<option value="0">禁用</option>
+				</select>
+			</td>
+		</tr> -->
+	</table>
+</form>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		$("#myform").form({
+			url:"{:U('editCategory')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var isValid  = $(this).form('validate');
+				if(isValid){
+					//验证通过提交，禁用提交按钮，防止多次提交
+					parent.$("#btnSubmit").linkbutton("disable");
+				}
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$.tipShow({
+						"message":"操作成功",
+						"color":"green",
+						"callback":function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":true,
+								"controlType":"datagrid",
+								"gridId":"dicTypeGrid"
+							});
+						}
+					});
+				}else{
+					$.tipShow({
+						"message":result.message,
+						"color":"red"
+					});
+					
+					parent.$("#btnSubmit").linkbutton("enable");
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败",
+					"color":"red"
+				});
+				parent.$("#btnSubmit").linkbutton("enable");
+			}
+		});
+
+	});
+	</script>
+</block>

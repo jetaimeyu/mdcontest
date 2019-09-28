@@ -1,0 +1,102 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>添加字典类型</title>
+</block>
+<block name="body">
+<form id="myform" class="easyui-form myform" data-options="novalidate:false" method="post">
+	<table>
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>类型名称：</td>
+			<td><input id="type_name"  name="type_name" class="easyui-textbox" style="width:250px" data-options="required:true,validType:['length[1,40]']" ></td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>类型编码：</td>
+			<td><input id="type_code"  name="type_code" class="easyui-textbox" style="width:250px" data-options="validateOnCreate:false,delay:800,required:true,validType:['length[1,40]','validDicTypeCode']"></td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>状态：</td>
+			<td>
+				<select name="status" class="easyui-combobox" data-options="editable:false,panelHeight:'auto',required:true" style="width:145px">
+					<option value="1">启用</option>
+					<option value="0">禁用</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</form>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		$("#myform").form({
+			url:"{:U('DictionaryType/addDicType')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var isValid  = $(this).form('validate');
+				if(isValid){
+					//验证通过提交，禁用提交按钮，防止多次提交
+					parent.$("#btnSubmit").linkbutton("disable");
+				}
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$.tipShow({
+						"message":"操作成功",
+						"color":"green",
+						"callback":function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":true,
+								"controlType":"datagrid",
+								"gridId":"dicTypeGrid"
+							});
+						}
+					});
+				}else{
+					$.tipShow({
+						"message":"操作失败",
+						"color":"red"
+					});
+					
+					parent.$("#btnSubmit").linkbutton("enable");
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败",
+					"color":"red"
+				});
+				parent.$("#btnSubmit").linkbutton("enable");
+			}
+		});
+		
+		$.extend($.fn.validatebox.defaults.rules, {    
+			validDicTypeCode:{
+		    	validator:function(value,param){
+		    		var isValid = false;
+		    		$.ajax({
+		    			type:"post",
+		    			async:false,
+		    			data:{
+		    				"type_code":$.trim(value)
+		    			},
+		    			url:"{:U('DictionaryType/validDicTypeCode')}",
+		    			success:function(response){
+		    				var result = $.parseJSON(response);
+		    				isValid = !result.isExist;
+		    			},
+		    			error:function(){
+		    				isValid = false;
+		    			}
+		    		});
+		    		return isValid;
+		    	},
+		    	message:"该类型编码已存在"
+		    }
+		}); 
+	});
+	</script>
+</block>

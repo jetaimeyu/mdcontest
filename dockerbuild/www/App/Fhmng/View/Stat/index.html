@@ -1,0 +1,218 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>统计管理</title>
+</block>
+<block name="body">
+	<div class="main-page">
+		<div class="easyui-layout" data-options="fit:true">
+			<div data-options="title:'访问量',region:'north',width:360,height:'50%',split:true,collapsible:true">
+				<table id="datafgrid"></table>
+				<!--grid工具栏 -->
+				<div id="f_toolbar">
+				<form id="searchForm">
+					<div style="display:inline-block;height:70px;">
+						<a id="btnf_refresh" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'pagination-load'">刷新</a>
+						开始时间：<input class="easyui-datetimebox" id="start_time" name="start_time" value="" style="width:150px">
+						结束时间：<input class="easyui-datetimebox" id="end_time" name="end_time" value="" style="width:150px">
+						类型:<input id="type" class="easyui-combobox" name="type" data-options="valueField:'id',textField:'text',panelHeight:'auto',url:'{:U('Stat/gettype')}'" >
+					</div>
+					<div style="display:inline-block;position:absolute;left:10px;top: 30px;bottom:5px">
+							一级模块:<input id="model_one" style="display:inline-block;position:absolute;right:200px;top:3px">
+							二级模块:<input id="model_two" name="model_two" class="easyui-combobox" data-options="method:'get',valueField:'id',textField:'text',panelHeight:'auto',editable:false">
+							三级模块:<input id="model_three" name="model_three" class="easyui-combobox" data-options="method:'get',valueField:'id',textField:'text',panelHeight:'auto',editable:false">
+							链接：<input id="searchValue" name="searchValue" class="easyui-searchbox" style="width:150px" data-options="searcher:searcher,prompt:'链接'"></input> 
+							
+							<input type="hidden" id="hide_type" name="hide_type" value=""/>
+							<input type="hidden" id="hide_model_one" name="hide_model_one" value=""/>
+							<input type="hidden" id="hide_model_two" name="hide_model_two" value=""/>
+							<input type="hidden" id="hide_model_three" name="hide_model_three" value=""/>
+							<input type="hidden" id="hide_url" name="hide_url" value=""/>
+						
+					</div>
+					</form>
+				</div>
+			</div>
+			<div data-options="region:'center',title:'详情'">
+				<table id="datagrid"></table>
+				
+				<!--grid工具栏 -->
+				<div id="toolbar">
+					<div style="display:inline-block;">
+						<a id="btn_refresh" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'pagination-load'">刷新</a>
+					</div>
+				</div>
+		
+			</div>
+		</div>
+	</div>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	//查询框
+	function searcher(value,name){
+		var type = '';
+		type = $("#type").combobox("getValue");
+		$("#hide_type").val(type);
+		
+		var mone = '';
+		mone = $("#model_one").combobox("getValue");
+		$("#hide_model_one").val(mone);
+		
+		var mtwo = '';
+		mtwo = $("#model_two").combobox("getValue");
+		$("#hide_model_two").val(mtwo);
+		
+		var mth = '';
+		mth = $("#model_three").combobox("getValue");
+		$("#hide_model_three").val(mth);
+		
+		$("#datafgrid").datagrid('load',$('#searchForm').serializeJson());
+	}
+
+	//模块
+	$("#type").combobox({
+		width:80
+	});
+	
+	//模块
+	$("#model_one").combobox({
+		width:80,
+		panelHeight:"auto",
+		valueField:'value',
+	    textField:'text',
+	    editable:false,
+	    value:"0",
+	    data:[
+			{"text":"全部",value:"0"},
+	    	{"text":"2017峰会",value:"-10"},
+	    	{"text":"意见领袖馆",value:"-20"},
+	    	{"text":"行业论坛",value:"-30"},
+	    ],
+	    onSelect: function (row) {  
+            if (row != null) {
+                $('#model_two').combobox({
+                	width:100,
+                    url: "{:U('Stat/getmodel')}"+"?pid=" + row.value,
+                    onSelect: function (val) {
+                        if ((val != null) && (row.value == -20)) {  
+                            $('#model_three').combobox({
+                            	width:100,
+                                url: "{:U('Stat/getchildmodel')}"+"?pid=" + val.id,
+                            });
+                        }
+                    }
+                });
+            }
+        }
+	});
+	
+	
+	$(function(){
+	    $("#btn_refresh").linkbutton('disable');
+
+		$("#datafgrid").datagrid({
+			border:true,
+			fit:true,
+			url:"{:U('getList')}",
+			pagination:true,
+			pageSize:10,//默认加载条数，必须是paseList内数据
+			pageList:[10,20,30,50],
+			striped:true,//是否显示斑马线效果
+			nowrap:true,//单元格不换行
+// 			rownumbers:true,//行号
+			singleSelect:true,
+			checkOnSelect:false,
+			toolbar:"#f_toolbar",
+			remoteSort:true,
+			columns:[[
+			    {title:"大模块",field:"controller",width:140,align:"center",sortable:true,formatter:function(value,row,index){
+					return "<span class='span-ellipsis' title='"+ value+"'>"+ value +"</span>";
+				}},
+				{title:"内容",field:"model_name",align:"center",width:240,sortable:true,formatter:function(value,row,index){
+					if(value == null){
+						value = '';
+					}
+					return value;
+				}},
+				{title:"操作",field:"type",width:140,align:"center",sortable:true,formatter:function(value,row,index){
+					return "<span class='span-ellipsis' title='"+ value+"'>"+ value +"</span>";
+				}},
+				{title:"链接",field:"url1",align:"center",width:400,sortable:true,formatter:function(value,row,index){
+					return "<span class='span-ellipsis' title='"+ value+"'>"+ value +"</span>";
+				}},
+				{title:"数量",field:"number",align:"center",width:130,sortable:true,formatter:function(value,row,index){
+					return "<span class='span-ellipsis' title='"+ value+"'>"+ value +"</span>";
+				}},
+				{title:"查看",field:"url",width:80,align:"center",sortable:true,formatter:function(value,row,index){
+					var str="";
+					str+="<div class='click_btn' style='float:right; margin:0 3px;cursor:pointer;'><img src='__PUBLIC__/easyui/themes/icons_extend/toolbar/GTP_preview.png' style='float:left;' title='查看' >"
+					 +"<a href='javascript:;' name='parentdetail' data-value='"+value+"' >查看</a></div>";	
+					 return str;
+				}}
+			]],
+			onLoadSuccess:function(data){
+				$("a[name='parentdetail']").click(detail);//查看
+				$("#searchValue").searchbox('setValue',data.str);// 赋值
+			},
+			onSelect:function(index,row){
+				if(!row){
+					return false;
+				}
+				var stime = $('#start_time').datebox('getValue');
+				var etime = $('#end_time').datebox('getValue');
+				var pid =row.id;
+				var url = "{:U('getDetail')}";
+				$('#datagrid').datagrid({    
+				    url:url,    
+				    queryParams:{pid:pid,start_time:stime,end_time:etime},
+				    toolbar:"#toolbar",
+				    pagination:true,
+				    pageSize:10,//默认加载条数，必须是paseList内数据
+					pageList:[10,20,30,50],
+				    pagePosition:'bottom',
+				    singleSelect:true,
+				    fit:true,
+					columns:[[
+					   {title:"IP",field:"ip",width:200,align:"center",sortable:true,formatter:function(value,row,index){
+							return "<span class='span-ellipsis'>"+ value +"</span>";
+						}},
+						{title:"创建时间",field:"create_time",align:"center",width:130,sortable:true,formatter:function(value,row,index){
+							return "<span class='span-ellipsis' title='"+ value+"'>"+ value +"</span>";
+						}}
+					]],
+					onLoadSuccess:function(data){
+						$("a[name='detail']").click(detail);//查看  child
+					},
+				});
+				$("#pid").val(pid);
+				$('#searchValue').searchbox('setValue','');
+				
+			    $("#btn_refresh").linkbutton('enable');
+			}
+			
+		});
+		
+		//查看
+		function detail(){
+			var value = $(this).data('value');
+			window.open(value);
+		}
+		
+		//刷新
+		$("#btn_refresh").click(function(){
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			$("#datagrid").datagrid("reload");
+		});
+		
+		$("#btnf_refresh").click(function(){
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			$("#datafgrid").datagrid("reload");
+		});
+
+	});
+	</script>
+</block>

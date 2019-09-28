@@ -1,0 +1,101 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>添加角色</title>
+</block>
+<block name="body">
+<form id="myform" class="easyui-form myform" data-options="novalidate:false" method="post">
+	<table>
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>角色名称：</td>
+			<td><input id="role_name"  name="role_name" class="easyui-textbox" style="width:250px" data-options="validateOnCreate:false,delay:800,required:true,validType:['length[1,20]','validRoleName']"></td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>状态：</td>
+			<td>
+				<select name="status" class="easyui-combobox" data-options="editable:false,panelHeight:'auto',required:true" style="width:130px">
+					<option value="1">启用</option>
+					<option value="0">禁用</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right" style='width:103px'>描述(200字之内)：</td>
+			<td><textarea style="width:300px;height:100px" name="description" class="easyui-validatebox text-area" data-options="tipPosition:'left',validType:['length[0,200]']" maxlength="200"></textarea></td>
+		</tr>
+	</table>
+</form>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		$("#myform").form({
+			url:"{:U('Role/addRole')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var isValid  = $(this).form('validate');
+				if(isValid){
+					//验证通过提交，禁用提交按钮，防止多次提交
+					parent.$("#btnSubmit").linkbutton("disable");
+				}
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$.tipShow({
+						"message":"操作成功",
+						"color":"green",
+						"callback":function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":true
+							});
+						}
+					});
+				}else{
+					$.tipShow({
+						"message":"操作失败",
+						"color":"red"
+					});
+					parent.$("#btnSubmit").linkbutton("enable");
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败",
+					"color":"red"
+				});
+				
+				parent.$("#btnSubmit").linkbutton("enable");
+			}
+		});
+		
+
+		$.extend($.fn.validatebox.defaults.rules, {    
+		    validRoleName:{
+		    	validator:function(value,param){
+		    		var isValid = false;
+		    		$.ajax({
+		    			type:"post",
+		    			async:false,
+		    			data:{
+		    				"role_name":$.trim(value)
+		    			},
+		    			url:"{:U('Role/validRoleName')}",
+		    			success:function(response){
+		    				var result = $.parseJSON(response);
+		    				isValid = !result.isExist;
+		    			},
+		    			error:function(){
+		    				isValid = false;
+		    			}
+		    		});
+		    		return isValid;
+		    	},
+		    	message:"该角色已存在"
+		    }
+		}); 
+	});
+	</script>
+</block>

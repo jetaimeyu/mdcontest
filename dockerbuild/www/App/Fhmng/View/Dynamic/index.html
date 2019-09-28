@@ -1,0 +1,269 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>动态管理</title>
+	<style>
+		#toolbar label{
+			margin:0px 5px;
+		}
+	</style>
+</block>
+<block name="body">
+	<div class="main-page">
+		<table id="datagrid"></table>
+		<!--grid工具栏 -->
+		<div id="toolbar">
+			<div style="display:inline-block;">
+				<a id="btn_enable"  data-status='5' href="javascript:void(0)" class="easyui-linkbutton setStatus" data-options="plain:true,iconCls:'icon-extend-enable'">启用</a>
+				<div class="toolbar-separator"></div>
+				<a id="btn_disable"  data-status='6' href="javascript:void(0)" class="easyui-linkbutton setStatus" data-options="plain:true,iconCls:'icon-extend-disable'">禁用</a>
+				<div class="toolbar-separator"></div>
+				<a id="btn_enable"  data-status='1' href="javascript:void(0)" class="easyui-linkbutton setStatus" data-options="plain:true,iconCls:'icon-extend-enable'">通过审核</a>
+				<div class="toolbar-separator"></div>
+				<a id="btn_disable"  data-status='0' href="javascript:void(0)" class="easyui-linkbutton setStatus" data-options="plain:true,iconCls:'icon-extend-disable'">不通过</a>
+				<div class="toolbar-separator"></div>
+				
+				<a id="btn_del" data-status='3' href="javascript:void(0)" class="easyui-linkbutton setStatus" data-options="plain:true,iconCls:'icon-extend-del'">删除</a>
+				<a id="btn_refresh" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'pagination-load'">刷新</a>
+
+			</div>
+			
+					<div style="display:inline-block;position:absolute;right:10px;top:3px">
+					<form id="searchForm">
+					专家：<input id="searchValue" name="searchValue" class="easyui-searchbox" style="width:150px" data-options="searcher:searcher,prompt:'专家'"></input> 
+					</form>
+					</div>
+		</div>
+	</div>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	function searcher(value,name){
+		$("#datagrid").datagrid('load',$('#searchForm').serializeJson());
+	}
+	
+	$(function(){
+		//datagrid表格
+		$("#datagrid").datagrid({
+			border:true,
+			fit:true,
+			url:"{:U('getList')}",
+			pagination:true,
+			pageSize:20,//默认加载条数，必须是paseList内数据
+			pageList:[10,20,30,50],
+			striped:true,//是否显示斑马线效果
+			nowrap:true,//单元格不换行
+			rownumbers:true,//行号
+			singleSelect:false,
+			checkOnSelect:false,
+			toolbar:"#toolbar",
+			remoteSort:true,
+			frozenColumns:[[
+							{title:'全选',field:'id',checkbox:true}
+			]],
+			columns:[[
+			          
+			    {title:"标题",field:"title",width:140,align:"center",sortable:true,formatter:function(value,row,index){
+					return "<span class='span-ellipsis' title='"+ value+"'>"+ value +"</span>";
+				}},
+			   {title:"图片",field:"img",width:140,align:"center",sortable:true,formatter:function(value,row,index){
+					return "<img style='width:23px;height:23px' src='"+ value+"' />";
+				}},
+			   {title:"专家",field:"name",width:140,align:"center",sortable:true,formatter:function(value,row,index){
+					return "<span class='span-ellipsis' title='"+ value+"'>"+ value +"</span>";
+				}},
+				{title:"创建时间",field:"create_time",width:130,sortable:true,formatter:function(value,row,index){
+					return "<span class='span-ellipsis' title='"+ value+"'>"+ value +"</span>";
+				}},
+				{title:"状态",field:"status",width:90,align:"center",sortable:true,formatter:function(value,row,index){
+					if(value==1){
+						return "<span style='color:green;font-weight:bold'>已通过</span>";
+					}else if(value==0){
+						return "<span style='color:red;font-weight:bold'>未通过</span>";
+					}else if(value==5){
+						return "<span style='color:orange;font-weight:bold'>启用</span>";
+					}else if(value==6){
+						return "<span style='color:gray;font-weight:bold'>禁用</span>";
+					}
+				}},
+				{title:"操作",field:"_operate",align:"center",width:60,formatter:function(value,row,index){
+					return "<div class='click_btn' style='float:left; margin:0 3px;cursor:pointer;'><img src='__PUBLIC__/easyui/themes/icons_extend/toolbar/GTP_preview.png' style='float:left;' title='查看' >"
+						 +"<a href='javascript:;'  name='detail' data-value='"+row.id+"' >查看</a></div>";
+				}}
+			]],
+			onLoadSuccess:function(data){
+// 				$("#datagrid").datagrid('selectRow',0);	
+				$("a[name='detail']").click(detail);//查看
+			},
+			onSelect:oncheckChange,
+			onUnselect:oncheckChange,
+			onSelectAll:oncheckChange,
+			onUnselectAll:oncheckChange
+		});
+		//选择行改变处理方法
+		function oncheckChange(){
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(selections.length==0||selections.length==1){
+				$("#btn_edit").linkbutton('enable');
+			}else{
+				//当选择的记录多余1条的时候启用按钮，
+				//注意：此处只是样式禁用，但是单击事件没有被禁用
+				$("#btn_edit").linkbutton('disable');
+			}
+		}
+		
+
+		//启用，禁用，删除   审核通过 拒绝
+		$(".setStatus").click(function(){
+			var status = parseInt($(this).data('status'));
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			//提示语
+			switch(status){
+				case  1:
+					alertstr="确定通过审核吗？";
+					break;
+				case  0:
+					alertstr="确定审核不通过吗？";
+					break;
+				case  5:
+					alertstr="确定启用吗？";
+					break;
+				case  6:
+					alertstr="确定禁用吗？";
+					break;
+				case  3:
+					alertstr="确定删除吗？";
+					break;
+			}
+			confirm('温馨提示',alertstr,function(flag){    
+			    if (flag){ 
+			    	var ids = new Array();
+					$.each(selections,function(i,item){
+						ids.push(item.id);
+					});
+					$.ajax({
+						url:"{:U('updateStu')}",
+						type:"post",
+						data:{
+							"id":ids.join(","),
+							'status':status,
+							"table":"online_dynamic"
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								
+								$("#datagrid").datagrid("reload");
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red",
+								});
+							}
+						}
+					});
+			    }    
+			});  
+		});
+		
+		
+		//查看
+		function detail(){
+			var id = $(this).data('value');
+			$("#datagrid").datagrid("clearSelections");//
+			openDialog({
+				windowId:"window",
+				title:"动态详情",
+				href:"{:U('Dynamic/detail')}?id="+id,
+				width:400,
+				height:350,
+				buttons:[
+							{
+								text:"取消",
+								iconCls:"icon-cancel",
+								handler:function(){
+										closeDialog();
+								}
+							}
+						]
+
+			});
+		}
+		
+		
+		//审核
+		function  deal(){
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");	
+			var param=$(this).data('val');
+			var id = selections[0].id;
+			var txt="";
+			if(param==1){
+				txt="确定通过？";
+			}else{
+				txt="确定不通过？";
+			}
+			confirm('温馨提示',txt,function(flag){    
+			    if (flag){ 
+					$.ajax({
+						url:"{:U('Dynamic/updateStu')}",
+						type:"post",
+						data:{
+							"id":id,
+							"status":param,
+							"table":"online_dynamic"
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								var rowindex = $("#dicTypeGrid").datagrid('getRowIndex',selections[0]);
+								$("#datagrid").datagrid("deleteRow",rowindex);
+								$("#datagrid").datagrid("selectRow",0);
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }    
+			}); 
+			
+		}
+		//刷新
+		$("#btn_refresh").click(function(){
+			$("#datagrid").datagrid("clearSelections");
+			var selections = $("#datagrid").datagrid("getSelections");
+				if(selections.length==0||selections.length==1){
+					$("#btn_edit").linkbutton('enable');
+					
+				}else{
+					$("#btn_edit").linkbutton('disable');
+				}
+			$("#datagrid").datagrid("reload");
+		});
+	});
+	</script>
+</block>

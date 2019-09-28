@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{$webtitle}</title>
+    <meta name="keywords" content="{$keywords}" />
+    <meta name="description" content="{$description}"/>
+    <link rel="Shortcut Icon" href="/favicon.ico">
+    <link rel="stylesheet" href="__PUBLIC__/home/css/common.css?v={$version_no}">
+    <link rel="stylesheet" href="__PUBLIC__/home/css/layer.css?v={$version_no}">
+    <style>
+    .layui-layer-btn .layui-layer-btn0 {
+        border-color: #D14E4E !important;
+        background-color: #D14E4E !important;
+        color: #fff;
+    }
+    </style>
+    <block name='style'></block>
+    <!--[if IE]>
+    <link rel="stylesheet" href="__PUBLIC__/home/css/ie9.css?v={$version_no}" type="text/css" charset="utf-8" />
+    <![endif]-->
+</head>
+<body>
+<!--头部 start-->
+<div class="header header-fix">
+    <div class="header-inner">
+        <a href="/" title="工业大数据" class="logo fl"></a>
+        <div class="users fr">
+            <if condition="!$isShow">
+            <a href="/login" title="登录" class="actionstyle">登录</a>
+            <a href="/register" title="注册" class="actionstyle" style="background: none">注册</a>
+            <else />
+            <a href="/personinfo" class="logined actionstyle"><span>{$userName}</span> <img src="__PUBLIC__/home/images/index_06.png" alt="" style="vertical-align: middle"></a>
+            <ul class="logined_action">
+                <li class="logined_action_li"><a href="/personinfo">个人中心</a></li>
+                <li class="logined_action_li"><a href="{:U('Home/Login/signout')}">退出登录</a></li>
+            </ul>
+            </if>
+        </div>
+        <ul class="menu">
+            <volist name='menus' id='vo'>
+                <li <if condition="CONTROLLER_NAME eq $vo['controller_name']">class="on"</if>  >
+                    <a target="{$vo.url_target}" <eq name="vo.menu_type" value="2"> href="/{:strtolower($vo['controller_name'])} " <else/> href="{$vo.menu_url}" </eq> " title="{$vo.menu_name}">{$vo.menu_name}</a>
+                </li>
+            </volist>
+        </ul>
+    </div>
+</div>
+<!--中间内容-->
+<block name='body'></block>
+<!--底部 start-->
+<div class="footer">
+    <div style="overflow: hidden;height:230px;">
+        <div style="width:1200px;margin:0 auto">
+            <ul style="margin-left: 80px;">
+                <li style="font-size:14px;">
+                    <a href="/aboutus">关于我们</a>
+                </li>
+                <li>
+                    <a href="/game">关于竞赛</a>
+                </li>
+                <li>
+                    <a href="/aboutus">联系我们</a>
+                </li>
+
+            </ul>
+            <ul style="margin-left: 6px">
+                <li style="color:white;font-size:14px;" >合作伙伴</li>
+                <li><a href="http://www.cmes.org/" target="_blank">中国机械工程学会</a></li>
+                <li><a href="http://www.cncma.org/" target="_blank">中国工程机械协会</a></li>
+                <li><a href="http://www.i-ibd.com/" target="_blank">中国机械工业互联应用服务平台</a></li>
+            </ul>
+            <ul class="last" style="font-size:14px;float: right;margin: 20px 0 0 20px;">
+                <li style="color: white;text-align: center;">移动报名</li>
+                <li id="qrcode" style="padding: 8px;background-color: white;width: 120px;height: 120px;">
+                    <input type="text" hidden id="qrcodeVal" value="{:'http://'.$_SERVER['HTTP_HOST'].'/mobile'}">
+                    <!--<img src="https://b.bshare.cn/barCode?site=weixin&url={:'http://'.$_SERVER['HTTP_HOST'].U('mobile')}">-->
+                </li>
+            </ul>
+<!--            <ul class="last" style="font-size:14px;float: right;margin: 20px 0 0 20px;">-->
+<!--                <li style="color: white;text-align: center;">今日制造群</li>-->
+<!--                <li style="padding: 8px;background-color: white;width: 120px;height: 120px;">-->
+<!--                    <img src="__PUBLIC__/home/images/jrzzwx.png">-->
+<!--                </li>-->
+<!--            </ul>-->
+            <ul class="last" style="font-size:14px;float: right;margin: 20px 0 0 20px;">
+                <li style="color: white;text-align: center;">陕鼓公众号</li>
+                <li style="padding: 8px;background-color: white;width: 120px;height: 120px;">
+                    <img src="__PUBLIC__/home/images/shanguwx.png">
+                </li>
+            </ul>
+            </br>
+            </br>
+        </div>
+    </div>
+    <div class="poli">
+        <div style="width: 670px; margin: 0 auto; padding: 20px 0;">
+            <a target="_blank" href="https://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010302000996 " style="display: inline-block; text-decoration: none; height: 20px; line-height: 20px;float:left">
+                <img src="https://g.maidiyun.com/images/ghs.png" style="float: left;"><p style="float: left; height: 20px; line-height: 20px; margin: 0px 0px 0px 5px; color: #939393;">
+                    浙公网安备 33010302000996 号
+                </p>
+            </a><div style="float: left; margin-left: 10px; color: #939393;">
+                增值电信业务经营许可证: 浙B2-20160296</a>
+            </div><div style="float: left; margin-left: 10px; color: #939393;">
+                浙ICP备16010574号
+            </div>
+        </div>
+    </div>
+</div>
+<!--弹窗-->
+<div class="popupbg"></div>
+<div class="popupContent">
+    <div class="popupContentTitle"><span></span><img src="__PUBLIC__/home/images/closeicon.png" alt="" class="closePopup"></div>
+    <div class="markedWords">
+        <div class="markedWords_title"></div>
+        <p class="firsttip"></p>
+        <p class="secondtip"></p>
+        <p class="thirdtip"></p>
+        <div class="gobtn"></div>
+        <div class="goPersoninfo"><a href="/personinfo">去个人中心</a></div>
+    </div>
+
+</div>
+<!--底部 end-->
+<script src="__PUBLIC__/home/js/jquery-1.11.2.min.js"></script>
+<script src="__PUBLIC__/home/js/layer/layer.js"></script>
+<script src="__PUBLIC__/home/js/common.js?v={$version_no}"></script>
+<script src="__PUBLIC__/home/js/QRCode.js"></script>
+<block name='script'>
+</block>
+<script>
+    $(function () {
+        var qrcode = new QRCode(document.getElementById("qrcode"), { width : 200, height : 200 });
+        var QRCodeUrl= $('#qrcodeVal').val();
+        qrcode.makeCode(QRCodeUrl);
+    });
+</script>
+<script>
+    var _hmt = _hmt || [];
+    (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?2605b390dd248f607f0749af5be071e3";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+        //登录后弹出框弹出与隐藏
+        $(".users ").on('mouseover mouseout ',function(){
+            $(".logined_action").toggle();
+        })
+    })();
+</script>
+<script>
+    var _hmt = _hmt || [];
+    (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?6bfb0f42217e6a5000395c1bfae362bc";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+</body>
+</html>

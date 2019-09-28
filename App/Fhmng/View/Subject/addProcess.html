@@ -1,0 +1,81 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>添加流程</title>
+</block>
+<block name="body">
+<form id="myform" class="easyui-form myform" data-options="novalidate:false" method="post">
+	<table>
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>标题：</td>
+			<td>
+				<input name="title" class="easyui-textbox" style="width:250px" data-options="validateOnCreate:false,required:true,validType:['length[1,40]']" >
+				<input type="hidden" name='sid' value={$sid}>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>时间：</td>
+			<td><input  name="pdate" class="easyui-datebox" style="width:250px" data-options="validateOnCreate:false,required:true,editable:false" ></td>
+		</tr>
+		
+		
+	</table>
+</form>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		var type_code = $("#type_code").val();
+		
+		$("#myform").form({
+			url:"{:U('addProcess')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var isValid  = $(this).form('validate');
+				if(isValid){
+					//验证通过提交，禁用提交按钮，防止多次提交
+					parent.$("#btnSubmit").linkbutton("disable");
+				}
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$.tipShow({
+						"message":"操作成功",
+						"color":"green",
+						"callback":function(){
+							closeDialog({
+								"windowId":"window_p",
+								"needRefresh":true,
+								"controlType":"datagrid",
+								"gridId":"p_datagrid"
+							});
+						}
+					});
+					
+				}else{
+					$.tipShow({
+						"message":"操作失败",
+						"color":"red"
+					});
+					
+					parent.$("#btnSubmit").linkbutton("enable");
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败",
+					"color":"red"
+				});
+				
+				parent.$("#btnSubmit").linkbutton("enable");
+			}
+		});
+		
+		$.extend($.fn.validatebox.defaults.rules, {    
+			
+		}); 
+	});
+	</script>
+</block>

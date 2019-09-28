@@ -1,0 +1,75 @@
+.main-div{
+    width:1080px;
+    height:254px;
+    background:#EEF5FD;margin: 30px auto;
+}
+.content-div{padding: 38px 48px;}
+
+.info-div{
+    height: 125px;
+}
+.title{
+    height:20px;
+    font-size:20px;
+    font-family:MicrosoftYaHei;
+    color:#D14E4E;
+    line-height:21px;
+    margin-bottom: 13px;
+}
+.description{
+    width:978px;
+    height:69px;
+    font-size:14px;
+    font-family:MicrosoftYaHei;
+    color:#666666;
+    line-height:21px;
+    overflow: hidden;
+    word-wrap: break-word;
+}
+.counts{
+    height:12px;
+    font-size:14px;
+    font-family:MicrosoftYaHei;
+    color:#666666;
+    line-height:21px;
+}
+.button-div{
+    width:121px;
+    height:40px;
+    line-height: 3;
+    background:#D14E4E;
+    border-radius:6px;
+    margin: 31px;
+}
+.button-div a{
+    display: block;
+}
+.button-div.right{
+    background: none;
+    border: 1px solid #D14E4E;
+}
+.button-div.right span{
+    color:#D14E4E;
+}
+.left{float: left;}
+.right{float: right;}
+.button-div span{
+    width:56px;
+    height:12px;
+    font-size:14px;
+    font-family:MicrosoftYaHei;
+    color:#FFFFFF;
+    line-height:21px;
+    padding-left: 29px;
+}
+.foot-button{
+    margin-left: 279px;
+    width: 368px;
+    height: 50px;
+}
+.layui-layer-content{
+    text-align: center;
+}
+.layui-layer-btn{
+    text-align: center !important;
+}

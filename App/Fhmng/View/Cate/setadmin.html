@@ -1,0 +1,126 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>分配人员</title>
+</block>
+<block name="body">
+	<div class="main-page">
+		<table id="datagrid"></table>
+		<!--grid工具栏 -->
+		<div id="toolbar">
+			<div style="margin-left:5px">
+				<input id="searchbox">
+				<input id="hdnSelectedIds" type="hidden" value="{$uid}">
+			</div>
+	  </div>
+
+	  <input type='hidden' value="{:I('get.roleid',0,intval)}" name='roleid' >
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		var ids = "";
+		//datagrid表格
+		$("#datagrid").datagrid({
+			border:true,
+			fit:true,
+			url:"{:U('getadminlist')}?cateid={:I('get.cateid')}",
+			pagination:true,
+			pageSize:10,//默认加载条数，必须是paseList内数据
+			pageList:[10,20,30,50],
+			striped:true,//是否显示斑马线效果
+			nowrap:true,//单元格不换行
+			rownumbers:true,//行号
+			singleSelect:false,
+			checkOnSelect:true,
+			toolbar:"#toolbar",
+			remoteSort:false,
+			idField:"id",
+			queryParams:{
+				"roleid":$("#hdnRoleId").val(),
+				'select_roleid':$('input[name="roleid"]').val()
+			},
+			columns:[[
+				{title:"id",field:"id",checkbox:true,formatter:function(value,row,index){
+					if(row.checked){
+						return checked;
+					}
+				}},
+			    {title:"登录名",field:"login_name",width:120,align:"left",sortable:true},
+			    {title:"真实姓名",field:"true_name",width:120,align:"left",sortable:true},
+				{title:"手机号",field:"telephone",width:120,align:"left",sortable:true},
+			]],
+			onLoadSuccess:function(data){
+				
+			},
+			onSelect:function(index,row){
+				var ids=$("#hdnSelectedIds").val();
+				var id = row.id;
+				var temp = ","+id+",";
+				var index = ids.indexOf(temp);
+				if(index==-1){
+				
+						ids = ids+','+id+",";
+				}
+				$("#hdnSelectedIds").val(ids);
+			},
+			onUnselect:function(index,row){
+				var ids=$("#hdnSelectedIds").val();
+				ids = ','+ids;
+				var id = row.id;
+				var temp = id;
+				var index = ids.indexOf(temp);
+				if(index>-1){
+					ids = ids.replace(temp,",");
+					if(ids==","){
+						ids="";
+					}
+				}
+				$("#hdnSelectedIds").val(ids);
+			},
+			onSelectAll:function(rows){
+				var ids=$("#hdnSelectedIds").val();
+				$.each(rows,function(i,item){
+					var id = item.id;
+					var temp = ","+id+",";
+					var index = ids.indexOf(temp);
+					if(index==-1){
+						if(!ids){
+							ids = ","+id+",";
+						}else{
+							ids = ids+id+",";
+						}
+					}
+				});
+				$("#hdnSelectedIds").val(ids);
+			},
+			onUnselectAll:function(rows){
+				var ids=$("#hdnSelectedIds").val();
+				$.each(rows,function(i,item){
+					var id = item.id;
+					var temp = ","+id+",";
+					var index = ids.indexOf(temp);
+					if(index>-1){
+						ids = ids.replace(temp,",");
+						if(ids==","){
+							ids="";
+						}
+					}
+				});
+				$("#hdnSelectedIds").val(ids);
+			}
+		});
+		
+		//查询框
+		$("#searchbox").searchbox({
+			width:150,
+			prompt:'登录名或真实姓名',
+			searcher:function(value,name){
+				$("#datagrid").datagrid('load',{
+					"queryStr":$.trim(value),
+					'select_roleid':$.trim($('input[name="roleid"]').val())
+				});
+			}
+		});
+	});
+	</script>
+</block>

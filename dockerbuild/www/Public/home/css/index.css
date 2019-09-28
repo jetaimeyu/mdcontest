@@ -1,0 +1,411 @@
+/*banner*/
+.main{
+    width: 100%;
+}
+.full_slide .hd ul li,.full_slide .hd ul .on,.schedule_num,.pointicon,.competition_top,.benchmarkingimg,.award_content{
+    background:url('../images/indexspiritimg.png') no-repeat;
+}
+.banner,.schedule,.awards,.index_titleTip,.cooperative_unit{
+    width: 1080px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+.banner{
+    overflow: hidden;
+    margin-bottom: 32px;
+}
+.banner_swiper ,.banner_gameinfo{
+    box-sizing: border-box;
+    height: 444px;
+}
+.banner_swiper img{
+    display: block;
+    object-fit: cover;
+}
+.banner_swiper{
+    float: left;
+    width: 732px;
+    position: relative;
+}
+.full_slide_img{
+    width: 732px;
+    display: block;
+    height: 444px;
+    overflow: hidden;
+}
+.full_slide .hd{
+    position:absolute;
+    z-index:1;
+    bottom:0;
+    right: 30px;
+    height:30px;
+    line-height:30px;
+    text-align:center;
+}
+.full_slide .hd ul li{
+    cursor:pointer;
+    display:inline-block;
+    *display:inline;
+    zoom:1;
+    width:8px;
+    height:8px;
+    margin:4px;
+    overflow:hidden;line-height:9999px;
+    /*background-position: -206px -118px;*/
+    background: white;
+    border-radius: 50%;
+    -webkit-opacity: 0.5;
+    /* Netscape and Older than Firefox 0.9 */
+    -moz-opacity: 0.5;
+    /* Safari 1.x (pre WebKit!) 老式khtml内核的Safari浏览器*/
+    -khtml-opacity: 0.5;
+    /* IE9 + etc...modern browsers */
+    opacity: .5;
+    /* IE 4-9 */
+    filter:alpha(opacity=50);
+}
+.full_slide .hd ul .on{
+    width:37px;
+    /*background-position: -296px -118px;*/
+    background: white;
+    border-radius: 37px;
+    -webkit-opacity: 0.5;
+    /* Netscape and Older than Firefox 0.9 */
+    -moz-opacity: 0.5;
+    /* Safari 1.x (pre WebKit!) 老式khtml内核的Safari浏览器*/
+    -khtml-opacity: 0.5;
+    /* IE9 + etc...modern browsers */
+    opacity: .5;
+    /* IE 4-9 */
+    filter:alpha(opacity=50);
+
+}
+.banner_gameinfo{
+    float: right;
+    width: 348px;
+    border-top: 5px solid #D14E4E;
+    background: #354A68;
+    padding:10px 16px 20px 19px  ;
+}
+.game_title{
+    color:white;
+    margin-top:9px;
+}
+.game_detail{
+    color:#BDCDE2;
+    font-size: 12px;
+    line-height: 18px;
+}
+.game_detail p{
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.game_detail_bigtitle{
+    font-size: 20px;
+}
+.game_detail_middletilte{
+    font-size:16px ;
+}
+.clickMore{
+    font-size: 14px;
+    padding:6px 0;
+    overflow: hidden;
+}
+.clickMore a{
+    color: #D14E4E;
+}
+.clickMore span{
+    float: right;
+}
+.game_introduction{
+    word-break: break-all;
+    overflow: hidden;
+    height:125px;
+}
+.clickSignup{
+    background:#D14E4E ;
+    width: 152px;
+    text-align: center;
+    border-radius: 18px;
+    font-size: 20px;
+    line-height:34px;
+    height: 36px;
+    margin: 9px auto ;
+}
+.clickSignup a{
+    color: white;
+    display: block;
+}
+.index_titleTip{
+    color: #282D3C;
+    font-size:20px ;
+    font-weight: 600;
+}
+.game_compatition{
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+}
+/*赛程安排*/
+.schedule{
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+.schedule_ul{
+    padding:28px 0;
+    overflow: hidden;
+}
+.schedule_li{
+    float: left;
+    max-width: 124px;
+    min-width: 98px;
+    padding: 0 22px 0 25px;
+    text-align: center;
+}
+.schedule_num,.schedule_describe,.schedule_time{
+    margin: 0 auto;
+}
+.schedule_num{
+    width:52px;
+    height: 52px;
+    text-align: center;
+    line-height: 52px;
+    color: #D14E4E;
+    font-size: 20px;
+    margin: 0 auto;
+    background-position: -629px -74px;
+}
+.schedule_describe{
+    margin: 10px auto 0;
+    color: #323232;
+    font-size:16px;
+    height: 33px;
+    line-height: 18px;
+    overflow: hidden;
+    word-break: break-all;
+    padding-bottom: 5px;
+}
+.schedule_time{
+    font-size: 14px;
+    color: #BBBEC3;
+}
+.pointicon{
+    float: left;
+    width: 20px;
+    height: 18px;
+    margin-top:41px;
+    background-position:-94px -108px;
+}
+.competition_topic{
+    overflow: hidden;
+
+}
+.competition_topic_li{
+    color:white;
+    float: left;
+    margin-bottom: 20px;
+}
+.ligap{
+    width: 88px;
+    height:99px;
+}
+.competition_top{
+    width: 496px;
+    height: 99px;
+    overflow: hidden;
+    background-position: -95px -238px;
+}
+.competition_tip{
+    font-size:16px ;
+    padding: 13px 0 0 18px;
+}
+.competition_topic_name{
+    width: 455px;
+    font-size:24px;
+    text-align: center;
+    padding-top:17px ;
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 0 auto;
+}
+.competition_content{
+    width: 496px;
+    height: 344px;
+    background:#EEF5FD;
+    padding: 16px 20px 20px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+.competition_content_title{
+    font-size:14px;
+    color: #D14E4E;
+}
+.competition_content_box{
+    overflow: hidden;
+}
+.competition_content_detail{
+    width: 423px;
+    padding:10px 15px 0 0px;
+    font-size:14px;
+    color:#666666;
+    height: 268px;
+    line-height: 24px;
+    overflow: hidden;
+    word-break: break-all;
+    float:right;
+}
+.content_point{
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #D14E4E;
+    float:left;
+    margin: 18.5px 5px 0 5px;
+}
+/*评选基准*/
+.benchmarking{
+    width: 100%;
+    margin-bottom: 38px;
+}
+.benchmarking_content{
+    min-width: 1080px;
+    background: #EEF5FD;
+    /*overflow: hidden;*/
+    padding: 40px 0 50px;
+    margin-top:16px;
+}
+.benchmarking_content_ul{
+    width:1080px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+.benchmarking_li{
+    float: left;
+    text-align: center;
+    width: 360px;
+}
+.benchmarking_content_box{
+    width:169px;
+    margin: 0 auto;
+}
+.benchmarkingimg{
+    width: 158px;
+    height: 158px;
+    display: block;
+    margin: 0 auto 12px auto;
+}
+.benchmarkingbg1{
+    background-position: -93px -773px
+}
+.benchmarkingbg2{
+    background-position: -405px -773px
+}
+.benchmarkingbg3{
+    background-position: -717px -773px
+}
+.benchmarking_title,.benchmarking_detail{
+    width: 100%;
+}
+.benchmarking_title{
+    font-size:20px;
+    color: #282D3C;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+.benchmarking_detail{
+    font-size: 14px;
+    line-height: 21px;
+    color:#8A8F96
+}
+/*奖项设置开始*/
+.awards{
+    overflow: hidden;
+}
+.awards_ul{
+    overflow: hidden;
+    padding-top:38px;
+}
+.awards_li{
+    float: left;
+    text-align: center;
+    padding: 0 9px;
+}
+.awards_name{
+    font-size: 26px;
+    color:#436082;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+.award_content{
+    width: 251px;
+    height: 282px;
+    overflow: hidden;
+    padding-top: 30px;
+    box-sizing: border-box;
+    background-position:-96px -428px;
+}
+.award_money{
+    font-size: 30px;
+    color:#EB0D0D;
+    font-weight: 500;
+    margin-top: -4px;
+}
+.award_detail{
+    font-size: 19px;
+    color: #363B49;
+    margin-top: 30px;
+}
+.award_detail_first{
+    margin-bottom: 10px;
+}
+.award_detail_name{
+    margin-left: 9px;
+}
+/*合作单位*/
+.cooperative_unit{
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+.cooperative_unit_type{
+    font-size: 16px;
+    color:#282D3C;
+    padding: 17px 0 7px 18px;
+}
+
+/*.cooperative_unit_ul{*/
+    /*border-top:1px solid #DDE6F1;*/
+    /*border-left:1px solid #DDE6F1;*/
+    /*overflow: hidden;*/
+    /*text-align: center;*/
+/*}*/
+table,table tr th, table tr td {
+    border:1px solid #DDE6F1;
+}
+.cooperative_unit_table{
+    border:1px solid #DDE6F1;
+    border-collapse: collapse;
+}
+.cooperative_unit_list_td{
+    width: 270px;
+    height:90px;
+    text-align: center;
+}
+.cooperative_unit_img{
+    height: 45px;
+}
+.cooperative_unit_img img{
+    max-width: 201px;
+    max-height:40px;
+    overflow: hidden;
+    display: block;
+    margin: 0 auto;
+}
+.cooperative_unit_name{
+    font-size: 16px;
+    color:#8A8F96;
+    width: 265px;
+    white-space:nowrap;
+    overflow: hidden;
+    margin: 0 auto;
+}

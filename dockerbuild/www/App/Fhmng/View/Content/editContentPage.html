@@ -1,0 +1,557 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>编辑文章</title>
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/plugins/uploadify/uploadify.css"/>
+</block>
+<block name="body">
+<form id="myform" class="easyui-form myform" data-options="novalidate:false" method="post">
+<div class="main-page">
+	<div class="easyui-tabs" data-options="fit:true,plain:true,border:false">
+		<div title="基本信息" style="padding-top:10px">
+			<table>
+				<tr>
+					<td class="text_right" style="width:80px"><span class="mark">*</span>文章标题：</td>
+					<td>
+						<input id="title" name="title" class="easyui-textbox" value="{$content.title}" style="width:600px" data-options="required:true,validType:['length[0,100]']" autocomplete="off">
+						<input id=hdnId name="id" value="{$content.id}" type="hidden"/>
+						<span class="tip">（标题换行符：\n）</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="text_right"><if condition="$menu_code eq 'LJFH' or $menu_code eq 'FHJS' ">地点：<else/>一级副标题：</if></td>
+					<td>
+						<input id="sub_title1" name="sub_title1" class="easyui-textbox" value="{$content.sub_title1}" style="width:600px" data-options="validType:['length[0,100]']" >
+					</td>
+				</tr>
+				<tr <eq name="menu_code" value="LJFH">style="display:none;"</eq>>
+					<td class="text_right"><eq name="menu_code" value="FHJS">时间：<else/>二级副标题：</eq></td>
+					<td>
+						<input id="sub_title2" name="sub_title2" class="easyui-textbox" value="{$content.sub_title2}" style="width:600px" data-options="validType:['length[0,100]']">
+					</td>
+				</tr>
+				 <tr>
+					<td class="text_right"><span class="mark">*</span>所属栏目：</td>
+					<td>
+						<select id="drMenu" name="menu_id" style="width:200px"></select>
+					</td>
+				</tr>
+				<tr>
+						<td class="text_right"><span class="mark">*</span>内容：</td>
+						<td>
+							 <!-- 加载编辑器的容器 -->
+								<textarea id="content" cols="30" rows="10" name='content'>{$content.content}</textarea>
+						</td>
+					</tr>
+				<tr>
+					<td class="text_right" style="width:80px">摘要：</td>
+					<td>
+						<textarea style="width:800px;height:30px" name="summary" class="easyui-validatebox text-area"  maxlength="200">{$content.summary}</textarea>
+					</td>
+				</tr>
+				<tr>
+					<td class="text_right"><span class="mark">*</span>排序号：</td>
+					<td>
+						<input id="order_no" name="order_no" class="easyui-numberspinner" style="width:145px;" required="required" data-options="min:0,max:1000,editable:true,value:{$content.order_no}">
+						<span class="tip">（升序）</span>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div title="扩展信息"  style="padding-top:10px">
+			<table>
+			 
+				<tr>
+					<td class="text_right" style="width:100px">网页标题：</td>
+					<td>
+						<input id="website_title"  name="website_title" class="easyui-textbox" value="{$content.website_title}" style="width:300px" data-options="validType:['length[0,150]']">
+						<span class="tip">利于网页SEO</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="text_right" style="width:80px">网页关键字：</td>
+					<td>
+						<input id="key_word"  name="key_word" class="easyui-textbox" value="{$content.key_word}" style="width:300px" data-options="validType:['length[0,100]']">
+						<span class="tip">利于网页SEO：多个之间用者“,”隔开</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="text_right">网页描述：</td>
+					<td>
+						<textarea style="width:300px;height:55px" name="description" class="easyui-validatebox text-area" maxlength="200">{$content.description}</textarea>
+						<span class="tip">利于网页SEO</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="text_right" style="width:80px">Tags标签：</td>
+					<td>
+						<input id="tags"  name="tags" class="easyui-textbox" value="{$content.tags}" style="width:300px" data-options="validType:['length[0,100]']" >
+						<span class="tip">多个之间用者“,”隔开</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="text_right" style="width:80px">作者：</td>
+					<td>
+						<input id="author" name="author" class="easyui-textbox" value="{$content.author}" style="width:300px" data-options="validType:['length[0,50]']" >
+					</td>
+				</tr>
+				<tr>
+					<td class="text_right" style="width:80px">来源：</td>
+					<td>
+						<input id="source" name="source" class="easyui-textbox" value="{$content.source}" style="width:300px" data-options="validType:['length[0,50]']" >
+					</td>
+				</tr>
+				<tr>
+					<td class="text_right" style="width:80px">转向链接：</td>
+					<td>
+						<input id="link_url" name="link_url" class="easyui-textbox" value="{$content.link_url}" style="width:300px" data-options="validType:['length[0,150]','url']" >
+						<span class="tip">如果此字段不为空，则点击文章标题直接跳转向该链接</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="text_right" >文章编码：</td>
+					<td>
+						<input id="content_code" name="content_code" class="easyui-textbox" value="{$content.content_code}" style="width:300px" data-options="validType:['length[0,50]']" >
+					</td>
+				</tr>
+
+				<tr>
+					<td class="text_right">访问次数：</td>
+					<td>
+						<input id="visits" name="visits" class="easyui-numberspinner" style="width:145px;" required="required" data-options="min:0,max:9999999,editable:true,value:{$content.visits}"><span class="mark">*</span>
+						<span class="tip">（文章每被访问一次，则相应增加1）</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="text_right" style="width:80px">是否置顶：</td>
+					<td>
+						<eq name="content.is_top" value="1">
+							<input type="radio" name="is_top" checked="true" value="1"/>
+							<label class="hand" style=" left: 5px;position: relative;top: -2px;">是</label>
+							<input type="radio" name="is_top"   style="margin-left:5px" value="0"/>
+							<label class="hand" style=" left: 5px;position: relative;top: -2px;">否</label>
+						<else/>
+							<input type="radio" name="is_top" value="1"/>
+							<label class="hand" style=" left: 5px;position: relative;top: -2px;">是</label>
+							<input type="radio" name="is_top" checked="true"  style="margin-left:5px" value="0"/>
+							<label class="hand" style=" left: 5px;position: relative;top: -2px;">否</label>
+						</eq>
+					</td>
+				</tr>
+				<!-- <tr>
+					<td class="text_right">焦点图片大小：</td>
+					<td>
+						<input id="imgWidth" class="easyui-numberbox"  style="width:60px" data-options="min:0,prompt:'宽度'"/>&nbsp;px
+						<span style="font-weight:bold;color:red;font-size:16px;position:relative;top:2px;">×</span> 
+						<input id="imgHeight" class="easyui-numberbox"  style="width:60px" data-options="min:0,prompt:'高度'"/>&nbsp;px 
+					</td>
+				</tr> -->
+				<tr>
+					<td class="text_right"></td>
+					<td>
+						<span class="tip">
+							1、设置图片的宽度和高度，上传时会按照参数等比例缩放，生成缩略图<br/>
+							2、不设置或者设置为0则按照原图上传
+						</span>
+					</td>
+				</tr> 
+				<tr>
+						<td class="text_right" style="width:80px">图片：</td>
+						<td>
+						<div id="img_div" <empty name='content.content_img'>style='display: none;'</empty> >
+							<div class="upload-img-box">
+									<div class="upload-pre-item">
+										<span class="upload-img-remove" id='remove_img' title="点击删除"></span>
+										
+											<img id="pic_img" <notempty name='content.content_img'>src="__UPLOADS__{$content['content_img']}"</notempty>>
+										
+									</div>
+							</div>
+							<!-- <img id='pic_img'  /> -->
+						</div>
+						<input  id="content_img" value="{$content.content_img}" name="content_img" type='hidden' />
+						<label style="width:100px" for="file_hidden" class="easyui-linkbutton upload_button" data-options="plain:true,iconCls:'icon-extend-upload'">上传图片</label>
+						<input type='file' id="file_hidden" style="width:0;" onchange="ajaxfileupload()" name="pic" class="file"/>
+					
+						</td>
+					</tr>
+				<!-- <tr>
+					<td class="text_right" style="width:80px">焦点图片：</td>
+					<td>
+						<div style="position:relative">
+						<input type="file" id="btn_upload">
+						<input id="hdnimg" type="hidden" name="content_img" value="{$content.content_img}">
+						<input id="hdnimgshare" type="hidden" name="share_img" value="{$content.share_img}">
+						<empty name="content.content_img">
+							<div class="upload-img-box imgPre_box" style="display:none;position: absolute;left: 360px;top: 0px;">
+								<div class="upload-pre-item">
+									<span class="upload-img-remove" id="img_del" title="点击删除" ></span>
+									<img id="imgPre">
+								</div>
+							</div>
+						<else/>
+							<div class="upload-img-box imgPre_box" style="display:block;position: absolute;left: 360px;top: 0px;">
+								<div class="upload-pre-item">
+									<span class="upload-img-remove" id="img_del" title="点击删除" data="__UPLOADS__{$content.content_img}"></span>
+									<img id="imgPre" src="__UPLOADS__{$content.content_img}">
+								</div>
+							</div>
+						</empty>
+						</div>
+					</td>
+				</tr> -->
+				<!-- <tr>
+					<td class="text_right" style="width:80px">分享图片：</td>
+					<td>
+						<div style="position:relative">
+						<input type="file" id="btn_upload_share">
+						<empty name="content.share_img">
+							<div class="upload-img-box imgPreshare_box" style="display:none;position: absolute;left: 110px;top: -30px;">
+								<div class="upload-pre-item">
+									<span class="upload-img-remove" id="share_del" title="点击删除" ></span>
+									<img  width="80px" height="80px" id="imgPreshare">
+								</div>
+							</div>
+						<else/>
+							<div class="upload-img-box imgPreshare_box" style="display:block;position: absolute;left: 110px;top: -30px;">
+								<div class="upload-pre-item">
+									<span class="upload-img-remove" id="share_del" title="点击删除" data="__UPLOADS__{$content.share_img}"></span>
+									<img width="80px" height="80px" id="imgPreshare" src="__UPLOADS__{$content.share_img}">
+								</div>
+							</div>
+						</empty>
+						</div>
+					</td>
+				</tr> -->
+				<tr>
+					<td class="text_right" style="width:80px">发布时间：</td>
+					<td>
+						<input id="publish_time" name="publish_time" class="easyui-datetimebox" value="{$content.publish_time}" style="width:150px">
+						<span class="tip">如果不选，默认为当前系统时间</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="text_right" style="width:80px">过期时间：</td>
+					<td>
+						<input id="expiry_date" name="expiry_date" class="easyui-datetimebox" value="{$content.expiry_date}" style="width:150px">
+						<span class="tip">如果不选，则表示文章永久有效</span>
+					</td>
+				</tr>
+			</table>
+		</div>
+		{$fieldsConfig}
+	</div>
+</div>
+</form>
+</block>
+<block name="script">
+	<script type="text/javascript" src="__LOCALPUBLIC__/plugins/uploadify/jquery.uploadify.js"></script>
+	<script src="__PUBLIC__/system/js/ajaxfileupload.js"></script>
+   <!-- 编辑器源码文件 -->
+	<script type="text/javascript" src="__LOCALPUBLIC__/plugins/kindeditor_4.1.10/kindeditor-min.js"></script>
+    <!-- 实例化编辑器 -->
+    <script type="text/javascript">
+		var editor;
+		KindEditor.ready(function(K) {
+			editor = K.create('#content', {
+				allowFileManager : true,
+				width:'400px',
+				height:'300px'
+			});
+		});
+    </script>
+	<script type="text/javascript">
+	$(function(){
+		$("#myform").form({
+			url:"{:U('Content/updateContent')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				editor.sync();
+				var isValid  = $(this).form('validate');
+				
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$.tipShow({
+						"message":"操作成功",
+						"color":"green",
+						"callback":function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":true,
+								"controlType":"datagrid",
+								"gridId":"datagrid"
+							});
+						}
+					});
+				}else{
+					$.tipShow({
+						"message":result.message,
+						"color":"red"
+					});
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败",
+					"color":"red"
+				});
+			}
+		});
+		/**
+		*说明:combotree的url以及queryParams属性，最终要赋值到tree，
+		*可以取得combotree的tree对象，然后将url以及queryParams赋值给tree也可以
+		*如果要是给tree对象添加事件或者其他属性，最好此时设置url，否则会调用后台两次
+		*/
+		$('#drMenu').combotree({
+			required:true,
+			valueField:'id',
+			textField:'text'
+		});
+	  //父级菜单默认全部收缩
+		var tree = $('#drMenu').combotree('tree');
+		tree.tree({
+			url:"{:U('Content/getMenu')}",
+			onSelect : function(node) {  
+		        //选中的节点是否为叶子节点,如果不是叶子节点,清除选中  
+		        var isLeaf = $("#drMenu").tree('isLeaf', node.target);
+		        var menu_id = node.id;
+		        //叶子节点以及菜单类型不能选中
+		        if (isLeaf) {
+		        	$("#drMenu").tree('toggle', node.target);
+		        }else{
+		        	$("#drMenu").tree('toggle', node.target);
+		        	//清除选中
+		        	$("#drMenu").tree("unSelect",node.target);
+		        }  
+		    },
+			onLoadSuccess:function(node, data){
+		    	//收缩树
+		    	tree.tree("collapseAll");
+		    }
+		});
+		
+		$('#drMenu').combotree('setValue', {
+			id: '{$menu_id}',
+			text:'{$menu_name}'
+		});
+		var uploadify_onSelectError = function(file, errorCode, errorMsg){
+			var msgText="";
+	        switch (errorCode) {  
+	            case SWFUpload.QUEUE_ERROR.QUEUE_LIMIT_EXCEEDED:  
+	                //this.queueData.errorMsg = "每次最多上传 " + this.settings.queueSizeLimit + "个文件";  
+	                msgText += "每次最多上传 " + this.settings.queueSizeLimit + "个文件";  
+	                break;  
+	            case SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT:  
+	                msgText += "文件大小超过限制( " + this.settings.fileSizeLimit + " )";  
+	                break;  
+	            case SWFUpload.QUEUE_ERROR.ZERO_BYTE_FILE:  
+	                msgText += "文件大小为0";  
+	                break;  
+	            case SWFUpload.QUEUE_ERROR.INVALID_FILETYPE:  
+	                msgText += "文件格式不正确，仅限 " + this.settings.fileTypeExts;  
+	                break;  
+	            default:  
+	                msgText += "错误代码：" + errorCode + "\n" + errorMsg;  
+	        }  
+	        $.tipShow({
+				"message":msgText,
+				"color":"red"
+			});
+	    };  	   
+	    
+		// //上传图片
+	    // /* 初始化上传插件 */
+	    // var sid = '{:session_id()}';
+		// $("#btn_upload").uploadify({
+		// 	"formData":{
+		// 		"session_id":sid//需要传递session_id，否则火狐报302错误
+		// 	},
+		// 	"buttonClass":"btn-upload",
+	    //     "swf":"__LOCALPUBLIC__/plugins/uploadify/uploadify.swf",
+	    //     "buttonText":"上传图片",
+	    //     "uploader":"{:U('Content/uploadImg')}",
+	    //     "width":100,
+	    //     "removeTimeout":1,
+	    //     "fileTypeExts":"*.jpg; *.png; *.gif;",
+	    //     "onSelectError":uploadify_onSelectError,
+	    //     "onUploadStart":function(file){
+	    //     	//文章id
+	    //     	var id = $("#hdnId").val();
+	    //     	$("#btn_upload").uploadify("settings","formData",{"id":id});
+	        	
+	    //     	var data = $(".upload-img-remove").attr("data");
+	    //     	//判断是否已经含有了原图片，如果有则需要先删除原图片
+	    //     	if(data){
+	    //     		$("#btn_upload").uploadify("settings","formData",{"path":data});
+	    //     	}
+	        	
+	    //     	//判断是否设置了上传图片的宽度和高度
+	    //     	var scaleWidth = $("#imgWidth").val();
+	    //     	var scaleHeight = $("#imgHeight").val();
+	    //     	if(scaleWidth&&scaleHeight){
+	    //     		$("#btn_upload").uploadify("settings","formData",{"scaleWidth":scaleWidth,"scaleHeight":scaleHeight});
+	    //     	}else{
+	    //     		$("#btn_upload").uploadify("settings","formData",{"scaleWidth":0,"scaleHeight":0});
+	    //     	}
+	    //     },
+	    //     "onUploadSuccess":function(file, data, response){
+	    //       	//var result = $.parseJSON(data);
+	    //     	var result = eval("("+ data +")");
+	    //     	if(result.status == 1){
+	    //     		$("#hdnimg").val(result.file.old);
+	    //     		var imgSrc ="__UPLOADS__" + result.file.old;
+	    //     		$("#imgPre").attr("src",imgSrc);
+	    //     		$("#img_del").attr("data",imgSrc);
+	    //     		$(".imgPre_box").slideDown();
+	    //     	}
+	    //     },
+	    //     'onFallback':function() {
+	    //         alert('未检测到兼容版本的Flash.');
+	    //     }
+	    // });
+	    // $("#btn_upload_share").uploadify({
+		// 	"formData":{
+		// 		"session_id":sid//需要传递session_id，否则火狐报302错误
+		// 	},
+		// 	"buttonClass":"btn-upload",
+	    //     "swf":"__LOCALPUBLIC__/plugins/uploadify/uploadify.swf",
+	    //     "buttonText":"上传图片",
+	    //     "uploader":"{:U('Content/uploadImgShare')}",
+	    //     "width":100,
+	    //     "removeTimeout":1,
+	    //     "fileTypeExts":"*.jpg; *.png; *.gif;",
+	    //     "onSelectError":uploadify_onSelectError,
+	    //     "onUploadStart":function(file){
+	        	
+	    //     	//判断是否设置了上传图片的宽度和高度
+	   
+	    //     	$("#btn_upload_share").uploadify("settings","formData");
+	        	
+	    //     },
+	    //     "onUploadSuccess":function(file, data, response){
+	    //       	//var result = $.parseJSON(data);
+	    //     	var result = eval("("+ data +")");
+	    //     	if(result.status == 1){
+	    //     		$("#hdnimgshare").val(result.file.old);
+	    //     		var imgSrc = '__UPLOADS__'+result.file.old;
+	    //     		$("#imgPreshare").attr("src",imgSrc);
+	    //     		$("#share_del").attr("data",imgSrc);
+	    //     		$(".imgPreshare_box").slideDown();
+	    //     	}
+	    //     },
+	    //     'onFallback':function() {
+	    //         alert('未检测到兼容版本的Flash.');
+	    //     }
+	    // });
+	  	//删除图片
+		
+		$("#share_del").click(function(){
+			var path = $(this).attr("data");
+			if(!path){
+				return;
+			}
+			del_img(path,'imgPreshare','hdnimgshare');
+		})
+		//删除图片
+		$("#remove_img").click(function(){
+			var path = '__UPLOADS__'+$('#content_img').val();
+			var id = $('#id').val();
+			if(!path){
+				return;
+			}
+			confirm('温馨提示','确定删除该图片？',function(flag){
+				 if (flag){ 
+					 $.ajax({
+							type:"post",
+							data:{
+								"path":path,
+								'id':id
+							},
+							url:"{:U('removeImg')}",
+							success:function(response){
+								var result = $.parseJSON(response);
+								if(result.success){
+									$('#img_div').css('display','none');
+									$('#content_img').val('');
+									 $.tipShow({
+										"message":result.message,
+										"color":"green"
+									});
+								}else{
+									$.tipShow({
+										"message":result.message,
+										"color":"red"
+									});
+								}
+							}
+					  });
+				 }
+			});
+		})
+		
+	});
+	function ajaxfileupload() {
+            $.ajaxFileUpload
+            (
+                {
+                    url: "{:U('upload_pic')}", //用于文件上传的服务器端请求地址
+                    secureuri: false, //是否需要安全协议，一般设置为false
+                    fileElementId: 'file_hidden', //文件上传域的ID
+                    dataType: 'text', //返回值类型 一般设置为json
+                    success: function (response)  //服务器成功响应处理函数
+                    {
+                        //清空上传表单
+						$("#file_form").form('reset');
+						var result = $.parseJSON(response);
+						if(result.success){
+							$("#pic_img").attr('src','__UPLOADS__'+result.savefile);
+							$('#content_img').val(result.savefile);
+							$("#img_div").css('display','block');
+						}else{
+							$.tipShow({
+								"message":result.message,
+								"color":"red"
+							});
+						}
+                    }
+                }
+            )
+            return false;
+        }
+	function del_img(path,id,input){
+			confirm('温馨提示','确定删除该图片？',function(flag){
+				 if (flag){ 
+					 $.ajax({
+							type:"post",
+							data:{
+								"path":path
+							},
+							url:"{:U('Fhmng/Content/removeImg')}",
+							success:function(response){
+								var result = $.parseJSON(response);
+								if(result.success){
+									$("."+id+'_box').slideUp("normal",function(){
+										$("#"+id).attr("src","");
+									});
+									$("#"+input).val("");
+									 $.tipShow({
+										"message":result.message,
+										"color":"green"
+									});
+								}else{
+									$.tipShow({
+										"message":result.message,
+										"color":"red"
+									});
+								}
+							}
+					  });
+				 }
+			});
+		}
+
+	</script>
+</block>

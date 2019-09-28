@@ -1,0 +1,132 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>添加字典</title>
+</block>
+<block name="body">
+<form id="myform" class="easyui-form myform" data-options="novalidate:false" method="post">
+	<table>
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>键：</td>
+			<td>
+				<input id="dic_key"  name="dic_key" class="easyui-textbox" style="width:250px" data-options="validateOnCreate:false,delay:800,required:true,validType:['length[1,40]','validDickey']" >
+				<input type="hidden" id="type_code" name="type_code" value="{$type_code}">
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>值：</td>
+			<td><input id="dic_value"  name="dic_value" class="easyui-textbox" style="width:250px" data-options="required:true,validType:['length[1,100]','validDicTypeCode']" ></td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>父级字典：</td>
+			<td>
+				<select id="drDictionary" name="pid_key" class="easyui-combotree" style="width:145px" data-options="required:true,valueField:'id',textField:'text'"></select>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>状态：</td>
+			<td>
+				<select name="status" class="easyui-combobox" data-options="editable:false,panelHeight:'auto',required:true" style="width:145px">
+					<option value="1">启用</option>
+					<option value="0">禁用</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>排序号：</td>
+			<td>
+				<input id="order_no" name="order_no" class="easyui-numberspinner" style="width:145px;" required="required" data-options="min:0,max:1000,editable:true,value:0">
+				<span class="tip">（升序）</span>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right">描述：</td>
+			<td><textarea style="width:300px;height:100px" name="description" class="easyui-validatebox text-area" maxlength="200"></textarea></td>
+		</tr>
+	</table>
+</form>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		var type_code = $("#type_code").val();
+		$("#drDictionary").combotree({
+			url:"{:U('Dictionary/getPidDictionaryTree')}",
+			queryParams:{
+				'type_code':type_code
+			}
+		});
+		
+		$("#myform").form({
+			url:"{:U('Dictionary/addDictionary')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var isValid  = $(this).form('validate');
+				if(isValid){
+					//验证通过提交，禁用提交按钮，防止多次提交
+					parent.$("#btnSubmit").linkbutton("disable");
+				}
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$.tipShow({
+						"message":"操作成功",
+						"color":"green",
+						"callback":function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":true,
+								"controlType":"treegrid",
+								"gridId":"treegrid"
+							});
+						}
+					});
+					
+				}else{
+					$.tipShow({
+						"message":"操作失败",
+						"color":"red"
+					});
+					
+					parent.$("#btnSubmit").linkbutton("enable");
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败",
+					"color":"red"
+				});
+				
+				parent.$("#btnSubmit").linkbutton("enable");
+			}
+		});
+		
+		$.extend($.fn.validatebox.defaults.rules, {    
+			validDickey:{
+		    	validator:function(value,param){
+		    		var isValid = false;
+		    		$.ajax({
+		    			type:"post",
+		    			async:false,
+		    			data:{
+		    				"dic_key":$.trim(value)
+		    			},
+		    			url:"{:U('Dictionary/validDickey')}",
+		    			success:function(response){
+		    				var result = $.parseJSON(response);
+		    				isValid = !result.isExist;
+		    			},
+		    			error:function(){
+		    				isValid = false;
+		    			}
+		    		});
+		    		return isValid;
+		    	},
+		    	message:"该字典键已存在"
+		    }
+		}); 
+	});
+	</script>
+</block>

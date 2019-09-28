@@ -1,0 +1,34 @@
+.slide-all {
+    overflow: hidden;
+    background: #fafafa;
+}
+.slide-hd {
+    width: 150px;
+    background: #fafafa;
+    line-height: 40px;
+    text-align: left;
+    height: 100%;
+    float: left;
+}
+.slide-bd {
+    margin: 0 0 0 150px;
+    background: #fff;
+    min-height: 500px;
+}
+.slide-hd a.on {
+    background: #fff;
+    border-left: 3px solid #52afd6;
+}
+
+.slide-hd a {
+    display: block;
+    width: 100%;
+    text-indent: 20px;
+    color: #666;
+}
+.slide-bd div{
+    display: none;
+}
+.slide-bd div.on{
+    display: block;
+}

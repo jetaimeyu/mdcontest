@@ -1,0 +1,586 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>角色管理</title>
+</block>
+<block name="body">
+<div class="main-page">
+	<div class="easyui-layout" data-options="fit:true">
+		<div data-options="region:'north',height:250,split:true,collapsible:true,border:false">
+			<table id="datagrid"></table>
+			<!--grid工具栏 -->
+			<div id="toolbar">
+				<div style="display:inline-block;">
+					<a id="btn_add" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-add'">新增</a>
+					<div class="toolbar-separator"></div>
+					<a id="btn_edit" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-edit'">修改</a>
+					<div class="toolbar-separator"></div>
+					<a id="btn_del" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-del'">删除</a>
+					<div class="toolbar-separator"></div>
+					<a id="btn_enable" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-enable'">启用</a>
+					<div class="toolbar-separator"></div>
+					<a id="btn_disable" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-disable'">禁用</a>
+					<div class="toolbar-separator"></div>
+					<a id="btn_setUser" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-usergroup'">分配人员</a>
+					<div class="toolbar-separator"></div>
+					<a id="btn_setFunction" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-function'">分配功能</a>
+				</div>
+				<div style="display:inline-block;position:absolute;right:10px;top:3px">
+					角色状态：<input id="drStatus"> <input id="searchbox">
+				</div>
+			</div>
+		</div>
+		<div data-options="region:'center',border:false">
+			<table id="roleuser_datagrid"></table>
+			<!--grid工具栏 -->
+			<div id="roleuser_toolbar">
+				<div style="display:inline-block;">
+					<a id="btn_roleuser_del" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-del'">删除</a>
+				</div>
+				<div style="display:inline-block;position:absolute;right:10px;top:3px">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		//角色选中的行index
+		var selectedRowIndex=-1;
+		//datagrid表格
+		$("#datagrid").datagrid({
+			border:true,
+			fit:true,
+			url:"{:U('Fhmng/Role/getRoleList')}",
+			pagination:true,
+			pageSize:20,//默认加载条数，必须是paseList内数据
+			pageList:[10,20,30,50],
+			striped:true,//是否显示斑马线效果
+			nowrap:true,//单元格不换行
+			rownumbers:true,//行号
+			singleSelect:true,
+			checkOnSelect:true,
+			toolbar:"#toolbar",
+			remoteSort:false,
+			columns:[[
+			    {title:"角色名称",field:"role_name",width:180,sortable:true},
+				{title:"状态",field:"status",width:60,align:"center",sortable:true,formatter:function(value,row,index){
+					if(value==1){
+						return "<span style='color:green;font-weight:bold'>启用</span>";
+					}else{
+						return "<span style='color:gray;font-weight:bold'>禁用</span>";
+					}
+				}},
+				{title:"创建时间",field:"create_time",width:150,sortable:true},
+				{title:"描述",field:"description",width:300,sortable:true,formatter:function(value,row,index){
+					if(!value){
+						value ='无';
+					}
+					var html="<span class='span-ellipsis' title='"+ value+"'>"+ value+"</span>";
+					return html;
+				}},
+			]],
+			onLoadSuccess:function(data){
+				if(selectedRowIndex!=-1){
+					$("#datagrid").datagrid('selectRow',selectedRowIndex);
+				}else{
+					$("#datagrid").datagrid('selectRow',0);
+				}
+				
+			},
+			onSelect:function(index,row){
+				selectedRowIndex = index;
+				if(row){
+				var roleid = row.id;
+				}else{
+					return;
+				}
+					
+				$("#hdnRoleId").val(roleid);
+				var url = "{:U('Fhmng/Role/getRoleUserList')}";
+				$("#roleuser_datagrid").datagrid('options').url = url;
+				$("#roleuser_datagrid").datagrid('load',{
+					"roleid":roleid
+				});
+			}
+		});
+		
+		//查询框
+		$("#searchbox").searchbox({
+			width:150,
+			prompt:'角色名称',
+			searcher:function(value,name){
+				$("#datagrid").datagrid("clearSelections");
+				var selections = $("#datagrid").datagrid("getSelections");
+				if(selections.length==0||selections.length==1){
+					$("#btn_edit").linkbutton('enable');
+				}else{
+					$("#btn_edit").linkbutton('disable');
+				}
+				
+				//用户状态
+				var status = $("#drStatus").combobox("getValue");
+				$("#datagrid").datagrid('load',{
+					queryStr:$.trim(value),
+					roleStatus:status
+				});
+			}
+		});
+		
+		//用户状态下拉列表
+		$("#drStatus").combobox({
+			width:100,
+			panelHeight:"auto",
+			valueField:'value',    
+		    textField:'text',
+		    editable:false,
+		    value:"-1",
+		    data:[
+		    	{"text":"全部",value:"-1"},
+		    	{"text":"启用",value:"1"},
+		    	{"text":"禁用",value:"0"}
+		    ]
+		});
+		
+		//新增
+		$("#btn_add").click(function(){
+			openDialog({
+				windowId:"window",
+				title:"新增角色",
+				href:"{:U('Role/addRolePage')}",
+				width:550,
+				height:300,
+				buttons:[
+					{
+						id:"btnSubmit",
+						text:"提交",
+						iconCls:"icon-ok",
+						handler:function(){
+							submitForm("myform");
+						}
+					},
+					{
+						text:"取消",
+iconCls:"icon-cancel",
+handler:function(){
+		closeDialog();
+}
+					}
+				]
+			});
+		});
+		
+		//修改
+		$("#btn_edit").click(function(){
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			var id = selections[0].id;
+			openDialog({
+				windowId:"window",
+				title:"修改角色",
+				href:"{:U('Role/editRolePage')}?id="+id,
+				width:550,
+				height:300,
+				buttons:[
+					{
+						text:"提交",
+						iconCls:"icon-ok",
+						handler:function(){
+							submitForm("myform");
+						}
+					},
+					{
+						text:"取消",
+iconCls:"icon-cancel",
+handler:function(){
+		closeDialog();
+}
+					}
+				]
+			});
+		});
+		
+		//删除
+		$("#btn_del").click(function(){
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			confirm('温馨提示','确定删除？',function(flag){    
+			    if (flag){ 
+			    	var id = selections[0].id;
+					$.ajax({
+						url:"{:U('Role/delRole')}",
+						type:"post",
+						data:{
+							"id":id
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#datagrid").datagrid("reload");
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }    
+			});  
+		});
+		
+		//启用
+		$("#btn_enable").click(function(){
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			confirm('温馨提示','确定启用？',function(flag){    
+			    if (flag){ 
+			    	var ids = new Array();
+					$.each(selections,function(i,item){
+						ids.push(item.id);
+					});
+					$.ajax({
+						url:"{:U('Role/setRoleStatus')}",
+						type:"post",
+						data:{
+							"ids":ids.join(","),
+							"status":1
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#datagrid").datagrid("reload");
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }    
+			}); 
+		});
+		
+		//禁用
+		$("#btn_disable").click(function(){
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			
+			confirm('温馨提示','确定禁用？',function(flag){    
+			    if (flag){ 
+			    	var ids = new Array();
+					$.each(selections,function(i,item){
+						ids.push(item.id);
+					});
+					$.ajax({
+						url:"{:U('Role/setRoleStatus')}",
+						type:"post",
+						data:{
+							"ids":ids.join(","),
+							"status":0
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#datagrid").datagrid("reload");
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }    
+			}); 
+			
+		});
+		
+		//设置角色人员
+		$("#btn_setUser").click(function(){
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			var roleid = selections[0].id;
+			openDialog({
+				windowId:"window",
+				title:"分配人员",
+				href:"{:U('Role/setRoleUserPage')}?roleid="+roleid,
+				width:650,
+				height:500,
+				buttons:[
+					{
+						text:"确定",
+						iconCls:"icon-ok",
+						handler:function(){
+							//选择的用户id串，逗号隔开
+							var selectedUserIdStr = parent.$("#window iframe")[0].contentWindow.$("#hdnSelectedIds").val();
+							$.ajax({
+								type:"post",
+								data:{
+									uidStr:selectedUserIdStr,
+									roleid:roleid,
+								},
+								url:"{:U('Role/setRoleUser')}",
+								success:function(response){
+									var result = $.parseJSON(response);
+									if(result.success){
+										closeDialog({
+											"windowId":"window",
+											"needRefresh":true
+										});
+										$.tipShow({
+												"message":"分配成功",
+												"color":"green",
+										});
+										var row = $("#datagrid").datagrid("getSelected");
+										if(row){
+											var rowIndex =$("#datagrid").datagrid("getRowIndex",row);
+											$("#datagrid").datagrid("selectRow",rowIndex);
+										}
+									}
+								}
+							});
+						}
+					},
+					{
+						text:"取消",
+						iconCls:"icon-redo",
+						handler:function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":false
+							});
+						}
+					}
+				]
+			});
+		});
+		
+		
+		//设置角色功能
+		$("#btn_setFunction").click(function(){
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			var roleid = selections[0].id;
+			openDialog({
+				windowId:"window",
+				title:"分配功能",
+				href:"{:U('Role/setRoleFunctionPage')}?roleid="+roleid,
+				width:250,
+				height:500,
+				buttons:[
+					{
+						text:"确定",
+						iconCls:"icon-ok",
+						handler:function(){
+							//选择的用户id串，逗号隔开
+							var selectedFuncStr = parent.$("#window iframe")[0].contentWindow.getChecked();
+							$.ajax({
+								type:"post",
+								data:{
+									funcStr:selectedFuncStr,
+									roleid:roleid
+								},
+								url:"{:U('Role/setRoleFunction')}",
+								success:function(response){
+									var result = $.parseJSON(response);
+									if(result.success){
+										closeDialog({
+											"windowId":"window",
+											"needRefresh":false
+										});
+										$.tipShow({
+											"message":"分配成功",
+											"color":"green"
+										});
+									}
+								}
+							});
+						}
+					},
+					{
+						text:"取消",
+						iconCls:"icon-redo",
+						handler:function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":false
+							});
+						}
+					}
+				]
+			});
+		});
+		//========================================================================================================
+		//datagrid表格
+		$("#roleuser_datagrid").datagrid({
+			border:true,
+			fit:true,
+			//url:"{:U('Fhmng/Role/getRoleUserList')}",
+			pagination:true,
+			pageSize:10,//默认加载条数，必须是paseList内数据
+			pageList:[10,20,30,50],
+			striped:true,//是否显示斑马线效果
+			nowrap:true,//单元格不换行
+			rownumbers:true,//行号
+			//singleSelect:true,
+			checkOnSelect:true,
+			toolbar:"#roleuser_toolbar",
+			remoteSort:false,
+			queryParams:{
+				"roleid":$("#hdnRoleId").val()
+			},
+			columns:[[
+			    {title:"uid",field:"uid",checkbox:true},
+			    {title:"登录名",field:"login_name",width:120,align:"left",sortable:true},
+			    {title:"真实姓名",field:"true_name",width:120,align:"left",sortable:true},
+				{title:"手机号",field:"telephone",width:120,align:"left",sortable:true},
+			]]
+		});
+		
+		//查询框
+		$("#roleuser_searchbox").searchbox({
+			prompt:'登录名或真实姓名',
+			width:150,
+			searcher:function(value,name){
+				var roleid=$("#hdnRoleId").val();
+				$("#roleuser_datagrid").datagrid('load',{
+					"queryStr":$.trim(value),
+					"roleid":roleid
+				});
+			}
+		});
+		
+		//删除
+		$("#btn_roleuser_del").click(function(){
+			//取得选中的记录
+			var selections = $("#roleuser_datagrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			confirm('温馨提示','确定删除？',function(flag){    
+			    if (flag){ 
+			    	
+			    	var ids="";
+			    	var ids = new Array();
+					$.each(selections,function(i,item){
+						ids.push(item.uid);
+					});			
+			    	var roleid=selections[0].rid;
+					$.ajax({
+						url:"{:U('Role/delRoleUser')}",
+						type:"post",
+						data:{
+							"roleid":roleid,
+							"ids":ids.join(",")
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#roleuser_datagrid").datagrid("reload");
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }    
+			});  
+		});
+	});
+	</script>
+</block>

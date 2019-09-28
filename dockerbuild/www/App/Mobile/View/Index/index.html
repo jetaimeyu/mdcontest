@@ -1,0 +1,116 @@
+<extend name="base/base"/>
+<block name="content">
+    <div class="img-container" style="margin: 0;">
+        <div class="go-bottom" id="go-bottom"></div>
+        <img src="__PUBLIC__/mobile/images/banner.png" style="width: 100%" alt="">
+    </div>
+    <div class="content">
+        <div class="content-title">大赛简介</div>
+        <div class="container">
+            <p>{$gameDetail|htmlspecialchars_decode|html_entity_decode}</p>
+        </div>
+    </div>
+    <div class="content">
+        <div class="content-title">赛程安排</div>
+        <div class="container">
+            <volist name="scheduleData" id="item" key="key">
+                <div class="schedule-block">
+                    <div class="schedule-number" style="padding-right: 4px">{$key}</div>
+                    <div class="schedule-info">
+                        <!--<div class="schedule-info-content">{$item.config_name}</div>-->
+                        <div class="schedule-info-content">{$item.description}</div>
+                        <div class="schedule-time">{$item.config_value}</div>
+                    </div>
+                    <div class="schedule-redirect">
+                        <img class="" src="__PUBLIC__/mobile/images/re.png"  style="width: 13.5px;height: 12px;margin-top: 15px" alt="">
+                    </div>
+                </div>
+            </volist>
+        </div>
+    </div>
+    <div class="content">
+        <div class="content-title">竞赛题目</div>
+        <div class="container subject-container">
+            <volist name="subject" id="item" >
+                <div class="subject">
+                    <div>
+                        <span class="subject-number">{$item.subtypename}</span>
+                        <span class="subject-name">{$item.title|cutStr=13}</span>
+                    </div>
+                    <div style="position: relative">
+                        <div class="subject-content-mark"></div>
+                        <div class="subject-content">{$item.description|cutStr=65}</div>
+                        <div class="subject-image-content">
+                            <a href="{:U('/detail',array('id'=>$item['id']))}" >
+                                <img style="width: 10px;height: 18px" src="__PUBLIC__/mobile/images/reright.png" alt="">
+                            </a>
+                        </div>
+                        <div style="clear: both"></div>
+                    </div>
+                </div>
+            </volist>
+        </div>
+    </div>
+    <div>
+<!--        <div class="content-title">奖项设置 <span class="title-info">每个题目分别设置以下奖项</span></div>-->
+        <div class="content-title">奖项设置</div>
+        <div class="prize-content-info">
+            <img src="__UPLOADS__{$mobilePrize[0]['banner_img']}" style="width: 100%" alt="">
+<!--            <div class="prize">-->
+<!--                <div class="prize-title">一等奖(1名)</div>-->
+<!--                <img src="__PUBLIC__/mobile/images/red.png" style="width: 100%" alt="">-->
+<!--                <div class="prize-detail">-->
+<!--                    <div class="prize-count">100,000 RMB</div>-->
+<!--                    <div class="prize-money">奖金</div>-->
+<!--                    <div class="prize-honor">+ 荣誉证书</div>-->
+<!--                    <div class="prize-honor" style="margin-bottom: 31.5px">+ 荣誉称号</div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="prize">-->
+<!--                <div class="prize-title">二等奖(2名)</div>-->
+<!--                <img src="__PUBLIC__/mobile/images/red.png" style="width: 100%" alt="">-->
+<!--                <div class="prize-detail">-->
+<!--                    <div class="prize-count">30,000 RMB</div>-->
+<!--                    <div class="prize-money">奖金</div>-->
+<!--                    <div class="prize-honor">+ 荣誉证书</div>-->
+<!--                    <div class="prize-honor" style="margin-bottom: 31.5px">+ 荣誉称号</div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="prize">-->
+<!--                <div class="prize-title">三等奖(3名)</div>-->
+<!--                <img src="__PUBLIC__/mobile/images/red.png" style="width: 100%" alt="">-->
+<!--                <div class="prize-detail">-->
+<!--                    <div class="prize-count">10,000 RMB</div>-->
+<!--                    <div class="prize-money">奖金</div>-->
+<!--                    <div class="prize-honor">+ 荣誉证书</div>-->
+<!--                    <div class="prize-honor" style="margin-bottom: 31.5px">+ 荣誉称号</div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="prize">-->
+<!--                <div class="prize-title">优秀奖(20名)</div>-->
+<!--                <img src="__PUBLIC__/mobile/images/red.png" style="width: 100%" alt="">-->
+<!--                <div class="prize-detail">-->
+<!--                    <div class="prize-count">3,000 RMB</div>-->
+<!--                    <div class="prize-money">奖金</div>-->
+<!--                    <div class="prize-honor">+ 荣誉证书</div>-->
+<!--                    <div class="prize-honor" style="margin-bottom: 31.5px">+ 荣誉称号</div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div style="clear: both"></div>-->
+        </div>
+    </div>
+    <div class="entered-now">
+        <button class="entered-btn" {$isEnd?'disabled':''}>立即报名</button>
+    </div>
+    <!--<div class="footer">Copyright ©2018 All Rights Reserved.  版权所有</div>-->
+    <script>
+        $(function () {
+            $('#go-bottom').click(function () {
+                document.querySelector(".entered-btn").scrollIntoView();
+            });
+            $(".entered-btn").click(function () {
+                $(location).attr('href', '/submit');
+            });
+        })
+    </script>
+</block>

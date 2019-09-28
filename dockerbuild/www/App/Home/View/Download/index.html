@@ -1,0 +1,45 @@
+<extend name='Public/base'/>
+<block name='style'>
+    <link rel="stylesheet" href="__PUBLIC__/home/css/download.css?v={$version_no}">
+</block>
+<block name='body'>
+    <div class="main main-none">
+        <div class="datadownload">
+            <div class="datadownloadTitle">相关参赛资料下载</div>
+            <volist name="downDataList[1]" id="vo">
+            <table class="dataDownloader dataDownloader_margin">
+                <volist name="vo" id="v">
+                <tr>
+                    <td class="dataDownlist"><a href="__UPLOADS__{$v.file_url}">{$v.file_name|cutStr=9}</a></td>
+                    <td class="downbtn"><a href="__UPLOADS__{$v.file_url}">下载</a></td>
+                </tr>
+                </volist>
+            </table>
+            </volist>
+        </div>
+        <div class="videoData">
+            <div class="datadownloadTitle">相关视频介绍</div>
+            <ul class="videoData_list">
+                <volist name="downDataList[2]" id="v" key="k">
+                    <li class="videoData_li <if condition='$k%3 !==0'>videoData_ligap</if>" <empty name="v['img']">style="background: url('__PUBLIC__/home/images/login-left.png') no-repeat center;"<else/> style="background: url('__UPLOADS__{$v.img}') no-repeat center;background-size: cover;"</empty>>
+                        <div class="videoData_libg"></div>
+                        <a href="{$v.input_file_url}" target="_blank"><img src="__PUBLIC__/home/images/playvideoicon.png" alt="" class="playvideoicon"></a>
+                        <div class="videoDataList_content">
+                            <p class="videoDataList_title">{$v.title|cutStr=15}</p>
+                            <p class="videoDataList_detail">{$v.description|cutStr=54}</p>
+                        </div>
+                    </li>
+                </volist>
+            </ul>
+
+        </div>
+        <!--<div style='text-align: center;'>-->
+
+            <!--<img src="__PUBLIC__/home/images/wsj.jpg" alt="暂无作品">-->
+        <!--</div>-->
+      </div>
+</block>
+<block name='script'>
+ 
+</block>
+

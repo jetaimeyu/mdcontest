@@ -1,0 +1,199 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>添加Banner</title>
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/plugins/uploadify/uploadify.css"/>
+</block>
+<block name="body">
+<form id="myform" enctype="multipart/form-data"  class="easyui-form myform" data-options="novalidate:false" method="post">
+	<table>
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>标题：</td>
+			<td>
+				<input id="title"  name="title" class="easyui-textbox" style="width:250px" data-options="required:true,validType:['length[0,40]']">
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px">跳转链接：</td>
+			<td><input id="link_url"  name="link_url" class="easyui-textbox" style="width:250px" data-options="prompt:'链接格式，如:http://www.baidu.com',validType:['length[0,200]','url']"></td>
+		</tr>
+		<tr>
+				<td class="text_right" style="width:80px">图片：</td>
+				<td>
+				<div id="img_div" <empty name='data.banner_img'>style='display: none;'</empty>>
+					<div class="upload-img-box">
+							<div class="upload-pre-item">
+								<span class="upload-img-remove" id='remove_img' title="点击删除"></span>
+								
+									<img id="pic_img" <notempty name='data.banner_img'>src="__UPLOADS__{$data['banner_img']}"</notempty>>
+								
+							</div>
+					</div>
+					<!-- <img id='pic_img'  /> -->
+				</div>
+				<input  id="banner_img" value="{$data.banner_img}" name="banner_img" type='hidden' />
+				<label style="width:100px" for="file_hidden" class="easyui-linkbutton upload_button" data-options="plain:true,iconCls:'icon-extend-upload'">上传图片</label>
+				<input type='file' id="file_hidden" style="width:0;" onchange="ajaxfileupload()" name="pic" class="file"/>
+			
+				</td>
+			</tr>
+		
+		<tr>
+			<td class="text_right"><span class="mark">*</span>状态：</td>
+			<td>
+				<select name="status" class="easyui-combobox" style="width:150px;" data-options="editable:false,panelHeight:'auto',required:true" style="width:130px">
+					<option value="1">启用</option>
+					<option value="0">禁用</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>排序号：</td>
+			<td>
+				<input id="order_no" name="order_no" class="easyui-numberspinner" style="width:150px;" required="required" data-options="min:0,max:1000,editable:true,value:0">
+				<span class="tip">（升序）</span>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right">描述：</td>
+			<td><textarea style="width:300px;height:100px" name="description" class="easyui-validatebox text-area" maxlength="200"></textarea></td>
+		</tr>
+	</table>
+</form>
+</block>
+<block name="script">
+		<script src="__PUBLIC__/system/js/ajaxfileupload.js"></script>
+	<script type="text/javascript">
+	$(function(){
+		$("#myform").form({
+			url:"{:U('Banner/addBanner')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var isValid  = $(this).form('validate');
+				if(isValid){
+					//验证通过提交，禁用提交按钮，防止多次提交
+					parent.$("#btnSubmit").linkbutton("disable");
+				}
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$.tipShow({
+						"message":"操作成功",
+						"color":"green",
+						"callback":function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":true
+							});
+						}
+					});
+				}else{
+					$.tipShow({
+						"message":result.message,
+						"color":"red"
+					});
+					parent.$("#btnSubmit").linkbutton("enable");
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败",
+					"color":"red"
+				});
+				parent.$("#btnSubmit").linkbutton("enable");
+			}
+		});
+		
+		var uploadify_onSelectError = function(file, errorCode, errorMsg){
+			var msgText="";
+	        switch (errorCode) {  
+	            case SWFUpload.QUEUE_ERROR.QUEUE_LIMIT_EXCEEDED:  
+	                //this.queueData.errorMsg = "每次最多上传 " + this.settings.queueSizeLimit + "个文件";  
+	                msgText += "每次最多上传 " + this.settings.queueSizeLimit + "个文件";  
+	                break;  
+	            case SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT:  
+	                msgText += "文件大小超过限制( " + this.settings.fileSizeLimit + " )";  
+	                break;  
+	            case SWFUpload.QUEUE_ERROR.ZERO_BYTE_FILE:  
+	                msgText += "文件大小为0";  
+	                break;  
+	            case SWFUpload.QUEUE_ERROR.INVALID_FILETYPE:  
+	                msgText += "文件格式不正确，仅限 " + this.settings.fileTypeExts;  
+	                break;  
+	            default:  
+	                msgText += "错误代码：" + errorCode + "\n" + errorMsg;  
+	        }  
+	        $.tipShow({
+				"message":msgText,
+				"color":"red"
+			});
+	    };  	   
+	   //删除图片
+		$("#remove_img").click(function(){
+			var path = '__UPLOADS__'+$('#banner_img').val();
+			var id = $('#id').val();
+			if(!path){
+				return;
+			}
+			confirm('温馨提示','确定删除该图片？',function(flag){
+				 if (flag){ 
+					 $.ajax({
+							type:"post",
+							data:{
+								"path":path,
+								'id':id
+							},
+							url:"{:U('removeImg')}",
+							success:function(response){
+								var result = $.parseJSON(response);
+								if(result.success){
+									$('#img_div').css('display','none');
+									$('#banner_img').val('');
+									 $.tipShow({
+										"message":result.message,
+										"color":"green"
+									});
+								}else{
+									$.tipShow({
+										"message":result.message,
+										"color":"red"
+									});
+								}
+							}
+					  });
+				 }
+			});
+		})
+	});
+	function ajaxfileupload() {
+            $.ajaxFileUpload
+            (
+                {
+                    url: "{:U('upload_pic')}", //用于文件上传的服务器端请求地址
+                    secureuri: false, //是否需要安全协议，一般设置为false
+                    fileElementId: 'file_hidden', //文件上传域的ID
+                    dataType: 'text', //返回值类型 一般设置为json
+                    success: function (response)  //服务器成功响应处理函数
+                    {
+                        //清空上传表单
+						$("#file_form").form('reset');
+						var result = $.parseJSON(response);
+						if(result.success){
+							$("#pic_img").attr('src','__UPLOADS__'+result.savefile);
+							$('#banner_img').val(result.savefile);
+							$("#img_div").css('display','block');
+						}else{
+							$.tipShow({
+								"message":result.message,
+								"color":"red"
+							});
+						}
+                    }
+                }
+            )
+            return false;
+        }
+	</script>
+</block>

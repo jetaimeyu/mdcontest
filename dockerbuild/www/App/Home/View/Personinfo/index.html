@@ -1,0 +1,463 @@
+<extend name='Public/base' />
+<block name='style'>
+    <link rel="stylesheet" href="__PUBLIC__/home/css/personinfo.css?v={$version_no}">
+    <style>
+        .file_save {
+            margin: 40px 85px;
+            display: block;
+            height: 38px;
+            line-height: 38px;
+            padding: 0 18px;
+            background-color: #14aadb;
+            color: #fff;
+            white-space: nowrap;
+            text-align: center;
+            font-size: 14px;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+    </style>
+</block>
+<block name="body">
+    <div class="main main-none" style="background-color: #fff;">
+        <div class="person_info" id="leftHeight" style="position:relative;">
+            <div style="min-height:calc(60vh - 133px);">
+                <img class="head_portrait" src="__PUBLIC__/home/images/touxiang.png">
+                <div class="person_name" id="setInfo">
+                    {$user.true_name}
+                    <!-- <div style="max-width: 170px;    text-overflow: ellipsis;    white-space: nowrap;    overflow: hidden;">{$user.true_name} </div> -->
+                    <!-- <img src="__PUBLIC__/home/images/edit.png" style="vertical-align: middle;width: 16px;height: 16px;"> -->
+                </div>
+                <div class="person_phone">
+                    <img src="__PUBLIC__/home/images/iphone.png" style="vertical-align: middle;width: 16px;height: 20px;">
+                    {$user.telephone}
+                </div>
+            </div>
+            <div style='position: absolute; bottom: 21px;width: 80%;'>
+                <div style="color: red;margin-bottom: 8px;">温馨提示：</div>
+                查看报名信息与竞赛作品提交，同时凭借手机号码可登录今日制造，默认密码为手机号码，再次感谢对本次大赛的鼎力支持，预祝您比赛顺利，金榜题名。
+            </div>
+        </div>
+        <div class="person_content" id="rightHight">
+            <empty name='subjects'>
+                <eq name='is.open' value='1'>
+                <div class="cent" style="height:500px;">
+                    <img src="__PUBLIC__/home/images/nodata.png" style="vertical-align: middle;width: 128px;height: 90px;margin-top: 100px;">
+                    <div class='counts cent' style='color:red;'>您还未报名参赛</div>
+                    <div class='button-div' style="width: 100px;height: 40px;line-height: 2.7;margin-left: 369px;">
+                        <a style='display: block;width: 100%;height: 100%;' href="{:U('Subject/index')}"><span>立即报名</span></a>
+                    </div>
+                    <notempty name='time.m_attend_endtime'>
+                        <div class='counts cent' style="padding: 0px">报名截止时间：{$time['m_attend_endtime']|subStr=0,4}年{$time['m_attend_endtime']|subStr=5,2}月{$time['m_attend_endtime']|subStr=8,2}日</div>
+                    </notempty>
+                </div>
+                </eq>
+                <if condition="$is.signOver eq 1 AND $is.end eq 0">
+                    <div class="cent" style="height:500px;">
+                        <img src="__PUBLIC__/home/images/nodata.png" style="vertical-align: middle;width: 128px;height: 90px;margin-top: 100px;">
+                        <div class='counts cent' style='color:red;'>报名已结束</div>
+                    </div>
+                </if>
+                <if condition=" $is.end eq 1">
+                        <div class="cent" style="height:500px;">
+                            <img src="__PUBLIC__/home/images/nodata.png" style="vertical-align: middle;width: 128px;height: 90px;margin-top: 100px;">
+                            <div class='counts cent' style='color:red;'>竞赛已结束</div>
+                        </div>
+                    </if>
+                <eq name='is.isnotstart' value='1'>
+                    <div class="cent" style="height:500px;">
+                    <img src="__PUBLIC__/home/images/nodata.png" style="vertical-align: middle;width: 128px;height: 90px;margin-top: 100px;">
+                    <div class='counts cent' style='color:red;'>报名还未开始</div>
+                    <notempty name='time.m_starttime'>
+                        <div class='counts cent' style="padding: 0px">报名开始时间：{$time['m_starttime']|subStr=0,4}年{$time['m_starttime']|subStr=5,2}月{$time['m_starttime']|subStr=8,2}日</div>
+                    </notempty>
+                </div>
+                </eq>
+            </empty>
+
+            <notempty name='subjects'>
+
+                <div id='tabMenu ' class="tabMenu clearfix">
+                        <ul>
+                            <li class="active"  id='tab0'>已报名成功信息</li>
+                            <if condition='$is.end eq 0 AND $is.endupload eq 0 '>
+                                    <span style="float: left;cursor: pointer; width: 60px; height: 43px; text-align: center;line-height: 43px;font-size: 16px;"> | </span>
+                                <li  id='tab1'>上传作品</li>
+                            </if>
+                        </ul>
+                </div>
+                <div class="tabCont tabCont">
+                    <div id='tabC0'>
+                        <volist name='subjects' id='subject'>
+                            <div class='content-new'>
+                                <div class='info-top'>
+                                    <div class='info-top-left'>
+                                        <span>题目信息</span>
+                                    </div>
+                                    <if condition="$is.signOver eq 0 ">
+                                    <div style="background:#E8E8E8;" class='button-div  tran info-top-right cancle' data-id='{$subject.id}' data-sid='{$subject.sid}' >
+                                        <a href="javascript:;" ><span style="color: #D14E4E;">取消报名</span></a>
+                                    </div>
+                                    </if>
+                                </div>
+                                <div class='content-div'>
+                                    <div class='title'><a style='color: #D14E4E;' target='_blank' href="{:U('Subject/detail',array('id'=>$subject['sid']))}">{$subject.title}</a></div>
+                                    <div class='description'>{$subject.description|cutStr=120}</div>
+                                    <div class='counts'>参赛组数：{$subject.member_counts}</div>
+                                    <if condition="$time['m_dowloadtime'] neq '' AND $time['m_attend_endtime'] neq ''">
+                                        <div class='counts'><span style='color:red;'>提示：</span>请于 {$time['m_dowloadtime']|subStr=0,4}-{$time['m_dowloadtime']|subStr=5,2}-{$time['m_dowloadtime']|subStr=8,2} 到 {$time['m_attend_endtime']|subStr=0,4}-{$time['m_attend_endtime']|subStr=5,2}-{$time['m_attend_endtime']|subStr=8,2} 时间段内下载<a href="/download.html" style="margin-left: 3px;">参赛资料</a></div>
+                                    </if>
+                                </div>
+                                <div class='info-top'>
+                                        <div class='info-top-left'>
+                                            <span>作品信息</span>
+                                        </div>
+                                        <if condition='$is.upload eq 1  AND $is.endupload eq 0  AND $is.end eq 0'>
+                                        <div style='background: #F2D3D3;' data-id='{$subject.id}' onclick="setuploadfile(this)"  class='button-div  tran info-top-right' data-id='{$subject.id}' data-sid='{$subject.sid}' >
+                                            <a href="javascript:;" ><span style="color: #D14E4E;"><notempty name='subject.file_url'>重新上传<else/>上传作品</notempty></span></a>
+                                        </div>
+                                        </if>
+                                </div>
+                                <notempty name='subject.file_url'>
+                                <!-- 已经上传作品 -->
+                                    <div class='upload-info-div'>
+                                        <div class='info-line'>作品名称：<span class='ms-info'>{$subject.file_name}</span></div>
+                                        <div class='info-line'>上传附件：<a target="_blank" href="__UPLOADS__{$subject.file_url}"><span  class='ms-info' style="color:#4996ed;">{$subject.file_name}</span></a></div>
+                                        <div class='info-line clear'><span class='ms-name'>设计说明：</span><span  class='ms-info'>{$subject.file_description}</span></div>
+
+                                    </div>
+                                <else/>
+                                <!-- 还没上传作品 -->
+                                        <if condition='$is.upload eq 1 AND $is.endupload eq 0 AND $is.end eq 0'>
+                                        <div class='content-div'>
+                                            暂未上传作品，请点击右侧按钮上传作品~
+                                        </div>
+                                        </if>
+                                        <if condition='$is.upload eq 0  AND $is.end eq 0 AND $is.endupload eq 0'>
+                                            <div class='content-div' style='padding: 0px 0 0 20px;'>
+                                                <div style="margin-bottom:5px;color:#D14E4E">还未到上传作品时间</div>
+                                                <div> 第一次上传作品开放时间：{$time['m_first_uploadtime']|strtotime|date="m月d日",###} | 第二次上传作品开放时间：{$time['m_second_uploadtime']|strtotime|date="m月d日",###}</div>
+                                            </div>
+                                        </if>
+                                        <if condition=' $is.endupload eq 1 '>
+                                            <div class='content-div'  style='padding: 0px 0 0 20px;'>
+                                                <div style="margin-bottom:5px;color:#D14E4E">作品上传时间已经结束</div>
+                                                <div> 第一次上传作品开放时间：{$time['m_first_uploadtime']|strtotime|date="m月d日",###} | 第二次上传作品开放时间：{$time['m_second_uploadtime']|strtotime|date="m月d日",###}</div>
+                                            </div>
+                                        </if>
+                                </notempty>
+                            </div>
+                        </volist>
+                        <div style="margin: 10px;width: 800px;">
+                            <div>报名信息</div>
+                            <div class="person_Info">
+                                <ul class=" ">
+                                    <li class="personData left">
+                                        <div class=" personDataInfotitle ">
+                                            姓名：
+                                        </div>
+                                        <div class="personDataInfo ">
+                                            {$subjects.0.name}
+                                        </div>
+                                    </li>
+                                    <li class="personData left" style=" margin-left: 140px;">
+                                            <div class=" personDataInfotitle">
+                                                邮箱：
+                                            </div>
+                                            <div class="personDataInfo" >
+                                                {$subjects.0.email|default='无'}
+                                            </div>
+                                    </li>
+                                    <li class="personData left">
+                                        <div class=" personDataInfotitle" >
+                                            身份证号：
+                                        </div>
+                                        <div class="personDataInfo" >
+                                            {$subjects.0.ID_num}
+                                        </div>
+                                    </li>
+                                    <li class="personData left"  style=" margin-left: 140px;">
+                                        <div class="personDataInfotitle">
+                                            工作单位：
+                                        </div>
+                                        <div class="personDataInfo" >
+                                            {$subjects.0.company|default='无'}
+                                        </div>
+                                    </li>
+                                    <li class="personData left">
+                                        <div class=" personDataInfotitle">
+                                            省市：
+                                        </div>
+                                        <div class="personDataInfo" >
+                                            {$subjects.0.province}{$subjects.0.city}
+                                        </div>
+                                    </li>
+
+                                    <li class="personData left"  style=" margin-left: 140px;">
+                                        <div class=" personDataInfotitle">
+                                            毕业学校：
+                                        </div>
+                                        <div class="personDataInfo" >
+                                            {$subjects.0.school|default='无'}
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <if condition='$is.end eq 0 AND $is.endupload eq 0 '>
+                    <div id='tabC1' style="display: none;">
+                        <if condition='$is.upload eq 0  AND $is.end eq 0 AND $is.endupload eq 0'>
+                            <div class="cent">
+                                <img src="__PUBLIC__/home/images/updata.png" style="vertical-align: middle;width: 128px;height: 128px;margin-top: 60px;">
+                                <div class='counts cent' style="margin-top: 20px;" >还未到上传作品时间哦</div>
+                                <div class='counts cent' style="padding: 0px;margin-top: 20px;">第一次上传作品开放时间：{$time['m_first_uploadtime']|strtotime|date="m月d日",###}</div>
+                                <div class='counts cent' style="padding: 0px">第二次上传作品开放时间：{$time['m_second_uploadtime']|strtotime|date="m月d日",###}</div>
+                            </div>
+                        </if>
+                        <if condition="$is.upload eq 1  AND $is.end eq 0 AND $is.endupload eq 0">
+                        <div class="upload-time-div">
+                            <div class='upload-time'>
+                                    第一次上传时间点：{$time['m_first_uploadtime']}
+                            </div>
+                            <div  class='upload-time'>
+                                    第二次上传时间点：{$time['m_second_uploadtime']}
+                            </div>
+                        </div>
+                        <form id='file_form'>
+                            <div class='upload-file-div'>
+                                <div class='upload-input'>
+                                    <span >上传题目：</span>
+                                    <select name="id" id="selectsubject">
+                                        <volist name='subjects' id='subject'>
+                                        <option value="{$subject.id}">{$subject.title}</option>
+                                        </volist>
+                                    </select>
+                                </div>
+                                <div class='upload-input'>
+                                    <span >作品名称：</span>
+                                    <input  type="text" maxlength="100" name='file_name' value='' id='file_name'>
+                                </div>
+                                <div class='upload-input'>
+                                    <span  >上传附件：</span>
+                                    <label for="file_hidden" style='width: 0;height:0;cursor: pointer;display: block;' >
+                                    <div class='upload-input-box'>
+                                        <span style='padding-left: 16px;line-height: 33px;'><img src="__PUBLIC__/home/images/upload.png" alt="选择文件"> 选择文件</span>
+                                        <input type="file" style="width:0;opacity: 0;" name='file' onchange="ajaxfileupload()" id='file_hidden'>
+                                    </div>
+                                </label>
+                                <input type="hidden" name='file_url' value="" id='file_url' />
+                                <a href="#" target='_blank' style='display:none;margin: 0px 0 0px 262px;float: left;' id='file_review' ></a>
+                                </div>
+                            <div class='upload-input' style="margin-top: 44px;">
+                                <span>设计说明：</span>
+                                <textarea id='file_desctiption' name='file_description' type="text" maxlength="200" style="height: 77px;"></textarea>
+                            </div>
+                            <div class='submit-div'  onclick="saveFile()"><span>确定上传</span>
+                            </div>
+                        </div>
+                        </form>
+                        </if>
+                    </div>
+                    </if>
+                </div>
+            </notempty>
+        </div>
+    </div>
+
+</block>
+<block name="script">
+    <script src='__PUBLIC__/home/js/layer/layer.js'></script>
+    <script src="__PUBLIC__/system/js/ajaxfileupload.js"></script>
+    <script>
+        //左右两边高度相等
+        $(function () {
+            var rightHeight =document.getElementById('rightHight').offsetHeight;
+            document.getElementById('leftHeight').style.height = rightHeight+"px"
+        });
+        var id = "{$subject['id']}";
+        function saveFile() {
+            if (!$('#file_url').val()) {
+                layer.msg("请上传文件")
+                return false;
+            }
+            if (!$.trim($('#file_name').val())) {
+                $('#file_name').focus();
+                layer.msg("请输入文件名称")
+                return false;
+            }
+            $.ajax({
+                url: "{:U('saveFile')}",
+                type: 'post',
+                data: $('#file_form').serialize(),
+                success: function (res) {
+                    var res = $.parseJSON(res);
+                    if (res) {
+                        layer.msg('操作成功');
+                        window.location.reload();
+                    } else {
+                        layer.msg('操作失败');
+                    }
+                }
+            });
+        }
+        function setuploadfile(that){
+            var id  = $(that).data('id');
+            $('#selectsubject').val(id);
+            $("html, body").animate({scrollTop: $("#tab1").offset().top});
+            $('#tab1').click();
+        }
+        function setUserInfo() {
+            var postData = {
+                true_name: $("#newName").val(),
+                telephone: "{$user.truetelephone}"
+            }
+            if (!/^[\u4E00-\u9FA5A-Za-z]+$/.test(postData.true_name)) {
+                layer.msg("姓名只允许输入汉字和英文")
+                return
+            }
+            if (postData.true_name.length == 0) {
+                layer.msg("请输入新的姓名")
+                return
+            }
+            var url = "{:U('Home/Personinfo/setUserInfo')}";
+            postAjaxData(url, postData, function (res) {
+                if (res.State == 1 && res.Data == 1) {
+                    layer.msg('修改成功');
+                    setTimeout(function () {
+                        window.location.href = window.location.href = "/personinfo";
+                    }, 1000)
+
+                } else {
+                    layer.msg('修改失败');
+                }
+            })
+        }
+        var user_name = '{$user["true_name"]}';
+        $(function () {
+            $('#setInfo').click(function () {
+                layer.open({
+                    type: 1,
+                    title: '修改信息',
+                    move: false,
+                    area: ['420px', '240px'],
+                    content: ' <div style="width: 100%;height: 100%;padding: 30px 0 30px 0;box-sizing: border-box">' +
+                    '<div style="display: inline-block">新姓名：</div>' +
+                    '<input id="newName" value="'+user_name+'" type="text" style="width: 65%;height: 38px;line-height: 38px;border:1px solid #e6e6e6;background-color: #fff; border-radius: 2px;">' +
+                    '<button onclick="setUserInfo()" style="margin: 40px auto;display: block; height: 38px;line-height: 38px;padding: 0 18px;background-color: #14aadb;color: #fff; white-space: nowrap;text-align: center;font-size: 14px;  border: none; border-radius: 2px; cursor: pointer;">确认修改</button>' +
+                    '</div>',
+                });
+            })
+
+            $('.cancle').on('click', function () {
+                var that = $(this);
+                //询问框
+                layer.confirm('<font style="color:red; text-align: center">您确定要取消报名吗？</font>', {
+                    title: false,
+                    closeBtn:0,
+                    area: ['300px', '150px'],
+                    btn: ['确定', '关闭'] //按钮
+                }, function () {
+                    var id = that.data('id');
+                    var sid = that.data('sid');
+                    $.ajax({
+                        url: "{:U('cancel')}",
+                        data: { 'id': id, 'sid': sid },
+                        type: 'post',
+                        success: function (res) {
+                            var res = $.parseJSON(res);
+                            if (res) {
+                                layer.msg('取消报名成功', {
+                                    time: 1000,
+                                }, function () {
+                                    window.location.reload();
+                                });
+                            }
+                        }
+                    })
+                });
+            })
+            $('#upload').on('click', function () {
+                layer.open({
+                    type: 1,
+                    title: '上传作品',
+                    move: false,
+                    area: ['450px', '400px'],
+                    content: $("#file_upload_div"),
+                });
+            })
+
+
+            //$line = $('<div class="line"></div>').appendTo($tabMenu);
+
+            $('.tabMenu li').on('click', function (a) {
+                var $wrapper = $('.person_content'),
+                $allTabs = $wrapper.find('.tabCont > div'),
+                $tabMenu = $wrapper.find('.tabMenu li');
+                $tabMenu.removeClass('active');
+
+                var index = $tabMenu.index(a.target);
+                var $getWrapper = $(this).closest($wrapper);
+                $('#tab' + index).addClass('active');
+                $getWrapper.find($allTabs).hide();
+                $('#tabC' + index ).show();
+
+                return;
+            })
+
+        })
+        function ajaxfileupload() {
+            if(getFileSize($('#file_hidden'))>50){
+                layer.msg('文件大小不能超过50M');
+                $('#file_hidden').val('');
+                return false;
+            }
+            $.ajaxFileUpload
+            (
+                {
+                    url: "{:U('upload_file')}?id=" + id, //用于文件上传的服务器端请求地址
+                    secureuri: false, //是否需要安全协议，一般设置为false
+                    fileElementId: 'file_hidden', //文件上传域的ID
+                    dataType: 'text', //返回值类型 一般设置为json
+                    success: function (response)  //服务器成功响应处理函数
+                    {
+                        var result = $.parseJSON(response);
+                        if (result.success) {
+                            $('#file_url').val(result.url);
+                            if(!$.trim($('#file_name').val())){
+                                $('#file_name').val(result.name);
+                            }
+                            $('#file_review').html(result.name).attr('href','__UPLOADS__'+result.url).css('display','block');
+                            layer.msg('上传成功');
+                        } else {
+                            layer.msg(result.msg);
+                        }
+                    }
+                }
+            )
+            return false;
+        }
+
+        function getFileSize(target) {
+            var isIE = /msie/i.test(navigator.userAgent) && !window.opera;
+            var fileSize = 0;
+            try {
+                if (isIE && !target.files) {
+                    target.select();
+                    target.blur();
+                    var filePath = document.selection.createRange().text;
+                    var fileSystem = new ActiveXObject("Scripting.FileSystemObject");
+                    var file = fileSystem.GetFile(filePath);
+                    fileSize = file.Size;
+                } else {
+                    fileSize = target[0].files[0].size;
+                }
+                return fileSize/1024/1024;
+            }catch (e){
+                return false;
+            }
+        }
+
+    </script>
+</block>

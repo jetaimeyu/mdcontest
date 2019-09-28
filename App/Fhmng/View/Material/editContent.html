@@ -1,0 +1,235 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title></title>
+</block>
+<block name="body">
+<form id="myform" class="easyui-form myform" data-options="novalidate:false" method="post">
+<div class="main-page" style="padding-top:20px;">
+	<table>
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>标题：</td>
+			<td>
+				<input   name="title" class="easyui-textbox" style="width:250px" data-options="value:'{$data.title}',required:'true',validateOnCreate:false,validType:['length[1,40]']" >
+				<input type="hidden" id='id' name="id" value="{$data.id}">
+			</td>
+		</tr>
+		<tr>
+				<td class="text_right"><span class="mark">*</span>类型：</td>
+				<td>
+					<select id='type' name="type" class="easyui-combobox" data-options="value:'{$data.type|default=1}',editable:false,panelHeight:'auto',required:true" style="width:145px">
+						<option value="1">上传</option>
+						<option value="2">链接</option>
+					</select>
+				</td>
+			</tr>
+			<tr id='type2' style='display: none'>
+				<td class="text_right" style="width:80px"><span class="mark">*</span>链接：</td>
+				<td>
+					<input  name="input_file_url" id='file_url_input' class="easyui-textbox" style="width:250px" data-options="value:'{$data.input_file_url}',required:false,validateOnCreate:false,validType:['url','length[0,500]']" >
+				</td>
+			</tr>
+		<tr   id='type1'>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>附件：</td>
+			<td>
+			<label style="width:100px" for="file_hidden_pdf" class="easyui-linkbutton upload_button" data-options="plain:true,iconCls:'icon-extend-upload'">上传附件</label>
+
+			<div id="pdf_div" <empty name='data.file_url'>style='display: none;'<else/>style='display:inline-block;'</empty>>
+							
+				<a id='pdf_a'  <notempty name='data.file_url'>href="__UPLOADS__{:$data['file_url']}"<else/>href='javascript:void(0);'</notempty> target="_blank">点击查看</a>
+				<!-- <img id='pic_img'  /> -->
+			</div>
+			<input  id="file_url" value="{$data.file_url}" name="file_url" type='hidden' />
+			<input  id="file_name" value="{$data.file_name}" name="file_name" type='hidden' />
+			
+			<input type='file' id="file_hidden_pdf" onchange="ajaxfileuploadpdf()" name="pdf" class="file"/>
+			</td>
+		</tr>
+		<tr>
+				<td class="text_right" style="width:80px">封面图片：</td>
+				<td>
+				<div id="img_div" <empty name='data.img'>style='display: none;'</empty>>
+					<div class="upload-img-box">
+							<div class="upload-pre-item">
+								<span class="upload-img-remove" id='remove_img' title="点击删除"></span>
+								
+									<img id="pic_img" <notempty name='data.img'>src="__UPLOADS__{$data['img']}"</notempty>>
+								
+							</div>
+					</div>
+					<!-- <img id='pic_img'  /> -->
+				</div>
+				<input  id="img" value="{$data.img}" name="img" type='hidden' />
+				<label style="width:100px" for="file_hidden" class="easyui-linkbutton upload_button" data-options="plain:true,iconCls:'icon-extend-upload'">上传图片</label>
+				<input type='file' id="file_hidden" style="width:0;" onchange="ajaxfileuploadimg()" name="pic" class="file"/>
+				</td>
+			</tr>
+			<tr>
+				<td class="text_right">简介：</td>
+				<td><textarea style="width:300px;height:100px" name="description" class="easyui-validatebox text-area"data-options="validateOnCreate:false,required:true,validType:['length[1,200]']"  maxlength="200">{$data.description}</textarea></td>
+			</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>排序号：</td>
+			<td>
+				<input id="order_no" name="order_no" class="easyui-numberspinner" style="width:145px;" required="required" data-options="value:'{$data.order_no}',min:0,max:1000,editable:true,value:0">
+				<span class="tip">（升序）</span>
+			</td>
+		</tr>
+	
+	</table>
+
+</div>
+</form>
+</block>
+<block name="script">
+<script src="__PUBLIC__/system/js/ajaxfileupload.js"></script>
+
+<script type="text/javascript">
+
+    $(function(){
+		
+		$("#myform").form({	
+			url:"{:U('editContent')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var isValid  = $(this).form('validate');
+				if(isValid){
+					var type = $('#type').textbox('getValue');
+					if((!$('#file_url').val()) && (type == 1)){
+						$.tipShow({
+								"message":"请上传附件",
+								"color":"red"
+						});
+						isValid = false;
+					}
+				}
+				if(isValid){
+					//验证通过提交，禁用提交按钮，防止多次提交
+					parent.$("#btnSubmit1").linkbutton("disable");
+				}
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+						$.tipShow({
+								"message":"操作成功",
+								"color":"green",
+								"callback":function(){
+									closeDialog({
+										"windowId":"window",
+										"needRefresh":true,
+										"controlType":"datagrid",
+										"gridId":"datagrid"
+									});
+								}
+						});
+					
+				}else{
+					$.tipShow({
+							"message":"操作失败",
+							"color":"red"
+					});
+					parent.$("#btnSubmit1").linkbutton("enable");
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败",
+					"color":"red"
+				});
+				
+				parent.$("#btnSubmit1").linkbutton("enable");
+			}
+		});
+	
+	var type=$('#type').combobox('getValue');
+	if(type == 1){
+		$('#type1').show();
+		$('#type2').hide();
+		$('#file_url_input').textbox({'required':false});
+	}else if(type == 2){
+		$('#type1').hide();
+		$('#type2').show();
+		$('#file_url_input').textbox({'required':true});
+	}
+	$("#type").combobox({
+		'onChange':function(value){
+			if(value == 1){
+				$('#type1').show();
+				$('#type2').hide();
+				$('#file_url_input').textbox({'required':false});
+			}else if(value == 2){
+				$('#type1').hide();
+				$('#type2').show();
+				$('#file_url_input').textbox({'required':true});
+			}
+		}
+	})
+	})
+	//上传附件
+	function ajaxfileuploadpdf() {
+            $.ajaxFileUpload
+            (
+                {
+                    url: "{:U('uploadpdf')}", //用于文件上传的服务器端请求地址
+                    secureuri: false, //是否需要安全协议，一般设置为false
+                    fileElementId: 'file_hidden_pdf', //文件上传域的ID
+                    dataType: 'text', //返回值类型 一般设置为json
+                    success: function (response)  //服务器成功响应处理函数
+                    {
+						var result = $.parseJSON(response);
+						if(result.success){
+							//清空上传表单
+							$.tipShow({
+								"message":"上传成功",
+								"color":"green"
+							});
+							$("#pdf_a").attr('href',"__UPLOADS__"+result.url);
+							$('#file_url').val(result.url);
+							$('#file_name').val(result.name);
+							$("#pdf_div").css('display','inline-block');
+						}else{
+							$.tipShow({
+								"message":result.message,
+								"color":"red"
+							});
+						}
+                    }
+                }
+            )
+            return false;
+        }
+		function ajaxfileuploadimg() {
+            $.ajaxFileUpload
+            (
+                {
+                    url: "{:U('upload_pic')}", //用于文件上传的服务器端请求地址
+                    secureuri: false, //是否需要安全协议，一般设置为false
+                    fileElementId: 'file_hidden', //文件上传域的ID
+                    dataType: 'text', //返回值类型 一般设置为json
+                    success: function (response)  //服务器成功响应处理函数
+                    {
+						
+                        //清空上传表单
+						$("#file_form").form('reset');
+						var result = $.parseJSON(response);
+						if(result.success){
+							$("#pic_img").attr('src','__UPLOADS__'+result.savefile);
+							$('#img').val(result.savefile);
+							$("#img_div").css('display','block');
+						}else{
+							$.tipShow({
+								"message":result.message,
+								"color":"red"
+							});
+						}
+                    }
+                }
+            )
+            return false;
+        }
+	
+	
+	</script>
+</block>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/easyui/themes/default/easyui.css" />
+	<link rel="stylesheet" type="text/css"  href="__PUBLIC__/easyui/themes/icon.css">
+ <link rel="stylesheet" type="text/css" href="__PUBLIC__/plugins/imgareaselect/css/imgareaselect-default.css" />
+	<style type="text/css">
+.uploadify-button-text{
+
+    border: 1px solid #bbb;
+    border-radius: 3px;
+    font-size: 14px;
+    margin-left: 15px;
+    padding: 2px 8px;
+    color:#444;
+}
+	</style>
+</head>
+<body>
+
+</body>
+</html>
+
+<body>	
+	<table>
+		
+		<tr>
+			<label style="width:200px" id='alinkupload' for="file_hidden" class="easyui-linkbutton upload_button" data-options="plain:true,iconCls:'icon-extend-upload'">选择图片</label>
+	
+			<div id="img_div" style="margin-top:6px;" >
+				<div class="upload-img-box" style="margin-left:16px;" >
+					<div class="upload-pre-item" style="border:1px dashed gray;width:365px;height:300px;max-height:300px;background:url(__PUBLIC__/system/images/upload.png) no-repeat;background-position:126px">
+						<img id="pic_img" style="" >
+					</div>
+				</div>
+			</div>
+			
+			
+			</td>
+		</tr>
+	</table>
+	<form id="cropimgform" method ='post'>
+	 <input type="hidden" id="x" name="x" />
+	        <input type="hidden" id="y" name="y" />
+	        <input type="hidden" id="w" name="w" />
+	        <input type="hidden" id="h" name="h" />
+	        <input  id="img" value="" name="img" type='hidden' />
+	        </form>
+	</body>
+<script src="__PUBLIC__/easyui/jquery.min.js" type="text/javascript"></script>
+<!-- <script src="__PUBLIC__/easyui/jquery-migrate-1.2.1.js" type="text/javascript"></script> -->
+
+<script src="__PUBLIC__/easyui/jquery.easyui.min.js" type="text/javascript"></script>
+
+<script src="__PUBLIC__/easyui/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
+<script src="__PUBLIC__/system/js/jquery.tipshow.js" type="text/javascript"></script>
+<script src="__PUBLIC__/system/js/sessionListener.js" type="text/javascript"></script>
+<script src="__PUBLIC__/system/js/common.js" type="text/javascript"></script>
+<!-- <script src="__PUBLIC__/system/js/ajaxfileupload.js"></script> -->
+<script type="text/javascript" src="__PUBLIC__/plugins/uploadify/jquery.uploadify.min.js"></script>
+ <script type="text/javascript" src="__PUBLIC__/plugins/imgareaselect/scripts/jquery.imgareaselect.pack.js"></script>
+<script type="text/javascript">
+	$("#cropimgform").form({
+			url:"{:U('crop')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var imgsrc = $('#img').val();
+				var isValid = true;
+				if(!imgsrc){
+					$.messager.alert('','请先上传图片','warning');
+					isValid = false;
+				}
+
+				if(isValid){
+					//验证通过提交，禁用提交按钮，防止多次提交
+					parent.$("#btnSubmit_sub").linkbutton("disable");
+				}
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$('#img').val(result.path);
+					parent.$("#window iframe")[0].contentWindow.$('#img').val(result.path);
+					parent.$("#window iframe")[0].contentWindow.$("#pic_img").attr('src',"{:C('QINIU_DOMAIN')}"+result.path);
+					parent.$("#window iframe")[0].contentWindow.$("#img_div").show();
+					closeDialog({
+								"windowId":"window_sub",
+								"needRefresh":false,
+							});
+				}else{
+					$.tipShow({
+						"message":"操作失败",
+						"color":"red"
+					});
+					
+					parent.$("#btnSubmit").linkbutton("enable");
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败",
+					"color":"red"
+				});
+				parent.$("#btnSubmit").linkbutton("enable");
+			}
+		});
+	
+
+  function initFileUpload(name, filetype,sizeLimit) {
+    $("#"+name).uploadify({
+        'swf':  '__LOCALPUBLIC__/plugins/uploadify/uploadify.swf',
+        'uploader': "{:U('Fhmng/Uploadimg/upload_pic')}",
+        'fileTypeExts': filetype,
+        'formData' : { 'name' : name},
+		'fileSizeLimit': sizeLimit,
+        'auto': true,
+        'queueID': name + '_queue',
+        'height': 26,
+        'buttonText':'选择图片',
+        'width': 100,
+        'multi' : false,
+        'removeCompleted': true,
+        'overrideEvents': ['onDialogClose', 'onSelectError'],
+        'onUploadSuccess': function(file, data, response) {
+        	   //清空上传表单
+					var result = $.parseJSON(data);
+					if(result.success){
+						$("#pic_img").css({'max-height':'300px','max-width':'365px'});
+						$("#pic_img").attr('src',"{:C('QINIU_DOMAIN')}"+result.file);
+						$('#img').val(result.file);
+						$("#img_div").css('display','block');
+						var size = 0;
+		            	if(result.height>result.width){
+		            		size = result.width;
+		            	}else{
+		            		size = result.height;
+		            	}
+						//裁剪
+						$('#pic_img').imgAreaSelect({
+			            		aspectRatio:'1:1',
+			            		handles:true,
+			            		imageHeight:result.height,
+			            		imageWidth:result.width,
+			            		minWidth:40,
+			            		minHeight:40,
+			            		x1:0,
+			            		y1:0,
+			            		x2:size,
+			            		y2:size,
+			            		onInit:function (img,selection) {
+			            			$('input[name="x"]').val(selection.x1);
+									$('input[name="y"]').val(selection.y1);
+									$('input[name="w"]').val(selection.width);
+									$('input[name="h"]').val(selection.height);
+									$('input[name="img"]').val(result.file);
+			            		},
+			            		onSelectEnd: function (img, selection) {
+									$('input[name="x"]').val(selection.x1);
+									$('input[name="y"]').val(selection.y1);
+									$('input[name="w"]').val(selection.width);
+									$('input[name="h"]').val(selection.height);
+									}
+			            	});
+
+						
+					}else{
+						$.tipShow({
+							"message":result.message,
+							"color":"red"
+						});
+					}
+        },
+        'onSelectError': function(file, errorCode, errorMsg, errorString) {
+            switch (errorCode) {
+            case SWFUpload.QUEUE_ERROR.QUEUE_LIMIT_EXCEEDED:
+                msgText = "最多上传1个文件";
+                break;
+            case SWFUpload.QUEUE_ERROR.INVALID_FILETYPE:
+                msgText = "文件格式不正确";
+                break;
+			case SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT:
+                msgText = "文件大小超出限制";
+                break;
+            }
+           
+			$.messager.alert('',msgText,'warning');
+        }
+    });
+}
+ initFileUpload('alinkupload',"*.jpg;*.jpeg;*.png",'3072');// 头像：
+
+	</script>
+</html>

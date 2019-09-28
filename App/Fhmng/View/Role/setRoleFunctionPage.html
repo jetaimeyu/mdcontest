@@ -1,0 +1,81 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>分配角色功能</title>
+</block>
+<block name="body">
+	<div class="main-page">
+		<input type="hidden" id="hdnRoleid" value="{$roleid}">
+		<ul id="functontree"></ul>
+	</div>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		var childrenFlag = true;
+		var roleid = $("#hdnRoleid").val();
+		$("#functontree").tree({
+			url:"{:U('Role/getFunctionTree')}",
+			checkbox:true,
+			cascadeCheck:false,
+			animate:true,
+			queryParams:{
+				"roleid":roleid
+			},
+			onCheck: function (node,checked) {
+	        if (checked) {
+	             //选中所有子节点
+	            var childNode = $("#functontree").tree('getChildren', node.target);
+	            if (childrenFlag) {
+	              for (var i = 0; i < childNode.length; i++) {
+	                $("#functontree").tree('check', childNode[i].target);
+	              }
+	              childrenFlag= false;
+	              setTimeout(function () {
+	              	childrenFlag = true;
+	              },200);
+	            } 
+	        	//选中父节点
+	        	var parentNode = $("#functontree").tree('getParent',node.target);
+	            if (parentNode != null) {
+	              $("#functontree").tree('check',parentNode.target);
+	            }
+	          } else {
+	          	//子节点unchecked掉
+	            var childNode = $("#functontree").tree('getChildren', node.target);
+	            if (childNode.length > 0) {
+	              for (var i = 0; i < childNode.length; i++) {
+	                $("#functontree").tree('uncheck', childNode[i].target);
+	              }
+	            }
+	            //如果兄弟节点都unchecked，那么 父节点unchecked掉
+	            var parent = $('#functontree').tree('getParent',node.target);
+	            if(parent){
+	            var siblings = $('#functontree').tree('getChildren',parent.target);
+	            var checkedCount = 0;
+	            if(siblings.length > 0){
+	            	for(var i= 0; i < siblings.length; i++){
+	            		if(siblings[i].checked == true){
+	            			checkedCount+=1;
+	            		}
+	            	}
+	            }
+	            if(checkedCount == 0){
+	            	 $("#functontree").tree('uncheck', parent.target);
+	            }
+	        }
+	          }
+	        }
+		});		
+	});
+	
+	function getChecked(){
+      var arr = [];
+      var checkeds = $('#functontree').tree('getChecked', 'checked');
+      for (var i = 0; i < checkeds.length; i++) {
+        arr.push(checkeds[i].id);
+      }
+      return arr.join(',');
+    }
+
+	</script>
+</block>

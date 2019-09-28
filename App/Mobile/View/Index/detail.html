@@ -1,0 +1,29 @@
+<extend name="base/base"/>
+<block name="content">
+    <div class="detail-title">
+        <div class="detail-title-image-content">
+            <img class="detail-title-image" src="__PUBLIC__/mobile/images/back.png" alt="">
+        </div>
+        <div class="detail-title-content">我要参赛</div>
+    </div>
+    <div style="background-color: #fff; padding: 0 10px" >
+        <volist name="content" id="item">
+            <div class="detail-subject">
+                <div class="detail-subject-title">{$item.title|}</div>
+                <div class="detail-subject-content">
+                    <div style="margin-top: 10px;word-break: break-all" >
+                        {$item.content|htmlspecialchars_decode|html_entity_decode}
+                    </div>
+                </div>
+            </div>
+        </volist>
+    </div>
+    <!--<div class="footer">Copyright ©2018 All Rights Reserved.  版权所有</div>-->
+    <script>
+        $(function () {
+            $('.detail-title-image').click(function () {
+                window.history.back();
+            })
+        })
+    </script>
+</block>

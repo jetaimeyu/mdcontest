@@ -1,0 +1,127 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title></title>
+</block>
+<block name="body">
+<form id="myform" class="easyui-form myform" data-options="novalidate:false" method="post">
+	<table>
+		<tr>
+			<td class="text_right" style="width:85px"><span class="mark">*</span>菜单名称：</td>
+			<td><input id="name"  name="menu_name" value="{$data.menu_name}" class="easyui-textbox" style="width:250px" data-options="validateOnCreate:false,required:true,validType:['length[1,40]'],tipPosition:'right'" >
+				<input id="hdnId" name="id" type="hidden" value="{$data.id}">
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:85px"><span class="mark">*</span>英文名称：</td>
+			<td><input id="en"  name="name_en" value="{$data.name_en}" class="easyui-textbox" style="width:250px" data-options="validateOnCreate:false,required:true,validType:['length[1,40]'],tipPosition:'right'" >
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:85px"><span class="mark">*</span>链接：</td>
+			<td><input id="key"  name="menu_url" value="{$data.menu_url}" class="easyui-textbox" style="width:250px" data-options="validateOnCreate:false,required:true"></td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:85px"><span class="mark">*</span>链接打开方式：</td>
+			<td><input id="key"  name="url_target" value="{$data.url_target}" class="easyui-textbox" style="width:250px" data-options="validateOnCreate:false,required:true,prompt:'_blank：新页面，_self:本页面'"></td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:85px"><span class="mark">*</span>关键字：</td>
+			<td><input id="key"  name="menu_code" value="{$data.menu_code}" class="easyui-textbox" style="width:250px" data-options="validateOnCreate:false,required:true,validType:['checkKey','length[1,40]']"></td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>排序：</td>
+			<td>
+				<input  name="order_no" class="easyui-numberspinner" style="width:145px;" required="required" data-options="value:'{$data.order_no}',validateOnCreate:false,min:0,max:1000,editable:true,">
+				<span class="tip">（升序）</span>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>状态：</td>
+			<td>
+				<select name="status" class="easyui-combobox" data-options="value:'{:$data?$data['status']:1}',validateOnCreate:false,editable:false,panelHeight:'auto',required:true" style="width:145px">
+					<option value="1">启用</option>
+					<option value="0">禁用</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</form>
+</block>
+<block name="script">
+<script type="text/javascript">
+	$(function(){
+		$("#myform").form({
+			url:"{:U('editOne')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var isValid  = $(this).form('validate');
+				if(isValid){
+					//验证通过提交，禁用提交按钮，防止多次提交
+					parent.$("#btnSubmit").linkbutton("disable");
+				}
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$.tipShow({
+						"message":"操作成功",
+						"color":"green",
+						"callback":function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":true,
+								"controlType":"datagrid",
+								"gridId":"dicTypeGrid"
+							});
+						}
+					});
+				}else{
+					$.tipShow({
+						"message":"操作失败",
+						"color":"red"
+					});
+					
+					parent.$("#btnSubmit").linkbutton("enable");
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败",
+					"color":"red"
+				});
+				parent.$("#btnSubmit").linkbutton("enable");
+			}
+		});
+
+		$.extend($.fn.validatebox.defaults.rules, {    
+			//检查关键字
+			checkKey:{
+		    	validator:function(value,param){
+		    		var isValid = false;
+		    		$.ajax({
+		    			type:"post",
+		    			async:false,
+		    			data:{
+		    				"key":$.trim(value),
+		    				"id":$('#hdnId').val(),
+		    			},
+		    			url:"{:U('checkKey')}",
+		    			success:function(response){
+		    				var result = $.parseJSON(response);
+		    				isValid = !result.isExist;
+		    			},
+		    			error:function(){
+		    				isValid = false;
+		    			}
+		    		});
+		    		return isValid;
+		    	},
+		    	message:"该关键字已存在"
+		    },
+
+		}); 
+	});
+</script>
+</block>

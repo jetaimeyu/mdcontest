@@ -1,0 +1,215 @@
+<extend name='Public/base'/>
+<block name='style'>
+    <link rel="stylesheet" href="__PUBLIC__/home/css/index.css?v={$version_no}">
+</block>
+<block name='body'>
+    <div class="main main-none" style="overflow: visible">
+        <!--banner开始-->
+        <div class="banner">
+            <div class="banner_swiper">
+                <if condition="count($data['bannerData']) eq 1">
+                    <img src="__UPLOADS__{$data['bannerData'][0]['banner_img']}" alt="">
+                    <elseif condition="count($data['bannerData']) gt 1"/>
+                    <div id="fullSlider" class="full_slide">
+                        <ul id="fullList" class="full_slide" style="width: 732px">
+                            <volist name="data['bannerData']" id = "v">
+                                <li class="full_slide_img">
+                                    <notempty name="v['link_url']">
+                                        <a href="{$v.link_url}" target="_blank">
+                                            <img style="width: 100%;object-fit: fill" src="__UPLOADS__{$v.banner_img}" alt="" >
+                                        </a>
+                                        <else/>
+                                        <img style="width: 100%;object-fit: fill" src="__UPLOADS__{$v.banner_img}" alt="" >
+                                    </notempty>
+                                </li>
+                            </volist>
+                        </ul>
+                        <div class="hd">
+                            <ul id="page"></ul>
+                        </div>
+                    </div>
+                    <else />
+                    <img src="__PUBLIC__/home/images/bannerimg.png" alt="">
+                </if>
+            </div>
+            <div class="banner_gameinfo">
+                <div class="game_detail_bigtitle game_title">大赛简介</div>
+                <div class="game_detail game_introduction">{$data.gameDetail|cutStr=180}</div>
+                <div class="clickMore"><a href="/game"><span>查看详情-></span></a></div>
+                <div class="game_detail_title game_title">大赛主题</div>
+                <div class="game_detail game_compatition">{$data.gameTitle}</div>
+                <div class="game_detail_title game_title">大赛项目</div>
+                <div class="game_detail">
+                    <volist name="data['competitionTopicData']" id="v" key="k" offset="0" length="">
+                        <p>{$v.title}</p>
+                    </volist>
+
+                </div>
+                <div class="clickSignup"><a href="/subject">我要报名</a></div>
+            </div>
+        </div>
+        <!--banner结束-->
+        <!--赛程安排开始-->
+        <div class="schedule">
+            <div class="index_titleTip">赛程安排</div>
+            <ul class="schedule_ul">
+                <volist name="data['scheduleData']" id="v" key="k">
+                <li class="schedule_li">
+                    <div class="schedule_num">{$k}</div>
+                    <div class="schedule_describe">{$v.description}</div>
+                    <div class="schedule_time">{$v.config_value}</div>
+                </li>
+                <if condition="$k neq count($data['scheduleData'])">
+                    <li class="pointicon"></li>
+                </if>
+                </volist>
+            </ul>
+            <!--比赛项目-->
+            <ul class="competition_topic">
+                <volist name="data['competitionTopicData']" id="v" key="k" offset="0" length="" >
+                    <a href="/subject">
+                        <li class="competition_topic_li">
+                            <div class="competition_top">
+                                <div class="competition_tip">{$v.subtypename }</div>
+                                <div class="competition_topic_name">{$v.title|cutStr=20}</div>
+                            </div>
+                            <div class="competition_content">
+                                <div class="competition_content_title">摘要：</div>
+                                <div class="competition_content_box">
+                                    <div class="content_point"></div>
+                                    <div class="competition_content_detail">{$v.description|cutStr=320}</div>
+                                </div>
+
+                            </div>
+                        </li>
+                    </a>
+                    <if condition="$k%2 !=0">
+                    <li class="competition_topic_li ligap"></li>
+                    </if>
+                </volist>
+            </ul>
+        </div>
+        <!--赛程安排结束-->
+        <!--评选基准开始-->
+<!--        <div class="benchmarking">-->
+<!--            <div class="index_titleTip">评选基准</div>-->
+<!--            <div class="benchmarking_content">-->
+<!--                <ul class="benchmarking_content_ul">-->
+<!--                    <li class="benchmarking_li">-->
+<!--                        <div class="benchmarking_content_box">-->
+<!--                            <div class="benchmarkingimg benchmarkingbg1">-->
+<!--                            </div>-->
+<!--                            &lt;!&ndash;<img src="__PUBLIC__/home/images/innovativeness.png" alt="" class="benchmarking_img">&ndash;&gt;-->
+<!--                            <p class="benchmarking_title">创新性</p>-->
+<!--                            <p class="benchmarking_detail">是否具有前瞻性、新颖性、配套性、符合审美</p>-->
+<!--                        </div>-->
+<!--                    </li>-->
+<!--                    <li class="benchmarking_li">-->
+<!--                        <div class="benchmarking_content_box">-->
+<!--                            <div class="benchmarkingimg benchmarkingbg2">-->
+<!--                            </div>-->
+<!--                            &lt;!&ndash;<img src="__PUBLIC__/home/images/Inheritance.png" alt="" class="benchmarking_img">&ndash;&gt;-->
+<!--                            <p class="benchmarking_title">继承性</p>-->
+<!--                            <p class="benchmarking_detail">市场价值、技术可实现性、具有批量生产的可行性</p>-->
+<!--                        </div>-->
+<!--                    </li>-->
+<!--                    <li class="benchmarking_li">-->
+<!--                        <div class="benchmarking_content_box">-->
+<!--                            <div class="benchmarkingimg benchmarkingbg3">-->
+<!--                            </div>-->
+<!--                            &lt;!&ndash;<img src="__PUBLIC__/home/images/deformability.png" alt="" class="benchmarking_img">&ndash;&gt;-->
+<!--                            <p class="benchmarking_title">变形性</p>-->
+<!--                            <p class="benchmarking_detail">智能、绿色、环保、节能等概念的运用、用户体验</p>-->
+<!--                        </div>-->
+<!--                    </li>-->
+<!--                </ul>-->
+<!--            </div>-->
+<!--        </div>-->
+        <!--评选基准结束-->
+        <!--奖项设置开始-->
+        <div class="awards">
+            <div class="index_titleTip">奖项设置</div>
+            <div style="padding:20px 0;">
+                <img style="width: 100%" src="__UPLOADS__{$data['pcPrize'][0]['banner_img']}" alt="">
+            </div>
+<!--            <ul class="awards_ul">-->
+<!--                <li class="awards_li">-->
+<!--                    <div class="awards_name">一等奖(1名)</div>-->
+<!--                    <div class="award_content">-->
+<!--                        <p class="award_money">100,000 RMB</p>-->
+<!--                        <p class="award_money">奖金</p>-->
+<!--                        <div class="award_detail">-->
+<!--                            <p class="award_detail_first"><span>+</span><span class="award_detail_name">荣誉证书</span></p>-->
+<!--                            <p><span>+</span><span class="award_detail_name">荣誉称号</span></p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </li>-->
+<!--                <li class="awards_li">-->
+<!--                    <div class="awards_name">二等奖(2名)</div>-->
+<!--                    <div class="award_content">-->
+<!--                        <p class="award_money">30,000 RMB</p>-->
+<!--                        <p class="award_money">奖金</p>-->
+<!--                        <div class="award_detail">-->
+<!--                            <p class="award_detail_first"><span>+</span><span class="award_detail_name">荣誉证书</span></p>-->
+<!--                            <p><span>+</span><span class="award_detail_name">荣誉称号</span></p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </li>-->
+<!--                <li class="awards_li">-->
+<!--                    <div class="awards_name">三等奖(3名)</div>-->
+<!--                    <div class="award_content">-->
+<!--                        <p class="award_money">10,000 RMB</p>-->
+<!--                        <p class="award_money">奖金</p>-->
+<!--                        <div class="award_detail">-->
+<!--                            <p class="award_detail_first"><span>+</span><span class="award_detail_name">荣誉证书</span></p>-->
+<!--                            <p><span>+</span><span class="award_detail_name">荣誉称号</span></p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </li>-->
+<!--                <li class="awards_li">-->
+<!--                    <div class="awards_name">优秀奖(20名)</div>-->
+<!--                    <div class="award_content">-->
+<!--                        <p class="award_money">3,000 RMB</p>-->
+<!--                        <p class="award_money">奖金</p>-->
+<!--                        <div class="award_detail">-->
+<!--                            <p class="award_detail_first"><span>+</span><span class="award_detail_name">荣誉证书</span></p>-->
+<!--                            <p><span>+</span><span class="award_detail_name">荣誉称号</span></p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </li>-->
+<!--            </ul>-->
+        </div>
+        <!--奖项设置结束-->
+        <!--合作单位开始-->
+        <div class="cooperative_unit">
+            <div class="index_titleTip">合作单位</div>
+            <volist name="data['cooperativeUnitData']" id="v">
+                <div class="cooperative_unit_list">
+                    <div class="cooperative_unit_type">{$v[0][0]['menu_name']}</div>
+                    <table class="cooperative_unit_table">
+                        <volist name="v" id="vo">
+                        <tr>
+                            <volist  name="vo" id="vv">
+                            <td class="cooperative_unit_list_td">
+                                <div class="cooperative_unit_img"><img src="__UPLOADS__{$vv.content_img}" alt=""></div>
+                                <div  class="cooperative_unit_name">{$vv['title']}</div>
+                            </td>
+                            </volist>
+                        </tr>
+                        </volist>
+                    </table>
+                </div>
+            </volist>
+        </div>
+        <!--合作单位结束-->
+    </div>
+</block>
+<block name='script'>
+    <script src="__PUBLIC__/home/js/jquery.SuperSlide.2.1.1.js"></script>
+    <script>
+    // 轮播图
+        $(function(){
+            $('#fullSlider').slide({titCell:'#page', mainCell:'#fullList', effect:'fold',autoPlay:true,autoPage:true,trigger:'click'});
+        })
+    </script>
+</block>

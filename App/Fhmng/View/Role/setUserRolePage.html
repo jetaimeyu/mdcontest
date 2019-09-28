@@ -1,0 +1,59 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>人员角色</title>
+</block>
+<block name="body">
+<div class="role_box">
+<ul>
+<volist name="roles" id="role">
+	<li>
+		<input id="checkbox_{$role.id}" type="checkbox"/> <label>{$role.role_name}</label>
+	</li>
+</volist>
+</ul>
+<input id="hdnRoleids" type="hidden" value="{$roleids}">
+</div>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		//取得用户已有的权限id串
+		var roleids=$("#hdnRoleids").val();
+		if(roleids){
+			roleids = ","+roleids+",";
+		} 
+		
+		$("input[type='checkbox']").each(function(){
+			var roleid = $(this).attr("id").split("_")[1];
+			var temp = ","+roleid+",";
+			var index = roleids.indexOf(temp);
+			if(index>-1){
+				$(this).get(0).checked=true;
+			}
+		});
+		
+		
+		$("input[type='checkbox']").on("change",function(){
+			var roleid = $(this).attr("id").split("_")[1];
+			if($(this).get(0).checked){
+				if(!roleids){
+					roleids = ","+roleid+",";
+				}else{
+					roleids = roleids+roleid+",";
+				}
+			}else{
+				var temp = ","+roleid+",";
+				var index = roleids.indexOf(temp);
+				if(index>-1){
+					roleids = roleids.replace(temp,",");
+					if(roleids==","){
+						roleids="";
+					}
+				}
+			}
+			//将roleids串存储在隐藏域中
+			$("#hdnRoleids").val(roleids);
+		});
+	});
+	</script>
+</block>

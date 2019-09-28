@@ -1,0 +1,437 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>编辑菜单</title>
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/plugins/uploadify/uploadify.css"/>
+</block>
+<block name="body">
+<form id="myform" enctype="multipart/form-data"  class="easyui-form myform" data-options="novalidate:false" method="post">
+<div class="main-page">
+	<div class="easyui-tabs" data-options="fit:true,plain:true,border:false">
+		<div title="基础" style="padding-top:10px">
+			<table>
+				<tr>
+					<td class="text_right" style="width:80px"><span class="mark">*</span>菜单名称：</td>
+					<td>
+						<input id="menu_name"  name="menu_name" class="easyui-textbox" style="width:250px" value="{$menu.menu_name}" data-options="required:true,validType:['length[0,20]']" >
+						<input id="hdnMenuid" name="menu_id" type="hidden" value="{$menu.id}">
+					</td>
+				</tr>
+				<tr>
+					<td class="text_right" style="width:80px">全名：</td>
+					<td>
+						<input id="englishname"  name="englishname" class="easyui-textbox" style="width:250px" value="{$menu.englishname}" data-options="validType:['length[0,20]']" >
+					
+					</td>
+				</tr>
+				<tr>
+					<td class="text_right"><span class="mark">*</span>菜单编码：</td>
+					<td><input id="menu_code"  name="menu_code" value="{$menu.menu_code}" class="easyui-textbox" style="width:250px" data-options="validateOnCreate:false,delay:800,required:true,validType:['length[0,20]','validMenuCode']" ></td>
+				</tr>
+				<tr>
+					<td class="text_right">菜单类型：</td>
+					<td>
+						<eq name="menu.menu_type" value="1">
+							<input type="radio" name="menu_type" checked="true" value="1"/><label class="hand" style=" left: 5px;position: relative;top: -2px;">站外链接</label>
+						<input type="radio" name="menu_type" style="margin-left:5px" value="2"/><label class="hand" style=" left: 5px;position: relative;top: -2px;">站内链接</label>
+						<else/>
+							<input type="radio" name="menu_type"  value="1"/><label class="hand" style=" left: 5px;position: relative;top: -2px;">站外链接</label>
+							<input type="radio" name="menu_type" style="margin-left:5px" value="2" checked="true"/><label class="hand" style=" left: 5px;position: relative;top: -2px;">站内链接</label>
+						</eq>
+					</td>
+				</tr>
+				<tr name="tr_menu_type_out">
+					<td class="text_right">菜单地址：</td>
+					<td><input id="menu_url"  name="menu_url" value="{$menu.menu_url}" class="easyui-textbox" style="width:250px" data-options="prompt:'链接格式，如:http://www.baidu.com',validType:['length[0,150]','url']" ></td>
+				</tr>
+				<tr name="tr_menu_type_in" >
+					<td class="text_right"><span class="mark">*</span>模型：</td>
+					<td>
+						<input id="model_name"  name="model_name" value="{$menu.model_name}" class="easyui-textbox" style="width:250px" data-options="prompt:'请输入Model名称',validType:['length[0,50]']">
+					</td>
+				</tr>
+				<tr name="tr_menu_type_in">
+					<td class="text_right"><span class="mark">*</span>控制器：</td>
+					<td>
+						<input id="controller_name"  name="controller_name" value="{$menu.controller_name}" class="easyui-textbox" style="width:250px" data-options="prompt:'请输入Controller名称',validType:['length[0,50]']">
+					</td>
+				</tr>
+				<tr name="tr_menu_type_in" >
+					<td class="text_right"><span class="mark">*</span>动作名称：</td>
+					<td>
+						<input id="action_name"  name="action_name" value="{$menu.action_name}" class="easyui-textbox" style="width:250px" data-options="prompt:'请输入Action名称',validType:['length[0,50]']">
+					</td>
+				</tr>
+				<tr name="tr_menu_type_in">
+					<td class="text_right">参数：</td>
+					<td><input id="url_params"  name="url_params" value="{$menu.url_params}" class="easyui-textbox" style="width:250px" data-options="prompt:'请输入参数,格式如：id/1',validType:['length[0,150]']"></td>
+				</tr>
+				<tr>
+					<td class="text_right"><span class="mark">*</span>所属分类：</td>
+					<td>
+						<select name="menu_category" class="easyui-combobox" style="width:145px"  data-options="onSelect: function(rec){
+							var url = '{:U('Menu/getPidMenuTree')}?dic_key='+rec.dic_key;
+							$('#drMenu').combotree('reload', url);
+						},value:'{$menu.menu_category}',url:'{:U('Menu/getMenuCategory')}',editable:false,panelHeight:'auto',required:true,valueField:'dic_key',textField:'dic_value'" style="width:130px"></select>
+					</td>
+				</tr>
+				<tr>
+					<td class="text_right"><span class="mark">*</span>父级菜单：</td>
+					<td>
+						<select id="drMenu" name="menu_pid" class="easyui-combotree" style="width:145px" data-options="url:'{:U('Menu/getPidMenuTree')}?dic_key={$menu.menu_category}',required:true,valueField:'id',textField:'text',queryParams:{id:'{$menu.id}'}"></select>
+					</td>
+				</tr>
+				<tr>
+					<td class="text_right"><span class="mark">*</span>状态：</td>
+					<td>
+						<select name="status" class="easyui-combobox" data-options="value:'{$menu.status}',editable:false,panelHeight:'auto',required:true" style="width:145px">
+							<option value="1">启用</option>
+							<option value="0">禁用</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td class="text_right"><span class="mark">*</span>排序号：</td>
+					<td>
+						<input id="order_no" name="order_no" class="easyui-numberspinner" style="width:145px;" required="required" data-options="min:0,max:1000,editable:true,value:{$menu.order_no}">
+						<span class="tip">（升序）</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="text_right">备注：</td>
+					<td><textarea style="width:300px;height:100px" name="remark" class="easyui-validatebox text-area" maxlength="200">{$menu.remark}</textarea></td>
+				</tr>
+			</table>
+		</div>
+		<div title="高级"  style="padding-top:10px">
+			<table>
+				<tr>
+					<td class="text_right" style="width:80px">应用模型：</td>
+					<td>
+						<select id="drModel" name="model_id" class="easyui-combobox" style="width:145px" data-options="value:'{$menu.model_id}',url:'{:U('Model/getModelComboStore')}',editable:false,panelHeight:'auto',valueField:'id',textField:'model_name'"></select>
+						<a id="btnClearModel" href="javascript:void(0)" class="link_clear">清除模型</a>
+					</td>
+				</tr>
+				<tr>
+					<td class="text_right">菜单图片：</td>
+					<td>
+						<input type="file" id="btn_upload">
+						<input id="hdnMenuPic" type="hidden" name="menu_pic" value="{$menu.menu_pic}">
+						<empty name="menu.menu_pic">
+							<div class="upload-img-box" style="display:none;position: absolute;right: 125px;top: 44px;">
+								<div class="upload-pre-item">
+									<span class="upload-img-remove" title="点击删除"></span>
+									<img id="imgPicPre">
+								</div>
+							</div>
+						<else/>
+							<div class="upload-img-box" style="display:block;position: absolute;right: 125px;top: 44px;">
+								<div class="upload-pre-item">
+									<span class="upload-img-remove" data="{$menu.menu_pic}" title="点击删除"></span>
+									<img id="imgPicPre" src="__UPLOADS__{$menu.menu_pic}">
+								</div>
+							</div>
+						</empty>
+						
+					</td>
+				</tr>
+				<tr>
+					<td class="text_right">打开方式：</td>
+					<td>
+						<select name="url_target" class="easyui-combobox" data-options="value:'{$menu.url_target}',editable:false,panelHeight:'auto',required:true" style="width:145px">
+							<option value="_blank">新页面打开</option>
+							<option value="_self">本页面打开</option>
+						</select><span class="mark">*</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="text_right" >网页标题：</td>
+					<td>
+						<input id="website_title"  name="website_title" class="easyui-textbox" style="width:250px" value="{$menu.website_title}" data-options="validType:['length[0,20]']">
+						<span class="tip">便于网页SEO</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="text_right">网页关键字：</td>
+					<td>
+						<input id="key_word"  name="key_word" class="easyui-textbox" style="width:250px" value="{$menu.key_word}" data-options="validType:['length[0,20]']" >
+						<span class="tip">便于网页SEO:多个之间用者“,”隔开</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="text_right">网页描述：</td>
+					<td>
+						<textarea style="width:300px;height:100px" name="description" class="easyui-validatebox text-area" style="width:250px" maxlength="200">{$menu.description}</textarea>
+						<span class="tip">便于网页SEO</span>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+</form>
+</block>
+<block name="script">
+<script type="text/javascript" src="__LOCALPUBLIC__/plugins/uploadify/jquery.uploadify.js"></script>
+	<script type="text/javascript">
+	$(function(){
+		//父级菜单默认全部收缩
+		var tree = $('#drMenu').combotree('tree');
+		tree.tree({
+			onLoadSuccess:function(node, data){
+				$('#drMenu').combotree("setValue",{$menu.pid});
+		    	//收缩树
+		    	tree.tree("collapseAll");
+		    }
+		});
+		
+		//菜单类型，1:站外链接，2：站内链接
+		//2016年10月13日  修改  如果是站内链接 则把必填验证加上
+		var menu_type="{$menu.menu_type}";
+		if(menu_type==1){
+			//若是站外链接，隐藏站内链接需要填写的数据
+			$("tr[name='tr_menu_type_in']").hide();
+			//模型名称输入框
+			$("#model_name").textbox({
+				required:false
+			});
+			//控制器输入框
+			$("#controller_name").textbox({
+				required:false
+			});
+			//aciton输入框
+			$("#action_name").textbox({
+				required:false
+			});
+			
+		}else if(menu_type==2){
+			//若是站内链接，隐藏站外链接需要填写的数据
+			$("tr[name='tr_menu_type_out']").hide();
+			//模型名称输入框
+			$("#model_name").textbox({
+				required:true
+			});
+			//控制器输入框
+			$("#controller_name").textbox({
+				required:true
+			});
+			//aciton输入框
+			$("#action_name").textbox({
+				required:true
+			});
+		
+		}
+		
+		$("#myform").form({
+			url:"{:U('Menu/updateMenu')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var isValid  = $(this).form('validate');
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$.tipShow({
+						"message":"操作成功",
+						"color":"green",
+						"callback":function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":true,
+								"controlType":"treegrid",
+								"gridId":"treegrid"
+							});
+						}
+					});
+				}else{
+					$.tipShow({
+						"message":"操作失败",
+						"color":"red"
+					});
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败",
+					"color":"red"
+				});
+			}
+		});
+		
+		$("input[type=radio]").click(function(){
+			//菜单类型，1:站外链接，2：站内链接
+			var menu_type = $("input[name='menu_type']:checked").val();
+			if(menu_type==1){
+				$("tr[name='tr_menu_type_out']").show();
+				$("tr[name='tr_menu_type_in']").hide();
+				//模型名称输入框
+				$("#model_name").textbox({
+					required:false
+				});
+				//控制器输入框
+				$("#controller_name").textbox({
+					required:false
+				});
+				//aciton输入框
+				$("#action_name").textbox({
+					required:false
+				});
+				
+			}else{
+				$("tr[name='tr_menu_type_out']").hide();
+				$("tr[name='tr_menu_type_in']").show();
+				
+				//模型名称输入框
+				$("#model_name").textbox({
+					required:true
+				});
+				//控制器输入框
+				$("#controller_name").textbox({
+					required:true
+				});
+				//aciton输入框
+				$("#action_name").textbox({
+					required:true
+				});
+				
+			}
+		});
+		
+		//清除模型
+		$("#btnClearModel").click(function(){
+			$("#drModel").combobox("clear");
+		});
+		
+		$.extend($.fn.validatebox.defaults.rules, {    
+			validMenuCode:{
+		    	validator:function(value,param){
+		    		var isValid = false;
+		    		var id=$("#hdnMenuid").val();
+		    		$.ajax({
+		    			type:"post",
+		    			async:false,
+		    			data:{
+		    				"menu_id":id,
+		    				"menu_code":$.trim(value)
+		    			},
+		    			url:"{:U('Menu/validMenuCodeByUpdate')}",
+		    			success:function(response){
+		    				var result = $.parseJSON(response);
+		    				isValid = !result.isExist;
+		    			},
+		    			error:function(){
+		    				isValid = false;
+		    			}
+		    		});
+		    		return isValid;
+		    	},
+		    	message:"该菜单编码已存在"
+		    }
+		}); 
+		
+		var uploadify_onSelectError = function(file, errorCode, errorMsg){
+			var msgText="";
+	        switch (errorCode) {  
+	            case SWFUpload.QUEUE_ERROR.QUEUE_LIMIT_EXCEEDED:  
+	                //this.queueData.errorMsg = "每次最多上传 " + this.settings.queueSizeLimit + "个文件";  
+	                msgText += "每次最多上传 " + this.settings.queueSizeLimit + "个文件";  
+	                break;  
+	            case SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT:  
+	                msgText += "文件大小超过限制( " + this.settings.fileSizeLimit + " )";  
+	                break;  
+	            case SWFUpload.QUEUE_ERROR.ZERO_BYTE_FILE:  
+	                msgText += "文件大小为0";  
+	                break;  
+	            case SWFUpload.QUEUE_ERROR.INVALID_FILETYPE:  
+	                msgText += "文件格式不正确，仅限 " + this.settings.fileTypeExts;  
+	                break;  
+	            default:  
+	                msgText += "错误代码：" + errorCode + "\n" + errorMsg;  
+	        }  
+	        $.tipShow({
+				"message":msgText,
+				"color":"red"
+			});
+	    };  	   
+	    
+		//上传图片
+	    /* 初始化上传插件 */
+	    var sid = '{:session_id()}';
+		$("#btn_upload").uploadify({
+			"formData":{
+				"session_id":sid//需要传递session_id，否则火狐报302错误
+			},
+			"buttonClass":"btn-upload",
+	        "swf":"__LOCALPUBLIC__/plugins/uploadify/uploadify.swf",
+	        "buttonText":"上传图片",
+	        "uploader":"{:U('Menu/uploadPic')}",
+	        "width":100,
+	        "removeTimeout":1,
+	        "fileTypeExts":"*.jpg; *.png; *.gif;",
+	        "onSelectError":uploadify_onSelectError,
+	        "onUploadStart":function(file){
+	        	var data = $(".upload-img-remove").attr("data");
+	        	//判断是否已经含有了原图片，如果有则需要先删除原图片
+	        	if(data){
+	        		$id=$("#hdnMenuid").val();
+	        		$("#btn_upload").uploadify("settings","formData",{"path":data,"id":$id});
+	        	}
+	        },
+	        "onUploadSuccess":function(file, data, response){
+	        	//var result = $.parseJSON(data);
+	        	var result = eval("("+ data +")");
+	        	if(result.success){
+	        		$("#hdnMenuPic").val(result.savefile);
+	        		var imgSrc = "__UPLOADS__"+result.savefile;
+	        		$("#imgPicPre").attr("src",imgSrc);
+	        		$(".upload-img-remove").attr("data",result.savefile);
+	        		$(".upload-img-box").slideDown();
+	        	}
+	        },
+	        'onFallback':function() {
+	            alert('未检测到兼容版本的Flash.');
+	        }
+	    });
+		//删除图片
+		$(".upload-img-remove").click(function(){
+			var id = $("#hdnMenuid").val();
+			var path = $(this).attr("data");
+			if(!path){
+				return;
+			}
+			confirm('温馨提示','确定删除该图片？',function(flag){
+				 if (flag){ 
+					 $.ajax({
+							type:"post",
+							data:{
+								"id":id,
+								"path":path
+							},
+							url:"{:U('Fhmng/Menu/removePic')}",
+							success:function(response){
+								var result = $.parseJSON(response);
+								if(result.success){
+									$(".upload-img-box").slideUp("normal",function(){
+										$("#imgPicPre").attr("src","");
+									});
+									$("#hdnMenuPic").val("");
+									$.tipShow({
+										"message":result.message,
+										"color":"green"
+									});
+								}else{
+									$.tipShow({
+										"message":result.message,
+										"color":"red"
+									});
+								}
+							}
+					  });
+				 }
+			});
+		});
+		
+	});
+	</script>
+</block>

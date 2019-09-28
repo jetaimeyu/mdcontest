@@ -1,0 +1,81 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>文章审核</title>
+</block>
+<block name="body">
+<form id="myform" class="easyui-form myform" data-options="novalidate:false" method="post">
+	<table>
+		<tr>
+			<td class="text_right" style="width:80px">
+				审核人：
+			</td>
+			<td>
+				{$session_user.true_name}
+				<input name="id" type="hidden" value="{$id}">
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>审核状态：</td>
+			<td>
+				<select name="status" class="easyui-combobox" data-options="editable:false,panelHeight:'auto',required:true" style="width:145px">
+					<option value="1">审核通过</option>
+					<option value="3">审核未通过</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right">审核意见：</td>
+			<td><textarea style="width:300px;height:100px" name="audit_opinion" class="easyui-validatebox text-area" maxlength="100"></textarea></td>
+		</tr>
+	</table>
+</form>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		$("#myform").form({
+			url:"{:U('Content/contentAudit')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var isValid  = $(this).form('validate');
+				if(isValid){
+					//验证通过提交，禁用提交按钮，防止多次提交
+					parent.$("#btnSubmit").linkbutton("disable");
+				}
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$.tipShow({
+						"message":"操作成功",
+						"color":"green",
+						"callback":function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":true,
+								"controlType":"datagrid",
+								"gridId":"datagrid"
+							});
+						}
+					});
+				}else{
+					$.tipShow({
+						"message":result.message,
+						"color":"red"
+					});
+					parent.$("#btnSubmit").linkbutton("enable");
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败!",
+					"color":"red"
+				});
+				parent.$("#btnSubmit").linkbutton("enable");
+			}
+		});
+	});
+	</script>
+</block>

@@ -1,0 +1,364 @@
+/* 个人中心样式 */
+body {
+    background-color: #f5f5f5 !important;
+}
+.person_content,.person_info{
+        min-height:70vh;
+}
+.person_content{
+    box-sizing: border-box;
+    background-color: #fff;
+    width: 880px;
+    padding: 20px;
+    padding-top: 10px;
+    float: left;
+}
+.person_pic {
+    width: 100%;
+    height: 200px;
+    background: #0678ed;
+}
+.person_content h4{
+    font-size: 20px;
+    font-family: 微软雅黑;
+    font-weight: 900;
+    color: rgb(33, 49, 72);
+    margin: 30px 0 3px 0;
+}
+.person_content h4 span{
+    border-bottom: 3px solid #213148;
+    display: inline-block;
+    padding-bottom: 2px;
+}
+.person_content .title_describe{
+    margin-top: 10px;
+    font-size: 16px;
+    letter-spacing: 2px;
+    text-indent: 2em;
+    line-height: 34px;
+}
+.person_content .person_set{
+    margin-top: 15px;
+}
+.person_content .person_set .set_title{
+    float: left;
+    color: #67C23A;
+    line-height: 28px;
+}
+.set_btn {
+    font-size: 12px;
+    color: #14aadb;
+    background: #fff;
+    padding: 5px 10px;
+    border: 1px solid #14aadb;
+}
+.person_content .person_set .set_btn{
+    float: right;
+    margin-right: 10px;
+}
+.person_info {
+    width: 200px;
+    float: left;
+    box-sizing: border-box;
+    padding:20px;
+    background-color: #FAF9F9;
+}
+
+.person_info .head_portrait{   
+    display: block;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto;
+}
+.person_name{
+    width: 50%;
+    margin: 20px auto 0 auto;
+    padding-right: 16px;
+    text-align: center;
+    cursor: pointer;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    overflow:hidden;
+    background: url('../images/edit.png') no-repeat right center;
+}
+.person_info .person_phone{
+    width: 100%;
+    text-align: center;
+    line-height: 28px;
+    padding: 5px 0 0 0px;
+}
+.person_info .boxline{
+    height: 1px;
+    width: 100%;
+    background-color: #1296db;
+    margin-top: 40px;
+    box-sizing: border-box;
+    /* border: 1px solid #cccccc; */
+}
+.person_info .boxline img{
+    display: block;
+    width: 30px;
+    height: 30px;
+    position: relative;
+    left: 50%;
+    top: -14px;
+    transform: translate(-50%, 0);
+    -ms-transform:translate(-50%, 0);
+    -moz-transform:translate(-50%, 0);
+    -webkit-transform:translate(-50%, 0);
+    -o-transform:translate(-50%, 0);
+}
+.person_info .set_btn{
+    display: block;
+    width: 70%;
+    margin: 30px auto 0 auto;
+}
+
+/*新增*/
+.main-div{
+    width:100%;
+    height:200px;
+    /*background:#EEF5FD;*/
+    margin: 10px auto;
+    padding-bottom: 10px;
+        margin-bottom: 30px;
+}
+.content-div{
+    padding: 20px; 
+    font-size: 14px; 
+    color: #666666;
+
+ }
+
+.info-div{
+    height: 125px;
+}
+.title{
+    height:20px;
+    font-family:MicrosoftYaHei;
+    color:#D14E4E;
+    line-height:21px;
+    margin-bottom: 1px;
+}
+.description{
+    width:100%;
+    font-family:MicrosoftYaHei;
+    color:#666666;
+    line-height:21px;
+    overflow: hidden;
+    text-align: left;
+    word-wrap: break-word;
+}
+.counts{
+    height:26px;
+    font-family:MicrosoftYaHei;
+    color:#666666;
+    line-height:22px;
+        margin-top: 5px;
+        text-align: left;
+}
+.button-div{
+    width:95px;
+    height:27px;
+    line-height: 2;
+    background:#D14E4E;
+    border-radius:6px;
+    text-align: center;
+    cursor: pointer;
+}
+.button-div.tran{
+    background: none;
+    border: 1px solid #D14E4E;
+}
+.button-div.tran span{
+    color:#D14E4E;
+}
+.left{float: left;}
+.right{float: right;}
+.cent{text-align: center;}
+.button-div span{
+    width:56px;
+    height:12px;
+    font-size:14px;
+    font-family:MicrosoftYaHei;
+    color:#FFFFFF;
+    line-height:21px;
+}
+.foot-button{
+    width: 100%;
+    height: 50px;
+    float: left;
+}
+.content-new{
+    width:800px;
+    min-height: 330px;
+    background: #EFEFEF;
+    margin: 10px;
+    border: 1px solid #CFCFCF;
+    
+}
+.info-top{
+    width: 100%;
+    height: 40px;
+}
+.info-top-left{
+    float: left;
+    margin: 10px 0 0 20px;
+}
+.info-top-left span{
+    padding-left: 10px;
+    border-left: 3px solid #D14E4E;
+    font-size: 15px;
+    font-weight: bold;
+}
+.info-top-right{
+    float: right;
+    margin: 6px 20px 0 0;
+}
+.person_Info{
+    padding:  20px;
+    margin-top: 10px;
+    min-height: 80px;
+    border: 1px solid #EBEBEB;
+    overflow: hidden;        
+}
+.perul{
+    min-width: 40%;
+    max-width: 40%;
+}
+.personData{
+    margin-bottom: 5px;
+    overflow: hidden;        
+}
+.personDataInfo{
+    display: inline-block;
+    width: 235px;
+    word-break: break-all;
+    text-overflow: ellipsis;
+    float: right;
+}
+.personDataInfotitle{
+    width: 70px;
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    -o-text-overflow: ellipsis; /* for Opera */
+    text-overflow: ellipsis;/* for IE */
+}
+.tabMenu {
+    border-bottom: 1px solid #EBEBEB;
+}
+.tabMenu ul li {
+    float: left;
+    cursor: pointer;
+    /* width: 114px; */
+    height: 43px;
+    text-align: center;
+    line-height: 43px;
+    font-size: 16px;
+}
+
+.active{
+    color: #D14E4E;
+    border-bottom: 3px solid #D14E4E;
+}
+.clear {
+    clear: both;
+    display: block;
+    height: auto;
+    overflow: hidden;
+}
+.clearfix:before, 
+.clearfix:after { 
+  clear: both; 
+}
+.clearfix:after { 
+  display: table; 
+  line-height: 0; 
+  content: ""; 
+} 
+.upload-info-div{
+    text-align: left;
+    padding: 20px;
+}
+.upload-info-div .info-line{
+    margin-bottom:5px;
+    overflow: hidden;
+}
+.upload-info-div .info-line .ms-info{
+    font-family:MicrosoftYaHei;
+    color:#666666;
+     float: right;
+    width: 680px; 
+    line-height:21px;
+    word-break: break-all;
+}
+.upload-time-div{width: 840px;height:61px;background:#EFF5FD;margin-top: 7px;}
+.upload-time{
+    width:239px;
+    height:12px;
+    font-size:14px;
+    font-family:MicrosoftYaHei;
+    color:#333333;
+    line-height:21px;
+    float:  left;
+    margin: 19px 0 0 125px;}
+.upload-file-div span{
+    width:61px;
+    height:12px;
+    font-size:14px;
+    font-family:MicrosoftYaHei;
+    color:#333333;
+    line-height:21px;
+}
+.upload-file-div .upload-input{margin-top:20px;}
+.upload-file-div input,textarea{
+    width:650px;
+    height:30px;
+    background:#FFFFFF;
+    padding-left: 5px;
+    font-family:MicrosoftYaHei;
+}
+.upload-file-div select{
+    height: 40px;
+    width: 659px;
+    background:#FFFFFF;
+    padding: 5px;
+    font-family:MicrosoftYaHei;
+    /* color: #D14E4E; */
+}
+
+.upload-input-box{
+    width:110px;
+    height:34px;
+    background:#FFFFFF;
+    border-radius:3px;
+    font-size:14px;
+    font-family:MicrosoftYaHei;
+    color:#D14E4E;border:1px solid;
+     margin: -26px 0 0 74px;
+    }
+.submit-div{
+    width:120px;
+    height:45px;
+    background:#D14E4E;
+    border-radius:3px;
+    cursor: pointer;
+    margin: 50px 0 20px 74px;
+}
+.submit-div span{
+    width:56px;
+    height:12px;
+    font-size:14px;
+    font-family:MicrosoftYaHei;
+    color:#FFFFFF;
+    line-height: 46px;
+    margin-left: 31px;
+}
+.layui-layer-content{
+    text-align: center;
+}
+.layui-layer-btn{
+    text-align: center !important;
+}

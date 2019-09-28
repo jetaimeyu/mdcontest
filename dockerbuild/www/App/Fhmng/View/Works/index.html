@@ -1,0 +1,323 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>评审管理</title>
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/plugins/fancybox/jquery.fancybox.css"/>
+</block>
+<block name="body">
+	<div class="main-page">
+		<table id="datagrid"></table>
+		<!--grid工具栏 -->
+		<div id="toolbar">
+			<div style="display:inline-block;">
+				<a id="btn_edit" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-edit'">修改</a>
+				<div class="toolbar-separator"></div>
+				<a id="btn_del" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-del'">删除</a>
+				<div class="toolbar-separator"></div>
+				<a id="btn_enable" href="javascript:void(0)" class="easyui-linkbutton setStatus" staus="1" data-options="plain:true,iconCls:'icon-extend-enable'">启用</a>
+				<div class="toolbar-separator"></div>
+				<a id="btn_disable" href="javascript:void(0)" class="easyui-linkbutton setStatus" staus="2"  data-options="plain:true,iconCls:'icon-extend-disable'">禁用</a>
+				<label style="width:100px" for="reviewfile" class="easyui-linkbutton upload_button" data-options="plain:true,iconCls:'icon-extend-upload'">导入</label>
+				<input type='file' id="reviewfile" style="width:0;" onchange="ajaxfileupload()" name="excel" class="file"/>
+			</div>
+			<div style="display:inline-block;position:absolute;right:10px;top:3px">
+					状态：<input id="drStatus"> <input id="searchbox">
+			</div>
+		</div>
+	</div>
+
+</block>
+<block name="script">
+<script src="__PUBLIC__/plugins/fancybox/jquery.fancybox.js" type="text/javascript"></script>
+<script src="__PUBLIC__/system/js/ajaxfileupload.js"></script>
+<script type="text/javascript">
+	$(function(){
+		//datagrid表格
+		$("#datagrid").datagrid({
+			border:true,
+			fit:true,
+			url:"{:U('Fhmng/Works/getReviewData')}",
+			pagination:true,
+			pageSize:20,//默认加载条数，必须是paseList内数据
+			pageList:[10,20,30,50],
+			striped:true,//是否显示斑马线效果
+			nowrap:true,//单元格不换行
+			rownumbers:true,//行号
+			singleSelect:false,
+			checkOnSelect:true,
+			toolbar:"#toolbar",
+			remoteSort:false,
+			columns:[[
+			    {title:"id",field:"id",checkbox:true},
+			    {title:"姓名",field:"name",width:150,sortable:true,formatter:function(value,row,index){
+					var html="<span class='span-ellipsis' title='"+ value+"'>"+ value+"</span>";
+					return html;
+				}},
+				{title:"手机号码",field:"tel",width:200,sortable:true,formatter:function(value,row,index){
+					var html="<span class='span-ellipsis' title='"+ value+"'>"+ value+"</span>";
+					return html;
+				}},
+				{title:"参赛小组",field:"title",align:"center",width:100,sortable:true,formatter:function(value,row,index){
+					if(value){
+						var html="<span class='span-ellipsis' title='"+ value+"'>"+ value+"</span>";
+						return html;
+					}else{
+						return ""
+					}
+					
+				}},
+				{title:"作品名称",field:"file_name",align:"center",width:100,sortable:true,formatter:function(value,row,index){
+					if(value){
+						var html="<span class='span-ellipsis' title='"+ value+"'>"+value+"</span>";
+						return html;
+					}else{
+						return ""
+					}
+
+				}},
+				{title:"作品评级",field:"levelname",width:100,align:"center",sortable:true,formatter:function(value,row,index){
+					if(value){
+						var html="<span class='span-ellipsis' title='"+ value+"'>"+ value+"</span>";
+						return html;
+					}else{
+						return ""
+					}
+				}},
+				{title:"状态",field:"status",width:60,align:"center",sortable:true,formatter:function(value,row,index){
+					if(value==1){
+						return "<span style='color:green;font-weight:bold'>启用</span>";
+					}else{
+						return "<span style='color:gray;font-weight:bold'>禁用</span>";
+					}
+				}},
+			]],
+			onSelect:oncheckChange,
+			onUnselect:oncheckChange,
+			onSelectAll:oncheckChange,
+			onUnselectAll:oncheckChange,
+			onLoadSuccess:function(){
+				$('.imgPreView').fancybox();
+			}
+			
+		});
+		//选择行改变处理方法
+		function oncheckChange(){
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(selections.length>1){
+				$("#btn_edit").linkbutton('disable');
+			}else{
+				$("#btn_edit").linkbutton('enable');
+			}
+		}
+		
+		//查询框
+		$("#searchbox").searchbox({
+			width:150,
+			prompt:'标题',
+			searcher:function(value,name){
+				//用户状态
+				var status = $("#drStatus").combobox("getValue");
+				$("#datagrid").datagrid('load',{
+					'like_title':$.trim(value),
+					 status:status
+				});
+			}
+		});
+		
+		//用户状态下拉列表
+		$("#drStatus").combobox({
+			width:100,
+			panelHeight:"auto",
+			valueField:'value',    
+		    textField:'text',
+		    editable:false,
+		    value:"-1",
+		    data:[
+		    	{"text":"全部",value:"-1"},
+		    	{"text":"启用",value:"1"},
+		    	{"text":"禁用",value:"2"}
+		    ],
+		});
+
+		//修改
+		$("#btn_edit").click(function(){
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			var id = selections[0].id;
+			openDialog({
+				windowId:"window",
+				title:"评审编辑",
+				href:"{:U('Works/editReview')}?id="+id,
+				width:550,
+				height:440,
+				buttons:[
+					{
+						text:"提交",
+						iconCls:"icon-ok",
+						handler:function(){
+							submitForm("myform");
+						}
+					},
+					{
+						text:"取消",
+						iconCls:"icon-cancel",
+						handler:function(){
+								closeDialog();
+						}
+					}
+				]
+			});
+		});
+//		//删除
+		$("#btn_del").click(function(){
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			confirm('温馨提示','确定删除？',function(flag){
+			    if (flag){
+			    	var ids = new Array();
+					$.each(selections,function(i,item){
+						ids.push(item.id);
+					});
+
+					$.ajax({
+						url:"{:U('Works/delReview')}",
+						type:"post",
+						data:{
+							"ids":ids.join(",")
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#datagrid").datagrid("reload");
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }
+			});
+		});
+		//禁用和启用
+		$(".setStatus").click(function(){
+			var status = $(this).attr("staus");
+			var statusMsg = '';
+			if(status){
+				statusMsg = "你确认要启用吗?";
+			}else{
+				statusMsg = "你确认要禁用吗?";
+			}
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			confirm('温馨提示',statusMsg,function(flag){
+				if (flag){
+					var ids = new Array();
+					$.each(selections,function(i,item){
+						ids.push(item.id);
+					});
+					$.ajax({
+						url:"{:U('Works/setReviewStatus')}",
+						type:"post",
+						data:{
+							"ids":ids.join(","),
+							"status":status,
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green",
+								});
+								$("#datagrid").datagrid("reload");
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+				}
+			});
+		})
+	});
+	//导入
+	function ajaxfileupload(){
+		if(image_check()){
+			$.ajaxFileUpload({
+				url: "{:U('Fhmng/Works/importReviewExcel')}", //用于文件上传的服务器端请求地址
+				secureuri: false, //是否需要安全协议，一般设置为false
+				fileElementId: 'reviewfile', //文件上传域的ID
+				dataType: 'json', //返回值类型 一般设置为json
+				success: function (response){  //服务器成功响应处理函数
+					$("#reviewfile").val("");
+					var result = response;
+					if(result.success){
+						$.tipShow({
+							"message":"导入成功",
+							"color":"green",
+						});
+						$("#datagrid").datagrid("reload");
+					}else{
+						$.tipShow({
+							"message":result.message,
+							"color":"red"
+						});
+					}
+				}
+			});
+		}
+		return false;
+	}
+	//导入文件检查
+	function image_check() { //自己添加的文件后缀名的验证
+		var excel = $("#reviewfile").val();
+		return /.(XLS|xls|XLSX|xlsx)$/.test(excel)?true:(function() {
+			$.tipShow({
+				"message":'文件格式仅支持XLS、xls、、XLSX、xlsx，且区分大小写。',
+				"color":"red"
+			});
+			return false;
+		})();
+	}
+	</script>
+</block>

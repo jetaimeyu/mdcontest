@@ -1,0 +1,504 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>文章管理</title>
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/plugins/fancybox/jquery.fancybox.css"/>
+</block>
+<block name="body">
+	<div class="main-page">
+		<div class="easyui-layout" data-options="fit:true">
+			<div data-options="title:'栏目菜单',region:'west',width:230,split:true,collapsible:true">
+				<ul id="menutree"></ul>
+			</div>
+			<div id="centerPanel" data-options="region:'center',title:'文章列表'">
+				<div class="easyui-layout" data-options="fit:true">
+					<div  data-options="region:'north',height:'100%',split:true,collapsible:true,border:false" style="border-bottom:1px solid #95B8E7">
+						<table id="datagrid"></table>
+						<!--grid工具栏 -->
+						<div id="toolbar">
+							<div style="display:inline-block;">
+								<a id="btn_add" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-add'">新增</a>
+								<div class="toolbar-separator"></div>
+								<a id="btn_edit" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-edit'">修改</a>
+								<div class="toolbar-separator"></div>
+								<a id="btn_on" href="javascript:void(0)" class="easyui-linkbutton setStatus" data-status='1' data-options="plain:true,iconCls:'icon-extend-enable'">启用</a>
+								<div class="toolbar-separator"></div>
+								<a id="btn_off" href="javascript:void(0)" class="easyui-linkbutton setStatus" data-status='2' data-options="plain:true,iconCls:'icon-extend-disable'">禁用</a>
+								<div class="toolbar-separator"></div>
+								<a id="btn_del"  href="javascript:void(0)" class="easyui-linkbutton setStatus" data-status='3' data-options="plain:true,iconCls:'icon-extend-del'">删除</a>
+								<!-- <div class="toolbar-separator"></div> -->
+								<!-- <a id="btn_preview" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-content-preview'">文章预览</a> -->
+								
+								<input id="hdnMenuId" value="" type="hidden">
+								<input id="hdnMenuCategory" value="" type="hidden">
+							</div>
+<!-- 							<div style="display:inline-block;position:absolute;right:10px;top:3px"> -->
+<!-- 								<input id="searchbox"> -->
+<!-- 							</div> -->
+
+					<div style="display:inline-block;position:absolute;right:10px;top:3px">
+					<form id="searchForm">
+					文章标题：<input id="queryStr" name="queryStr" class="easyui-searchbox" style="width:150px" data-options="searcher:searcher,prompt:'文章标题'"></input> 
+						<input id="hidemenuid"  name="menu_id" value="" type="hidden">
+					</form>
+					</div>
+						</div>
+					</div>
+				
+				<div>
+			</div>
+		</div>
+	</div>
+</block>
+<block name="script">
+	<script src="__PUBLIC__/plugins/fancybox/jquery.fancybox.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	
+	function searcher(value,name){
+		  var menuid=$("#hdnMenuId").val();
+		  $("#hidemenuid").val(menuid);
+		$("#datagrid").datagrid('load',$('#searchForm').serializeJson());
+	}
+	
+	$(function(){
+		$.extend($.fn.tree.methods,{
+		    unSelect:function(jq,target){
+		        return jq.each(function(){
+		            $(target).removeClass("tree-node-selected");
+		        });
+		    }
+		})
+		//菜单tree
+		$("#menutree").tree({
+			url:"{:U('Content/getMenu')}",
+			checkbox:false,
+			animate:true,
+			cascadeCheck:false,
+			queryParams:{},
+			onSelect : function(node) {  
+		        //选中的节点是否为叶子节点,如果不是叶子节点,清除选中  
+		        var isLeaf = $("#menutree").tree('isLeaf', node.target);
+		        var menu_id = node.id;
+		        
+		        //菜单分类
+		        var menu_category = node.menu_category;
+		        $("#hdnMenuCategory").val(menu_category);
+		        
+		        var pos = menu_id.indexOf("menu_category");
+		       
+		        //叶子节点以及菜单类型不能选中
+		        if (isLeaf&&pos==-1) {
+					$("#hdnMenuId").val(menu_id);
+					var url = "{:U('Fhmng/Content/getContentList')}";
+					$("#datagrid").datagrid('options').url = url;
+					$("#datagrid").datagrid('load',{
+						"menu_id":menu_id
+					});
+					
+					var title=node.text+">>文章列表";
+					$("#centerPanel").panel("setTitle",title);
+					
+		        }else{
+		        	$("#menutree").tree('toggle', node.target);
+		        	//清除选中
+		        	$("#menutree").tree("unSelect",node.target);
+		        }  
+		    },
+		    onLoadSuccess:function(node, data){
+		    	//收缩树
+		    	//$("#menutree").tree("collapseAll");
+		    }
+		});	
+		 
+		//文章列表
+		$("#datagrid").datagrid({
+			border:false,
+			fit:true,
+			//url:"{:U('Content/getContentList')}",
+			pagination:true,
+			pageSize:20,//默认加载条数，必须是paseList内数据
+			pageList:[10,20,30,50],
+			striped:true,//是否显示斑马线效果
+			nowrap:true,//单元格不换行
+			rownumbers:true,//行号
+			singleSelect:true,
+			checkOnSelect:true,
+			toolbar:"#toolbar",
+			remoteSort:false,
+			frozenColumns:[[
+                {title:"文章标题",field:"title",width:240,sortable:true,formatter:function(value,row,index){
+					return "<span class='span-ellipsis' title='"+ value+"'>"+ value +"</span>";
+				}}
+			]],
+			columns:[[
+			    // {title:"点击量",field:"visits",width:80,sortable:true},
+			   {title:"排序号",field:"order_no",width:80,sortable:true},
+				{title:"发布时间",field:"publish_time",width:140,sortable:true},
+			    {title:"创建时间",field:"create_time",width:140,sortable:true},
+			    {title:"最后一次更新时间",field:"update_time",width:140,sortable:true},
+				 {title:'状态',field:"status",width:140,sortable:true,formatter:function(value,row,index){
+						if(value==1){
+							return "<span style='color:green;font-weight:bold'>启用</span>";
+						}else if(value == 2){
+							return "<span style='color:gray;font-weight:bold'>禁用</span>";
+						}
+					
+				}},
+			]],
+			onSelect:function(index,row){
+				//如果审批通过则禁用审批按钮
+				//状态，0:待审核，1：审核通过，2：草稿，3：审核不通过
+				// if(row["status"]==1){
+				// 	$("#btn_audit").linkbutton('disable');
+				// 	$("#btn_submitAudit").linkbutton('disable');
+				// }else if(row["status"]==0){
+				// 	$("#btn_audit").linkbutton('enable');
+				// 	$("#btn_submitAudit").linkbutton('disable');
+				// }else{
+				// 	$("#btn_audit").linkbutton('enable');
+				// 	$("#btn_submitAudit").linkbutton('enable');
+				// }
+				
+				// var content_id = row.id;
+				// var url = "{:U('Fhmng/Content/getAuditData')}";
+				// $("#audit_datagrid").datagrid('options').url = url;
+				// $("#audit_datagrid").datagrid('load',{
+					// "content_id":content_id
+				// }); 
+			},
+			onLoadSuccess:function(){
+				$('.imgPreView').fancybox(); 
+			}
+		});
+		
+		//查询框
+// 		$("#searchbox").searchbox({
+// 			width:150,
+// 			prompt:'文章标题',
+// 			searcher:function(value,name){
+// 				var menu_id= $("#hdnMenuId").val();
+// 				if(!menu_id){
+// 					$.tipShow({
+// 						"message":"请选择相应的栏目菜单",
+// 						"color":"yellow"
+// 					});
+// 					return;
+// 				}
+// 				//状态
+// 				var status = $("#drStatus").combobox("getValue");
+// 				$("#datagrid").datagrid('load',{
+// 					menu_id:menu_id,
+// 					queryStr:$.trim(value),
+// 					status:status
+// 				});
+// 			}
+// 		});
+		
+		
+		
+		//状态下拉列表
+		$("#drStatus").combobox({
+			width:100,
+			panelHeight:"auto",
+			valueField:'value',    
+		    textField:'text',
+		    editable:false,
+		    value:"-1",
+		    data:[
+		    	{"text":"全部",value:"-1"},
+		    	{"text":"草稿",value:"2"},
+		    	{"text":"待审核",value:"0"},
+		    	{"text":"审核未通过",value:"3"},
+		    	{"text":"审核通过",value:"1"}
+		    ]
+		});
+		
+		///新增
+		$("#btn_add").click(function(){
+			var menu_id=$("#hdnMenuId").val();
+			if(!menu_id){
+				$.tipShow({
+					"message":"请选择相应的栏目菜单",
+					"color":"yellow"
+				});
+				return;
+			}
+			openDialog({
+				windowId:"window",
+				title:"文章添加",
+				href:"{:U('Content/addContentPage')}?menu_id="+menu_id,
+				width:1000,
+				height:600,
+				buttons:[
+					{
+						id:"btnSubmit",
+						text:"提交",
+						iconCls:"icon-ok",
+						handler:function(){
+							submitForm("myform");
+						}
+					},
+					{
+						text:"取消",
+						iconCls:"icon-cancel",
+						handler:function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":false
+							});
+						}
+					}
+				]
+			});
+		});
+		
+		//修改
+		$("#btn_edit").click(function(){
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			var id = selections[0].id;
+			openDialog({
+				windowId:"window",
+				title:"文章编辑",
+				href:"{:U('Content/editContentPage')}?id="+id,
+				width:1000,
+				height:600,
+				buttons:[
+					{
+						text:"提交",
+						iconCls:"icon-ok",
+						handler:function(){
+							submitForm("myform");
+						}
+					},
+					{
+						text:"取消",
+						iconCls:"icon-cancel",
+						handler:function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":false
+							});
+						}
+					}
+				]
+			});
+		});
+		
+		//删除
+		$(".setStatus").click(function(){
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			var status = $(this).data('status');
+			var alertStr = status==1?'确定启用？':(status==2?'确定禁用？':'确定删除？')
+			confirm('温馨提示',alertStr,function(flag){    
+			    if (flag){ 
+			    	var id = selections[0].id;
+					$.ajax({
+						url:"{:U('Content/setStatus')}",
+						type:"post",
+						data:{
+							"ids":id,
+							'status':status,
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#datagrid").datagrid("reload");
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }    
+			});  
+		});
+		
+		$("#btn_preview").click(function(){
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			var id = selections[0].id;
+			var url = "{:U('Home/News/detail/id/"+ id +"')}";
+			
+			
+			window.open(url);
+		});
+		
+		//审核2016年11月7日 弹出新页面
+		$("#btn_audit").click(function(){
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			var id = selections[0].id;
+			openDialog({
+				windowId:"window",
+				title:"文章审核",
+				href:"{:U('Content/contentAuditPage')}?id="+id,
+				width:500,
+				height:300,
+				buttons:[
+					{
+						text:"提交",
+						iconCls:"icon-ok",
+						handler:function(){
+							submitForm("myform");
+						}
+					},
+					{
+						text:"取消",
+						iconCls:"icon-cancel",
+						handler:function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":false
+							});
+						}
+					}
+				]
+			});
+		});
+		
+		//设为草稿
+		$("#btn_draft").click(function(){
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			confirm('温馨提示','确定设置为草稿？',function(flag){    
+			    if (flag){ 
+			    	var ids = new Array();
+					$.each(selections,function(i,item){
+						ids.push(item.id);
+					});
+					$.ajax({
+						url:"{:U('Content/setStatus')}",
+						type:"post",
+						data:{
+							"ids":ids.join(","),
+							"status":2
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#datagrid").datagrid("reload");
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }    
+			}); 
+		});
+		
+		//提交审核
+		$("#btn_submitAudit").click(function(){
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			confirm('温馨提示','确定提交审核？',function(flag){    
+			    if (flag){ 
+			    	var ids = new Array();
+					$.each(selections,function(i,item){
+						ids.push(item.id);
+					});
+					$.ajax({
+						url:"{:U('Content/setStatus')}",
+						type:"post",
+						data:{
+							"ids":ids.join(","),
+							"status":0
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#datagrid").datagrid("reload");
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }    
+			}); 
+		});
+
+	});
+	</script>
+</block>

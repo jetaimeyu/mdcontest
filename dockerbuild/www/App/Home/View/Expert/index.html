@@ -1,0 +1,35 @@
+<extend name='Public/base'/>
+<block name='style'>
+    <link rel="stylesheet" href="__PUBLIC__/home/css/expert.css?v={$version_no}">
+</block>
+<block name='body'>
+    <div class="main main-none">
+        <div class="expertitle">关于评委</div>
+        <div class="expertitleDetail">
+            专家评审团由行业、学术、企业社会责任（CSR）、非政府机构(NGO)专家及社会企业家组成。专业评审将从社会需求程度，创新性，资源可持续性，项目计划以及可行性等5方面对每个参赛项目进行考察评审。
+        </div>
+        <div class="expertTeam">
+            <volist name="listData" id="vo">
+                <?php $listCount = count($vo); ?>
+            <div class="expertTeam_list">
+                <div class="expertposition">{$vo[0].menu_name}</div>
+                <ul class="expertPeoples">
+                    <volist name="vo" id="vv">
+                    <li class="expertPeople  <switch name='listCount'><case value='1'>data_one</case><case value='2'>data_two</case><case value='3'>data_three</case><default />data_more</switch>" style="background: url('__UPLOADS__{$vv.content_img}') repeat center;background-size: cover;">
+                    <div class="expertnamebg expertnamebox">
+                    </div>
+                    <div class="expertname expertnamebox">{$vv.title}</div>
+                    <div class="expertdetailsboxbg expertdetailsposition expertdetailsbox"></div>
+                    <div class="expertdetails expertdetailsbox">
+                        <div class="expertdetails_name">{$vv.title}</div>
+                        <div class="expertdetailsContent">专家评委的简单介绍</div>
+                        <div class="expertdetailsContent">{$vv.summary|cutStr=84}</div>
+                    </div>
+                    </li>
+                    </volist>
+                </ul>
+            </div>
+            </volist>
+        </div>
+    </div>
+</block>

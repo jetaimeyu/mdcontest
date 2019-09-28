@@ -1,0 +1,143 @@
+.expertitle{
+    text-align: center;
+    font-size: 20px;
+    color: #3F4B5C;
+    font-weight: 700;
+    padding:29px 0 43px 0;
+}
+.expertitleDetail{
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    background: #EEF5FD;
+    border: 1px dotted #B2CDED;
+    padding:36px 41px 32px 41px;
+    font-size: 14px;
+    color: #666666;
+    border-radius: 5px;
+    line-height: 21px;
+    margin-bottom:10px ;
+}
+.expertposition{
+    font-size: 20px;
+    color: #3F4B5C;
+    font-weight: 700;
+    text-align: center;
+    padding:43px 0;
+}
+.expertTeam_list{
+    border-bottom:1px dotted #B2CDED;
+}
+.expertTeam_list:last-child{
+    border-bottom:none
+}
+.expertPeoples{
+    overflow: hidden;
+}
+.expertPeople{
+    width: 224px;
+    height: 299px;
+    position: relative;
+    margin-bottom: 53px;
+    border:1px solid #B2CDED;
+    box-sizing: border-box;
+    cursor:pointer;
+}
+.expertnamebg{
+    position: absolute;
+    bottom: 0;
+    width:100%;
+    height: 50px;
+    background: #202B3A;
+    -webkit-opacity: 0.6;
+    /* Netscape and Older than Firefox 0.9 */
+    -moz-opacity: 0.6;
+    /* Safari 1.x (pre WebKit!) 老式khtml内核的Safari浏览器*/
+    -khtml-opacity: 0.6;
+    /* IE9 + etc...modern browsers */
+    opacity: .6;
+    /* IE 4-9 */
+    filter:alpha(opacity=60);
+}
+.expertname{
+    position: absolute;
+    bottom: 0;
+    width:100%;
+    color: white;
+    height: 50px;
+    line-height: 48px;
+    text-align: center;
+    font-size: 16px;
+}
+.expertdetailsboxbg{
+    background:#3F4B5C;
+    -webkit-opacity: 0.88;
+    /* Netscape and Older than Firefox 0.9 */
+    -moz-opacity: 0.88;
+    /* Safari 1.x (pre WebKit!) 老式khtml内核的Safari浏览器*/
+    -khtml-opacity: 0.88;
+    /* IE9 + etc...modern browsers */
+    opacity: .88;
+    /* IE 4-9 */
+    filter:alpha(opacity=88);
+}
+.expertdetailsposition,.expertdetails{
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+.expertdetails{
+    color:white;
+    padding:33px 13px ;
+}
+.expertdetails_name{
+    font-size:18px;
+    text-align: center;
+    margin-bottom: 20px;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.expertdetailsContent{
+    font-size: 14px;
+    line-height: 21px;
+}
+.expertdetailsbox{
+    display: none;
+}
+.expertPeople:hover .expertnamebox{
+    display: none;
+}
+.expertPeople:hover .expertdetailsbox{
+    display: block;
+}
+/* 1条数显示 */
+.data_one{
+    /* float: left; */
+    margin-top: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+/* 两条数据显示 */
+.data_two {
+    float: left;
+    margin-top: 0;
+    margin-left: 158px;
+    margin-right: 158px;
+}
+/* 三条数据显示 */
+.data_three{
+    float: left;
+    margin-top: 0;
+    margin-left: 68px;
+    margin-right: 68px;
+}
+/*四条数据及更多显示*/
+.data_more{
+    float: left;
+    margin-top: 0;
+    margin-left: 23px;
+    margin-right: 23px;
+}

@@ -1,0 +1,87 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>添加内容</title>
+</block>
+<block name="body">
+<form id="myform" class="easyui-form myform" data-options="novalidate:false" method="post">
+	<table>
+		<tr>
+			<td class="text_right" style="width:85px"><span class="mark">*</span>分类名称：</td>
+			<td><input id="cate_name"  name="cate_name" value="{$data.cate_name}" class="easyui-textbox" style="width:250px" data-options="validateOnCreate:false,required:true,validType:['length[1,40]'],tipPosition:'right'" >
+				<input id="hdnId" name="id" type="hidden" value="{$data.id}">
+				<input type="hidden" name="pid" value="{:I('get.pid')}">
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>排序：</td>
+			<td>
+				<input  name="order_no" class="easyui-numberspinner" style="width:145px;" required="required" data-options="value:'{$data.order_no}',validateOnCreate:false,min:0,max:1000,editable:true,">
+				<span class="tip">（升序）</span>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>状态：</td>
+			<td>
+				<select name="is_open" class="easyui-combobox" data-options="value:'{:$data?$data['is_open']:1}',validateOnCreate:false,editable:false,panelHeight:'auto',required:true" style="width:145px">
+					<option value="1">启用</option>
+					<option value="0">禁用</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</form>
+</block>
+<block name="script">
+<script src="__PUBLIC__/system/js/ajaxfileupload.js"></script>
+	<script type="text/javascript">
+	$(function(){
+
+		$("#myform").form({
+			url:"{:U('editChild')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var isValid  = $(this).form('validate');
+				if(isValid){
+					//验证通过提交，禁用提交按钮，防止多次提交
+					parent.$("#btnSubmit").linkbutton("disable");
+				}
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$.tipShow({
+						"message":"操作成功",
+						"color":"green",
+						"callback":function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":true,
+								"controlType":"datagrid",
+								"gridId":"treegrid"
+							});
+						}
+					});
+					
+				}else{
+					$.tipShow({
+						"message":"操作失败",
+						"color":"red"
+					});
+					
+					parent.$("#btnSubmit").linkbutton("enable");
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败",
+					"color":"red"
+				});
+				parent.$("#btnSubmit").linkbutton("enable");
+			}
+		});
+
+	});
+	</script>
+</block>

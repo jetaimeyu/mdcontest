@@ -1,0 +1,131 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>添加功能</title>
+</block>
+<block name="body">
+<form id="myform" class="easyui-form myform" data-options="novalidate:false" method="post">
+	<table>
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>功能名称：</td>
+			<td><input id="func_name"  name="func_name" class="easyui-textbox" style="width:250px" data-options="required:true,validType:['length[0,20]']" ></td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px">功能编码：</td>
+			<td><input id="func_code"  name="func_code" class="easyui-textbox" style="width:250px" data-options="validateOnCreate:false,delay:800,validType:['length[0,30]','validFuncCode']" ></td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px">功能链接：</td>
+			<td><input id="func_url"  name="func_url" class="easyui-textbox" style="width:250px" data-options="validType:['length[0,150]']" ></td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>父级功能：</td>
+			<td>
+				<select id="drFunction" name="func_pid" class="easyui-combotree" style="width:145px" data-options="url:'{:U('Function/getPidFunctionTree')}',required:true,valueField:'id',textField:'text'"></select>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>功能类型：</td>
+			<td>
+				<select name="type" class="easyui-combobox" data-options="editable:false,panelHeight:'auto',required:true" style="width:145px">
+					<option value="1">菜单</option>
+					<option value="2">功能</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>功能状态：</td>
+			<td>
+				<select name="status" class="easyui-combobox" data-options="editable:false,panelHeight:'auto',required:true" style="width:145px">
+					<option value="1">启用</option>
+					<option value="0">禁用</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>排序号：</td>
+			<td>
+				<input id="order_no" name="order_no" class="easyui-numberspinner" style="width:145px;" required="required" data-options="min:0,max:1000,editable:true,value:0">
+				<span class="tip">（升序）</span>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right">描述：</td>
+			<td><textarea style="width:300px;height:100px" name="description" class="easyui-validatebox text-area" maxlength="200"></textarea></td>
+		</tr>
+	</table>
+</form>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		$("#myform").form({
+			url:"{:U('Function/addFunc')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var isValid  = $(this).form('validate');
+				if(isValid){
+					//验证通过提交，禁用提交按钮，防止多次提交
+					parent.$("#btnSubmit").linkbutton("disable");
+				}
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$.tipShow({
+						"message":"操作成功",
+						"color":"green",
+						"callback":function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":true,
+								"controlType":"treegrid",
+								"gridId":"treegrid"
+							});
+						}
+					});
+				}else{
+					$.tipShow({
+						"message":"操作失败",
+						"color":"red"
+					});
+					parent.$("#btnSubmit").linkbutton("enable");
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败!",
+					"color":"red"
+				});
+				parent.$("#btnSubmit").linkbutton("enable");
+			}
+		});
+		
+		$.extend($.fn.validatebox.defaults.rules, {    
+			validFuncCode:{
+		    	validator:function(value,param){
+		    		var isValid = false;
+		    		$.ajax({
+		    			type:"post",
+		    			async:false,
+		    			data:{
+		    				"func_code":$.trim(value)
+		    			},
+		    			url:"{:U('Function/validFuncCode')}",
+		    			success:function(response){
+		    				var result = $.parseJSON(response);
+		    				isValid = !result.isExist;
+		    			},
+		    			error:function(){
+		    				isValid = false;
+		    			}
+		    		});
+		    		return isValid;
+		    	},
+		    	message:"该功能编码已存在"
+		    }
+		}); 
+	});
+	</script>
+</block>

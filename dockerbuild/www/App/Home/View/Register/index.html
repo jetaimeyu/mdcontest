@@ -1,0 +1,479 @@
+<extend name='Public/base'/>
+<block name='style'>
+    <link rel="stylesheet" href="__PUBLIC__/home/css/register.css?v={$version_no}">
+</block>
+<block name="body">
+    <div class="main" style="padding:75px;width:930px;">
+        <div class="vali-nav va3">
+            <!--  <div class="nav-on"><b>验证注册</b></div>
+             <div><b>填写基本信息</b></div>
+             <div><b>完成</b></div> -->
+            <!-- <i class="c-on" style="left: 33.3%;"></i>
+            <i class="c-c"></i> -->
+        </div>
+        <div class="vali-main" style="height:450px;">
+            <h3 class="vali-title">
+                <b style="float: left;"><a href="jacascript::void(0)">账号注册</a></b>
+
+            </h3>
+            <div id="vali1" class="vali-b" style="width:600px;margin: 30px auto 70px auto;">
+                <div id="vali1-1">
+                    <div class="input-line">
+                        <b><i class="red-need">*</i>手机号码</b>
+                        <div class="input-field">
+                            <input type="text" id="mobileNumber" maxlength="11" name="mobileNumber"  placeholder="请输入手机号"  data-text="(+86)13800000000" class="need-text" req="true" reg="/^((\+?86)|(\(\+86\)))?1[3|4|5|7|8][0-9]\d{8}$/" err="手机号码格式错误" vali="register.mobileValidate"  style="float: left;margin-right: 10px;"/>
+                            <div class="err-tip" style="float: left;"></div>
+                        </div>
+                    </div>
+                    <div class="input-line">
+                        <div class="input-field">
+                            <div style="float: left;margin-right: 10px;">
+                                <input id="verifyCode" type="text" name="verifyCode"  placeholder="右侧验证码" data-text="右侧验证码" class="need-text" style="width: 135px;float: left;" req="true" />
+                                <img id="verifycodeId" class="verify-img" src="{:U('Home/Register/verify').'?timestamp='.time()}"/>
+                            </div>
+                            <div class="err-tip" style="float: left;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-line">
+                    <div class="input-field">
+                        <div  style="float: left;margin-right: 10px;">
+                            <input type="text" id="registerVerifyCode" name="registerVerifyCode" placeholder="注册验证码" data-text="注册验证码" class="need-text" style="width: 135px;float: left;" req="true"/>
+                            <button id="valiBtn" class="confirm-btn" title="获取注册验证码" style="font-size: 11px;padding: 8px 6px;letter-spacing: 0px;background: #6da0cb;line-height: 16px;color: #fff;border: none;min-width: 60px;">获取验证码</button>
+                        </div>
+                        <div class="err-tip" style="float: left;"></div>
+                    </div>
+                </div>
+                <div class="input-line">
+                    <b><i class="red-need">*</i>姓名</b>
+                    <div class="input-field"><input type="text" id="loginId" name="webUser.loginId"  placeholder="您的姓名" data-text="您的姓名" class="need-text" req="true" reg="/^[A-Za-z0-9_]{6,18}$/" err="不少于6位数字下划线或英文字符" vali="register.loginIdlValidate" maxlength="18" style="float: left;margin-right: 10px;"/><div class="err-tip" style="float: left;"></div></div>
+                </div>
+                <div class="input-line">
+                    <b><i class="red-need">*</i>登录密码</b>
+                    <div class="input-field"><input type="password" id="loginPassword"  class="passwordInput" placeholder="设置您的登录密码"  data-text="设置您的登录密码" class="need-text" req="true" reg="/^(?![a-zA-z]+$)(?!\d+$)(?![!@#$%^&*]+$)[a-zA-Z\d!@#$%^&*]{6,18}$/" err="不少于6位的字母+数字" maxlength="18" style="float: left;margin-right: 10px;"/><div class="err-tip" style="float: left;"></div></div>
+                </div>
+                <div class="input-line">
+                    <b><i class="red-need">*</i>确认密码</b>
+                    <div class="input-field"><input type="password" id="confirm"  class="passwordInput"  placeholder="请再次输入您的密码" data-text="请再次输入您的密码" class="need-text" req="true" reg="/^(?![a-zA-z]+$)(?!\d+$)(?![!@#$%^&*]+$)[a-zA-Z\d!@#$%^&*]{6,18}$/" err="不少于6位的字母+数字" vali="register.comparePswd" maxlength="18"  style="float: left;margin-right: 10px;"/><div class="err-tip" style="float: left;"></div></div>
+                </div>
+
+                <div class="input-line">
+                    <b></b>
+                    <div class="input-field"><a href="javascript:void(0);" id="submitBtn" class="confirm-btn" title="提交">提交</a></div>
+                </div>
+            </div>
+            <div id="vali2" class="vali-b vali-text" style="width:450px;display:none;margin: 20px auto 50px auto;">
+                <i class="vali-ok"></i>验证信息已发送到您的手机：<span id="to_mobileNumber"></span><br>
+                <i id="vali-note" class="vali-note"></i><br>
+            </div>
+        </div>
+        <p style="font-size:12px;color:#666;padding-left: 17em;">如遇到问题，请联系网站管理员，联系方式：13370566029</p>
+
+    </div>
+</block>
+<block name="script">
+    <script>
+        /**
+         * type   1 手机号  2 姓名  3 密码   4 双密码  5图片验证码 6 手机号是否已经注册
+         *
+        */
+        function ValidationData(domObj,msg,type,isSubmit){
+            var data = $(domObj).val();
+            if(data.length == 0 && !isSubmit){
+                $(domObj).parent().find(".error").remove();
+                return
+            }
+            if(type == 1){
+                var regular = /^((\+?86)|(\(\+86\)))?1[3|4|5|6|7|8|9][0-9]\d{8}$/;
+            }
+            if(type == 2){
+                var regular = /^[\u4E00-\u9FA5A-Za-z]+$/;
+            }
+            if(type == 3){
+                if(data.length > 18|| data.length< 6){
+                    var res= appentError('',domObj,msg,6)
+                    return res
+                }else{
+                    removeError(domObj);
+                    return true
+                }
+            }
+
+            if(type ==4 ){
+                var res = appentError("",domObj,msg,4)
+                return res
+            }
+            if(type == 5){
+                if(picCodeIsTrue(data)){
+                    $(domObj).parent().parent().find(".error").remove();
+                    return true;
+                }else{
+                    appentError("",domObj,msg,5);
+                    return false;
+                }
+
+            }
+            if(type == 1 || type == 2 || type == 3){
+                var res = appentError(regular,domObj,msg)
+                return res;
+            }
+        }
+        function appentError(regular,domObj,msg,type) {
+            var errorDom = $(domObj).parent();
+            if(type == 5 ){
+                errorDom = $(domObj).parent().parent();
+            }
+            var data = $(domObj).val();
+            if((regular && !regular.test(data)) || (type == 4 && $("#confirm").val() != $("#loginPassword").val()) || (type == 5 ) || (type == 6)){
+                if(errorDom.find(".error").length > 0){
+                    errorDom.find(".error").remove();
+                    errorDom.children(".err-tip").append('<div class="tip error"><i></i><span>' + msg + '</span></div>')
+                    return false;
+                }else{
+                    errorDom.children(".err-tip").append('<div class="tip error"><i></i><span>' + msg + '</span></div>')
+                }
+                return false;
+            }else{
+                if(type == 4){
+                    $(".passwordInput").parent().find(".error").remove();
+                }else{
+                    errorDom.find(".error").remove();
+                }
+                return true;
+            }
+        }
+        function removeError(domObj,type) {
+            var errorDom = $(domObj).parent();
+            if(type && type == 5){
+                errorDom = $(domObj).parent().parent();
+            }
+
+            errorDom.find(".error").remove();
+        }
+
+        /**
+         * 判断手机号是否存在
+         * tel 手机号
+         */
+        function phoneIsHave(tel){
+            var url = "{:U('Home/Register/valiTel/tel/"+tel+"')}";
+            var resData="";
+            getAjaxData(url,function(res){
+                if(res.State == 1){
+                    resData = true;
+                }else{
+                    resData = false;
+                }
+            })
+            return resData
+        }
+        /**
+         * 判断图片验证码是否正确
+         * picCode 图片验证码
+         */
+        function picCodeIsTrue(picCode){
+            var url = "{:U('Home/Register/check_verify')}"
+            var resData="";
+            postAjaxData(url,{code:picCode},function(res){
+                if(res){
+                    resData = true;
+                }else{
+                    resData = false;
+                }
+            })
+            return resData;
+        }
+        /*********************************************
+         *************调   用    逻   辑****************
+         *********************************************/
+        $(function(){
+            var isAllowPhone = false;
+            var postdata = {
+                telephone:"",
+                pwd:"",
+                true_name:"",
+                is_user:2
+            }
+            /**
+             * 点击验证码自动刷新
+             */
+            $("#verifycodeId").click(function(){
+                var that = this;
+                that.src = that.src + "?timestamp=" + new Date().getTime();
+            })
+            /**
+             *查询手机号是否已经注册
+             */
+            $("#mobileNumber").change(function(){
+                var that = this;
+                var data = $(that).val();
+                if(!ValidationData(that,"手机号格式错误！",1)){
+                    postdata.telephone = "";
+                    return;
+                }
+                if(phoneIsHave(data)){
+                    postdata.telephone = data;
+                    removeError(that);
+                }else{
+                    postdata.telephone = "";
+                    appentError("",that,"该手机号已被注册！",6)
+                }
+
+            })
+            /**
+             *查询姓名是否符合规则
+             */
+            $("#loginId").change(function(){
+                var that = this;
+                var data = $(that).val()
+                if(!ValidationData(that,"姓名只允许输入汉字和英文！",2)){
+                    postdata.true_name = "";
+                    return;
+                }else{
+                    postdata.true_name = data;
+                }
+            })
+            /**
+             *查询密码是否符合规则
+             */
+            $("#loginPassword").change(function(){
+                var that = this;
+                var data = $(that).val();
+                if(!ValidationData(that,"密码长度最少6位最多不超过18位",3)){
+//                    postdata.pwd = "";
+                    return;
+                }else{
+                    if($("#confirm").val().length>0){
+                        if(ValidationData(that,"两次密码不一致，请重新输入",4)){
+                            postdata.pwd = data;
+                        }
+                    }
+                }
+            })
+            /**
+             *查询确认密码是否符合规则
+             */
+            $("#confirm").change(function(){
+                var that = this;
+                var data = $(that).val();
+                if(!ValidationData(that,"密码长度最少6位最多不超过18位",3)){
+//                  postdata.pwd = "";
+                    return;
+                }else{
+                    if($("#loginPassword").val().length>0){
+                        if(ValidationData(that,"两次密码不一致，请重新输入",4)){
+                            postdata.pwd = data;
+                        }
+                    }
+                }
+//                if(!ValidationData(that,"两次密码不一致，请重新输入！",4)){
+//                    postdata.pwd = "";
+//                    return;
+//                }else{
+//                    postdata.pwd = data;
+////                    if(postdata.pwd == ""){
+////                        postdata.pwd == ""
+////                    }else{
+////                        postdata.pwd = data;
+////                    }
+//
+//                }
+            })
+            /**
+             *验证图片密码是否正确
+             */
+
+            /**
+             *获取手机验证码
+             */
+            var clock = '';
+            var reSetNum = 60;
+            $('#valiBtn').click(function(){
+                if(ValidationData($("#verifyCode"),"验证码错误，请重新输入",5,true)){
+                    isAllowPhone = true;
+                }else{
+                    autuRsetvali();
+                    isAllowPhone = false;
+                    return
+                }
+                var that = this;
+                if(isAllowPhone && postdata.telephone != ""){
+                    removeError(that,5);
+                    var url = "{:U('Home/Register/getPhonevali/tel/"+postdata.telephone+"')}"
+                    getAjaxData(url,function(res){
+                        if(res.State == 2){
+                            $('#valiBtn').attr("disabled","disabled");
+                            $('#valiBtn').html(reSetNum+"秒");
+                            clock = setInterval(doLoop,1000);
+                            layer.msg('迈迪网验证码获取成功', {time: 500});
+//                            alert(res.Data);
+                        }else{
+                        }
+                    })
+                }else{
+                    if(!isAllowPhone){
+                        appentError("",that,"请重新输入图片验证码",5);
+                        isAllowPhone = false;
+                        autuRsetvali();
+                    }else if(postdata.telephone == ""){
+                        appentError("",that,"请输入正确的手机号",5);
+                        isAllowPhone = false;
+                        autuRsetvali();
+                    }
+
+                }
+            })
+            /**
+             *验证码60秒时效
+             */
+            function doLoop() {
+                reSetNum--;
+                if (reSetNum > 0) {
+                    $('#valiBtn').html( reSetNum + '秒');
+                } else {
+                    clearInterval(clock); //清除js定时器
+                    $('#valiBtn').attr("disabled",false);
+                    $('#valiBtn').html("获取验证码");
+                    reSetNum = 60; //重置时间
+                }
+            }
+            /**
+             *刷新验证码
+             */
+            function autuRsetvali(){
+                var src = $("#verifycodeId")[0].src;
+                src = src+ "?timestamp=" + new Date().getTime();
+                $("#verifyCode").val("") ;
+                $("#verifycodeId").attr("src", src);
+            }
+
+            /**
+             *提交数据以及最后的数据验证
+             */
+            $("#submitBtn").click(function(){
+//               提交验证
+                var tel = $("#mobileNumber");
+                var userName =  $("#loginId");
+                var pwd = $("#loginPassword");
+                var repwd =  $("#confirm");
+                var verifyCode = $("#verifyCode");
+                var Phonevali = $("#registerVerifyCode");
+                var valiBtn  = $('#valiBtn')
+                postdata.Phonevali = Phonevali.val();
+                if(tel.val() == ""){
+                    ValidationData(tel,"请输入手机号！",1,true)
+                    return
+                }
+                if(verifyCode.val() == ""){
+                    ValidationData(verifyCode,"请输入验证码",5,true)
+                    return
+                }else{
+                    $(verifyCode).parent().parent().find(".error").remove();
+                }
+
+                if(userName.val() == ""){
+                    ValidationData(userName,"请输入姓名！",2,true)
+                    return
+                }
+                if(pwd.val() == ""){
+                    ValidationData(pwd,"请输入密码！",3,true)
+                    return
+                }
+                if(repwd.val() == ""){
+                    ValidationData(repwd,"请确认密码！",4,true)
+                    return
+                }
+
+                if(tel.val() != postdata.telephone){
+                    if(!ValidationData(tel,"手机号格式错误！",1)){
+                        removeError(verifyCode,5);
+                        removeError(Phonevali,5);
+                        return;
+                    }
+                    if(phoneIsHave(tel.val())){
+                        postdata.telephone = data;
+                        removeError(tel);
+                    }else{
+                        appentError("",tel,"该手机号已被注册！",6)
+                        removeError(verifyCode,5);
+                        removeError(Phonevali,5);
+                        autuRsetvali();
+                        return
+                    }
+                }
+                if(userName.val() != postdata.true_name){
+                    if(!ValidationData(userName,"姓名只允许输入汉字和英文！",2)){
+                        postdata.true_name = "";
+                        return;
+                    }else{
+                        removeError(userName);
+                    }
+                }
+                if(pwd.val().length < 6 || pwd.val().length > 18){
+                    ValidationData(pwd,"密码长度最少6位最多不超过18位",3)
+                    return
+                }
+                if(pwd.val() != postdata.pwd || repwd.val() != postdata.pwd || pwd.val() !=  repwd.val()){
+                    ValidationData(pwd,"不少于6位的字母+数字",3);
+                    ValidationData(repwd,"两次密码不一致，请重新输入！",4)
+                    return;
+                }
+                var url = "{:U('Home/Register/ajaxSubmit')}";
+                postAjaxData(url,postdata,function(res){
+                    if(res.State != 0){
+                        if(res.State== 1){
+                            var tipcontent = {
+                                'popupContentTitle':'恭喜您注册成功!',
+                                'firsttip':'凭借手机号登录大赛网站<a href="{:u("Home/Index/index")}">shaangu.maidiyun.com</a>，可查看报名信息、竞赛作品提交。',
+                                'secondtip':'您已是设计宝用户，可直接登录<a href="http://www.maidiyun.com/help/mdsjb.html" target="_blank">今日制造</a>建立设计群组，进行技术交流。',
+                                'thirdtip':'再次感谢对本次大赛的鼎力支持，预祝您比赛顺利，金榜题名！',
+                                'btn':'<a href="http://www.maidiyun.com/download/softInfo.aspx?id=1" target="_blank">好，加入团队比赛</a>',
+                            };
+
+                        }else if(res.State== 2){
+                            var tipcontent = {
+                                'popupContentTitle':'恭喜您注册成功!',
+                                'firsttip':'可凭借手机号登录大赛网站<a href="{:u("Home/Index/index")}">shaangu.maidiyun.com</a>，进行大赛报名。',
+                                'secondtip':'同时凭借手机号登录<a href="http://www.maidiyun.com/help/mdsjb.html" target="_blank">今日制造</a>（默认密码为报名手机号)，',
+                                'thirdtip':'可建立设计群组，进行技术交流，快快登录修炼内功吧！',
+                                'btn':'<a href="http://www.maidiyun.com/download/softInfo.aspx?id=1" target="_blank">走，修炼内功去</a>',
+                        };
+                        }
+                        openPopup(tipcontent,1);
+//                        if(res.State== 1){
+//                            layer.msg('注册成功');
+//                            setTimeout(function(){
+//                                window.location.href = window.location.href = "{:u('Home/Personinfo/index')}";
+//                            },1000)
+//                        }
+//                        if(res.State ==2){
+//                            layer.msg('注册成功,该账号也可用于登陆迈迪设计宝');
+//                            setTimeout(function(){
+//                                window.location.href = window.location.href = "{:u('Home/Personinfo/index')}";
+//                            },1000)
+//                        }
+                    }else{
+                        if(res.Type == 5){
+                            appentError("",valiBtn,res.Data,res.Type);
+                        }else if(res.Type == 1){
+                            appentError("",tel,res.Data,res.Type);
+                        }
+
+                    }
+                })
+            })
+
+
+        });
+        //点击关闭弹窗
+        $(".closePopup").click(function(){
+            var skipurl = "/personinfo";
+            closePopup(skipurl);
+        });
+    </script>
+</block>
+
+
+
+
+

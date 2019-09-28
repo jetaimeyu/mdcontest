@@ -1,0 +1,374 @@
+<extend name='Public/base'/>
+<block name='style'>
+    <link rel="stylesheet" href="__PUBLIC__/home/css/rqupassword.css?v={$version_no}">
+</block>
+<block name="body">
+    <div class="main" style="padding:75px;width:930px;">
+        <div class="vali-nav va3">
+            <!-- <div class="nav-on"><b>找回密码</b></div>
+            <div><b>填写基本信息</b></div>
+            <div><b>完成</b></div> -->
+            <!-- <i class="c-on" style="left: 33.3%;"></i>
+            <i class="c-c"></i> -->
+        </div>
+        <div class="vali-main" style="height:450px;">
+            <h3 class="vali-title">
+                <b style="float: left;"><a href="jacascript::void(0)">忘记密码</a></b>
+
+            </h3>
+                <div id="vali1" class="vali-b" style="width:600px;margin: 30px auto 70px auto;">
+                    <div id="vali1-1">
+                        <div class="input-line">
+                            <b><i class="red-need">*</i>手机号码</b>
+                            <div class="input-field"><input type="text" id="mobileNumber"  placeholder="请输入手机号" name="mobileNumber" data-text="(+86)13800000000" class="need-text" req="true" reg="/^((\+?86)|(\(\+86\)))?1[3|4|5|7|8][0-9]\d{8}$/" err="手机号码格式错误" vali="register.mobileValidate"  style="float: left;margin-right: 10px;"/><div class="err-tip" style="float: left;"></div></div>
+                        </div>
+                        <div class="input-line">
+                            <div class="input-field">
+                                <div style="float: left;margin-right: 10px;">
+                                    <input id="verifyCode" type="text" name="verifyCode" placeholder="右侧验证码" data-text="右侧验证码" class="need-text" style="width: 135px;float: left;" req="true"  />
+                                    <img id="verifycodeId" class="verify-img" src="{:U('Home/Rqupassword/verify')}"/>
+                                </div>
+                                <div class="err-tip" style="float: left;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-line">
+                        <div class="input-field">
+                            <div  style="float: left;margin-right: 10px;">
+                                <input type="text" id="registerVerifyCode" name="registerVerifyCode"  placeholder="注册验证码"  data-text="注册验证码" class="need-text" style="width: 135px;float: left;" req="true"/>
+                                <button id="valiBtn" class="confirm-btn" title="获取注册验证码" style="font-size: 11px;padding: 8px 6px;letter-spacing: 0px;background: #6da0cb;line-height: 16px;color: #fff;border: none;min-width: 60px;">获取验证码</button>
+                            </div>
+                            <div class="err-tip" style="float: left;"></div>
+                        </div>
+                    </div>
+                    <div class="input-line">
+                        <b><i class="red-need">*</i>新密码</b>
+                        <div class="input-field"><input type="password" id="loginPassword" class="passwordInput" placeholder="设置您新的登录密码"  data-text="设置您新的登录密码" class="need-text" req="true" reg="/^(?![a-zA-z]+$)(?!\d+$)(?![!@#$%^&*]+$)[a-zA-Z\d!@#$%^&*]{6,18}$/" err="不少于6位的字母+数字" maxlength="18" style="float: left;margin-right: 10px;"/><div class="err-tip" style="float: left;"></div></div>
+                    </div>
+                    <div class="input-line">
+                        <b><i class="red-need">*</i>确认密码</b>
+                        <div class="input-field"><input type="password" id="confirm"  class="passwordInput"  placeholder="请再次输入您的密码"  data-text="请再次输入您的密码" class="need-text" req="true" reg="/^(?![a-zA-z]+$)(?!\d+$)(?![!@#$%^&*]+$)[a-zA-Z\d!@#$%^&*]{6,18}$/" err="不少于6位的字母+数字" vali="register.comparePswd" maxlength="18"  style="float: left;margin-right: 10px;"/><div class="err-tip" style="float: left;"></div></div>
+                    </div>
+
+                    <div class="input-line">
+                        <b></b>
+                        <div class="input-field"><a href="javascript:void(0);" id="submitBtn" class="confirm-btn" title="提交">提交</a></div>
+                    </div>
+                </div>
+            <div id="vali2" class="vali-b vali-text" style="width:450px;display:none;margin: 20px auto 50px auto;">
+                <i class="vali-ok"></i>验证信息已发送到您的手机：<span id="to_mobileNumber"></span><br>
+                <i id="vali-note" class="vali-note"></i><br>
+            </div>
+        </div>
+        <p style="font-size:12px;color:#666;padding-left: 17em;">如遇到问题，请联系网站管理员，联系方式：13370566029</p>
+
+    </div>
+
+</block>
+<block name='script'>
+    <script>
+        function ValidationData(domObj,msg,type,isSubmit){
+            var data = $(domObj).val();
+            if(data.length == 0 && !isSubmit){
+                $(domObj).parent().find(".error").remove();
+                return
+            }
+            if(type == 1){
+                var regular = /^((\+?86)|(\(\+86\)))?1[3|4|5|7|8][0-9]\d{8}$/;
+            }
+            if(type == 2){
+                var regular = /^[\u4E00-\u9FA5A-Za-z]+$/;
+            }
+            if(type == 3){
+//                var regular = /^(?![a-zA-z]+$)(?!\d+$)(?![!@#$%^&*]+$)[a-zA-Z\d!@#$%^&*]{6,18}$/;
+                if(data.length > 18|| data.length< 6){
+                    var res= appentError('',domObj,msg,6)
+                    return res
+                }else{
+                    removeError(domObj);
+                    return true
+                }
+            }
+
+            if(type ==4 ){
+                var res = appentError("",domObj,msg,4)
+                return res
+            }
+            if(type == 5){
+                var url = "{:U('Home/Rqupassword/check_verify')}"
+                var resData = "";
+                postAjaxData(url,{code:data},function(res){
+                    resData = res ;
+                    if(!res){
+                        appentError("",domObj,msg,5);
+                        return false;
+                    }else{
+                        $(domObj).parent().parent().find(".error").remove();
+//                        console.log("验证成功");
+                        return true;
+                    }
+
+                })
+                return resData
+            }
+            if(type==6){
+                var res = appentError("",domObj,msg,6)
+                return res
+            }
+            if(type == 1 || type == 2 || type == 3){
+                var res = appentError(regular,domObj,msg)
+                return res;
+            }
+        }
+        function appentError(regular,domObj,msg,type) {
+            var errorDom = $(domObj).parents(".input-field");
+            if(type == 5 ){
+                errorDom = $(domObj).parent().parent();
+            }
+            var data = $(domObj).val();
+            if((regular && !regular.test(data)) || (type == 4 && $("#confirm").val() != $("#loginPassword").val()) || (type == 5 ) || (type == 6)){
+                if(errorDom.find(".error").length > 0){
+                    errorDom.find(".error").remove();
+                    errorDom.children(".err-tip").append('<div class="tip error"><i></i><span>' + msg + '</span></div>')
+                }else{
+                    errorDom.children(".err-tip").append('<div class="tip error"><i></i><span>' + msg + '</span></div>')
+                }
+                return false;
+            }else{
+                if(type == 4){
+                    $(".passwordInput").parent().find(".error").remove();
+                }else{
+                    errorDom.find(".error").remove();
+                }
+                return true;
+            }
+        }
+        function removeError(domObj,type) {
+            var errorDom = $(domObj).parent();
+            if(type && type == 5){
+                errorDom = $(domObj).parent().parent();
+            }
+
+            errorDom.find(".error").remove();
+        }
+    $(function () {
+        var isAllowPhone = false;
+        var userTel='';
+        var postdata = {
+            telephone:"",
+            pwd:"",
+        }
+        /**
+         * 点击验证码自动刷新
+         */
+        $("#verifycodeId").click(function(){
+            var that = this;
+            that.src = that.src + "?timestamp=" + new Date().getTime();
+        })
+        /**
+         *验证图片密码是否正确
+         */
+//        $("#verifyCode").change(function(){
+//            var that = this;
+//            if(!ValidationData(that,"验证码错误",5)){
+//                isAllowPhone = false;
+//            }else{
+//                isAllowPhone = true;
+//            }
+//        })
+        /**
+         * 手机号验证是否符合规则
+         */
+        $("#mobileNumber").change(function(){
+            var that = this;
+            var data = $(that).val();
+            if(!ValidationData(that,"手机号格式错误！",1)){
+                return;
+            }else{
+                var url = "{:U('Home/Rqupassword/valiTel/tel/"+data+"')}";
+                getAjaxData(url,function(res){
+                    if(res.Data == 1){
+                        removeError(that);
+                        postdata.telephone = data;
+                    }else{
+                        userTel = data;
+                        appentError("",that,data+"该手机号未注册！",6);
+                        postdata.telephone = "";
+                        $(that).val('');
+
+                    }
+                })
+            }
+        })
+        /**
+         *获取手机验证码
+         */
+        var clock = '';
+        var reSetNum = 60;
+        $('#valiBtn').click(function(){
+            if(ValidationData($("#verifyCode"),"验证码错误，请重新输入",5,true)){
+                isAllowPhone = true;
+            }else{
+                autuRsetvali();
+                isAllowPhone = false;
+                return
+            }
+            var that = this;
+            if(isAllowPhone && postdata.telephone!=""){
+                removeError(that,5);
+                var url = "{:U('Home/Rqupassword/getPhonevali/tel/"+postdata.telephone+"')}"
+                getAjaxData(url,function(res){
+                    if(res.State == 2){
+                        $('#valiBtn').attr("disabled","disabled");
+                        $('#valiBtn').html(reSetNum+"秒");
+                        clock = setInterval(doLoop,1000);
+                        layer.msg('获取成功', {time: 500})
+//                        临时添加
+//                        alert(res.Data);
+                    }else{
+
+                    }
+                })
+            }else{
+                appentError("",that,"请输入正确的手机号",5);
+            }
+        })
+        /**
+         *验证码60秒时效
+         */
+        function doLoop() {
+            reSetNum--;
+            if (reSetNum > 0) {
+                $('#valiBtn').html( reSetNum + '秒');
+            } else {
+                clearInterval(clock); //清除js定时器
+                $('#valiBtn').attr("disabled",false);
+                $('#valiBtn').html("获取验证码");
+                reSetNum = 60; //重置时间
+            }
+        }
+        /**
+         *查询密码是否符合规则
+         */
+        $("#loginPassword").change(function(){
+            var that = this;
+            var data = $(that).val();
+            if(!ValidationData(that,"密码长度最少6位最多不超过18位",3)){
+                postdata.pwd = "";
+                return;
+            }else{
+                if($("#confirm").val().length>0){
+                    if(ValidationData(that,"两次密码不一致，请重新输入",4)){
+                        postdata.pwd = data;
+                    }
+                }
+            }
+        })
+        /**
+         *查询确认密码是否符合规则
+         */
+        $("#confirm").change(function(){
+            var that = this;
+            var data = $(that).val();
+            if(!ValidationData(that,"密码长度最少6位最多不超过18位",3)){
+                //postdata.pwd = "";
+                return;
+            }else{
+                if($("#loginPassword").val().length>0){
+                    if(ValidationData(that,"两次密码不一致，请重新输入",4)){
+                        postdata.pwd = data;
+                    }
+                }
+            }
+        });
+        /**
+         * 提交数据修改密码
+         */
+        $("#submitBtn").click(function(){
+            var tel = $("#mobileNumber");
+            var pwd = $("#loginPassword");
+            var repwd =  $("#confirm");
+            var verifyCode = $("#verifyCode");
+            var Phonevali = $("#registerVerifyCode");
+            postdata.telephone = tel.val();
+            postdata.pwd = repwd.val();
+            if(tel.val() == ""){
+                if(userTel){
+                    ValidationData(tel,userTel+"该手机号未注册！",1,true);
+                    userTel = '';
+                    return
+                }else{
+                    ValidationData(tel,"请输入手机号！",1,true)
+                    return
+                }
+
+            }
+            if(verifyCode.val() == ""){
+                ValidationData(verifyCode,"请输入验证码",5,true)
+                return
+            }
+            var checkPhonevali_status = true;
+            if(postdata.telephone && Phonevali.val()){
+                // var url = "{:U('Home/Rqupassword/checkPhonevali/tel/"+postdata.telephone+"/val/"+Phonevali.val()+"')}";
+                var url = "{:U('Home/Rqupassword/checkPhonevali')}?tel="+postdata.telephone+'&val='+Phonevali.val();
+                getAjaxData(url,function(res) {
+                    if(res.State !=1 ){
+                        checkPhonevali_status =false;
+                        autuRsetvali();
+                        ValidationData(Phonevali,"手机验证码不正确！",6,true);
+                    }else{
+                        checkPhonevali_status =true;
+                    }
+                })
+            }else{
+                checkPhonevali_status =false;
+                autuRsetvali();
+                ValidationData(Phonevali,"请输入手机验证码！",6,true);
+            }
+            if(!checkPhonevali_status){
+                return false;
+            }
+            if(pwd.val() == ""){
+                ValidationData(pwd,"请输入密码！",3,true)
+                return
+            }
+            if(repwd.val() == ""){
+                ValidationData(repwd,"请输入密码！",4,true)
+                return
+            }
+            if(tel.val() != postdata.telephone){
+                ValidationData(tel,"手机号格式错误！",1,true)
+                autuRsetvali();
+                return;
+            }
+            if(pwd.val() != postdata.pwd || repwd.val() != postdata.pwd || pwd.val() !=  repwd.val()){
+                ValidationData(pwd,"不少于6位的字母+数字",3);
+                ValidationData(repwd,"两次密码不一致，请重新输入！",4)
+                autuRsetvali();
+                return;
+            }
+            var url = "{:U('Home/Rqupassword/setUserPwd')}";
+            postAjaxData(url,postdata,function (res) {
+               if(res.State == 1 && res.Data == 1){
+                   layer.msg('修改成功，稍等将跳转个人中心');
+                   setTimeout(function(){
+                       window.location.href = window.location.href = "/personinfo";
+                   },1000)
+
+               }else{
+                   layer.msg('修改失败');
+               }
+            })
+        })
+        /**
+         *刷新验证码
+         */
+        function autuRsetvali(){
+            var src = $("#verifycodeId")[0].src;
+            src = src+ "?timestamp=" + new Date().getTime();
+            $("#verifyCode").val("") ;
+            $("#verifycodeId").attr("src", src);
+        }
+    })
+    </script>
+</block>

@@ -1,0 +1,31 @@
+
+
+
+
+.input-line{line-height: 30px;overflow: hidden;margin:0 0 15px 0;}
+.input-line b{display:block;width:195px;float:left;text-align:right;color:#616262;font-weight:400}
+/* .register .input-field{margin-left:205px;} */
+.input-field{position:relative;}
+.input-field input{position: relative;width:208px;height:28px;padding:0 10px;line-height:28px;border:1px solid #d0d0d0;outline:none;font-size:14px;color:#212121;/*border-radius:5px;*/background:transparent;}
+.input-field input:focus{border-color:#2f8dd7;outline:none;}
+.verify-img{width: 73px;height:30px;}
+/* .ph-label{position:absolute;height:28px;line-height:28px;color:#bbb;top:1px;left:10px;} */
+
+a.confirm-btn{background:#6da0cb;line-height: 20px;padding:10px 40px;color:#fff;letter-spacing:5px;box-shadow: 1px 1px 1px #bebfc1;}
+
+.login-left{width:580px;padding:0 70px 0 0;text-align:right}
+.login-left img{width:600px;height:320px;}
+.login{margin-left:650px;width:230px;padding:40px 20px 65px 20px;border:1px solid #d0d0d0}
+.login h3{line-height:30px;font-weight:400;font-size:14px;overflow:hidden}
+.login a{color:#52b9cc;}
+.login .confirm-btn{color:#fff;padding:0;display:block;line-height:35px;height:35px;width:100%;text-align:center;}
+.login-u {display:inline-block;width:13%;height:28px;border:1px solid #d0d0d0;border-right:none;background-color:#EEEEEE;background-position:-107px -1px;float:left;}
+.login-pwd {display:inline-block;width:13%;height:28px;border:1px solid #d0d0d0;border-right:none;background-color:#EEEEEE;background-position:-134px -1px;float:left;}
+.login .input-line input {width:76%;}
+.login .ph-label {left:40px;}
+.login .verify .ph-label {left:10px;}
+
+.header-fix {z-index:99;top:0;left:0;}
+/*.header-fix + .main {margin: 105px auto;}*/
+.header-fix + .index {margin:75px auto;}
+.header-fix + .main .leaderPic{margin: -10px 0;}

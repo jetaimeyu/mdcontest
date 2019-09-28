@@ -1,0 +1,70 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>登录日志</title>
+	<style>
+		#toolbar label{
+			margin:0px 5px;
+		}
+	</style>
+</block>
+<block name="body">
+	<div class="main-page">
+		<table id="datagrid"></table>
+		<!--grid工具栏 -->
+		<div id="toolbar">
+			<div style="display:inline-block;padding-left:5px">
+				<label>用户名:</label><input id="login_name" type="text" class="easyui-textbox">
+				<label style="margin-left:10px">登录时间:</label><input id="startLoginTime" class="easyui-datetimebox" name="startLoginTime" data-options="editable:true,showSeconds:false" style="width:140px"><label>到</label><input id="endLoginTime" class="easyui-datetimebox" name="endLoginTime" data-options="editable:true,showSeconds:false" style="width:140px">   
+				<a id="btn_query" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:false,iconCls:'icon-search'">查询</a>
+			</div>
+		</div>
+	</div>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		//datagrid表格
+		$("#datagrid").datagrid({
+			border:true,
+			fit:true,
+			url:"{:U('Fhmng/UserLog/getexprtLogList')}",
+			pagination:true,
+			pageSize:20,//默认加载条数，必须是paseList内数据
+			pageList:[10,20,30,50],
+			striped:true,//是否显示斑马线效果
+			nowrap:true,//单元格不换行
+			rownumbers:true,//行号
+			singleSelect:false,
+			checkOnSelect:true,
+			toolbar:"#toolbar",
+			remoteSort:false,
+			columns:[[
+			    {title:"用户名",field:"login_name",width:180,sortable:true},
+			    {title:"姓名",field:"true_name",width:180,sortable:true},
+			    {title:"登录IP",field:"login_ip",width:150,sortable:true},
+				{title:"登录时间",field:"login_time",width:150,sortable:true},
+			]],
+		});
+		//回车事件
+		$(document).keydown(function(event) {
+			if (event.keyCode == 13) {
+				$("#btn_query").trigger("click");
+			}
+		})
+		$("#btn_query").click(function(){
+			//登录名
+			var login_name = $("#login_name").val();
+			//开始时间
+			var startLoginTime = $("#startLoginTime").datetimebox("getValue");
+			//结束时间
+			var endLoginTime = $("#endLoginTime").datetimebox("getValue");
+			
+			$("#datagrid").datagrid('load',{
+				"login_name":login_name,
+				"startLoginTime":startLoginTime,
+				"endLoginTime":endLoginTime
+			});
+		});
+	});
+	</script>
+</block>

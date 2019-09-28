@@ -1,0 +1,59 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>模块分配</title>
+
+</block>
+<block name="body">
+<div class="role_box">
+<table style='width:574px;'>
+<volist name="meeting_model" id="vo" empty="暂无">
+	<tr>
+		<td>
+	<div style='margin-top: 10px;'>
+		<label ><font color='#3380cc'>会议名称：{$vo.meeting_name}</font></label>
+	</div>
+</td>
+	</tr>
+	<tr>
+		<td>
+	<!-- <div style='width:100px;word-wrap:break-word;word-break:break-all;'> -->
+		<label>模块：<empty name='vo.model_list'>(暂无)</empty></label>
+		<volist name='vo.model_list' id='voo' mod='5'  key="k">
+			<input  style='margin-left: 8px;' data-modelid="{$voo.id}" data-mid="{$voo.mid}" type="checkbox" <eq name='voo.checked' value='true'>checked</eq>/> <label style=''>{$voo.name}</label>
+			<!--控制换行-->
+			<eq name="mod" value="4"><br/><span style='margin-left:42px;'></span></eq>
+		</volist>
+	<!-- </div> -->
+	</td>
+</tr>
+</volist>
+<input id="hdnModelids" type="hidden" value="">
+</table>
+</div>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		//取得用户已有的权限id串
+		var modelids = '';
+		$("input[type='checkbox']:checked").each(function(){
+			var modelid = $(this).data('modelid');
+			var mid = $(this).data('mid');
+			var temp = mid+'_'+modelid+",";
+			modelids += temp;
+		});
+		$('#hdnModelids').val(modelids);
+		$("input[type='checkbox']").on("change",function(){
+			var modelids = '';
+			$("input[type='checkbox']:checked").each(function(){
+				var modelid = $(this).data('modelid');
+				var mid = $(this).data('mid');
+				var temp = mid+'_'+modelid+",";
+				modelids += temp;
+			});
+			$('#hdnModelids').val(modelids);
+		});
+		
+	});
+	</script>
+</block>

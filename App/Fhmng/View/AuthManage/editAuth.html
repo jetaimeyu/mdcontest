@@ -1,0 +1,142 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>编辑权限</title>
+</block>
+<block name="body">
+<form id="myform" class="easyui-form myform" data-options="novalidate:false" method="post">
+	<table>
+		<input id="authid" name="id" type="hidden" value="{$data.id}"/>
+		<tr>
+			<td class="text_right" style="width:120px;"><span class="mark">*</span>权限名称：</td>
+			<td><input  name="auth_name" value="{$data.auth_name}" class="easyui-textbox" style="width:250px;" data-options="validateOnCreate:false,required:true,validType:['length[1,100]']"></td>
+		</tr>
+
+
+
+ 
+		<tr>
+			<td class="text_right" id='model_list'><span class="mark">*</span>模块：</td>
+			<td>
+				<div class='model_list'>
+				<volist name='model_list' id='vo' mod='5' empty='暂无'>
+					<input name="model" type='checkbox' <eq name="vo.checked" value='true'>checked</eq> value="{$vo.id}" data-options='required:true' />{$vo.name}
+					<!-- 控制换行 -->
+				   <!-- <if condition="$i eq count($model_list)"><br/>
+					<else />
+					<eq name="mod" value="4"><br/></eq>
+					</if> -->
+				</volist> 
+				</div>
+				<!-- <span class='panel-loading' style='color:red'>请选择模块</span> -->
+			</td> 
+		</tr>
+
+		<tr>
+			<td class="text_right"><span class="mark">*</span>状态：</td>
+			<td>
+				<select name="status" value="{$data.status}" class="easyui-combobox" style="width:150px" data-options="validateOnCreate:false,editable:false,panelHeight:'auto',required:true" style="width:130px">
+					<option value="1" <eq name="data.status" value='1'>selected='true'</eq>>启用</option>
+					<option value="0" <eq name="data.status" value='0'>selected='true'</eq>>禁用</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right">描述(200字之内)：</td>
+			<td><textarea style="width:300px;height:100px" name="description" class="easyui-validatebox text-area" data-options="tipPosition:'left',validType:['length[0,200]']"  maxlength="200">{$data.description}</textarea></td>
+		</tr>
+	</table>
+</form>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		// $('#cc').combobox({    
+		//     onSelect:function(res){
+		//     	$.ajax({
+		//     		url:'getModellist',
+		//     		data:{meeting_id:res.id},
+		//     		dataType: 'json',   
+		//     		success:function(data){
+		//     			var html='';
+		//     			for(var i = 0; i< data.length;i++){
+		//     				var model_id = data[i].id;
+		//     				var model_name = data[i].name;
+		//     				html +="<input type='checkbox' name='model' value="+model_id+">"+model_name+""; 
+		//     			}
+		//     			$('.model_list').html(html);
+		//     		}
+		//     	})
+		//     }  
+		// });  
+
+
+		$("#myform").form({
+			url:"{:U('AuthManage/editAuth')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var isValid  = $(this).form('validate');
+
+				//赋值 会议 id
+				var model_list = $("input[name='model']:checked").map(function () {
+               		return $(this).val();
+           		}).get().join(',');
+				if(model_list){
+	           		param.value = model_list;
+				}else{
+					$('#model_list').tooltip({  
+						position: 'left', 
+						showDelay:0,
+						hideDelay:0, 
+						content: '<span>该输入项为必填项</span>',   
+						onShow: function(){    
+						$(this).tooltip('tip').css({        
+						color:"#000",borderColor:"#CC9933",backgroundColor:"#FFFFCC"   
+						});   
+					}});
+					$("#model_list").tooltip("show");
+					setTimeout("$('#model_list').tooltip('hide')",500);
+					isValid = false;
+				}
+				if(isValid){
+					//验证通过提交，禁用提交按钮，防止多次提交
+					parent.$("#btnSubmit").linkbutton("disable");
+				}
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$.tipShow({
+						"message":"操作成功",
+						"color":"green",
+						"callback":function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":true,
+								"controlType":"datagrid",
+								"gridId":"treegrid"
+							});
+						}
+					});
+				}else{
+					$.tipShow({
+						"message":"操作失败",
+						"color":"red"
+					});
+					
+					parent.$("#btnSubmit").linkbutton("enable");
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败",
+					"color":"red"
+				});
+				parent.$("#btnSubmit").linkbutton("enable");
+			}
+		});
+		
+	});
+	</script>
+</block>

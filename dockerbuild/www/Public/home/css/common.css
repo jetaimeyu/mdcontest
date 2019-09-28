@@ -1,0 +1,212 @@
+@CHARSET "UTF-8";  /* CSS Document */
+
+body,ul,ol,li,p,h1,h2,h3,h4,h5,h6,form,fieldset,legend,table,td,img,div,dl,dt,dd,em,strong{margin: 0;padding: 0;border: 0;}
+input{padding:0;margin:0;}
+html{height:100%;width:100%;}
+body {color: #333;font-size: 14px;font-family: "Microsoft Yahei";}
+img {border: none;}
+ul{list-style:none;}
+a {text-decoration: none;color: #4996ed; cursor: pointer;}
+a:link {color: #4996ed;text-decoration: none;}
+a:visited {color: #4996ed;text-decoration: none;}
+a:hover {color: #4996ed;text-decoration: none;}
+a:active {color: #4996ed;text-decoration: none;}
+.fl{float:left;}
+.fr{float:right;position: relative}
+.clear{clear:both;display:block;height:0;}
+i,b{font-style:normal;}
+.red-need{color:#f93150;vertical-align:middle;padding:0 10px;}
+.on-on,.c-on,.c-c,.on-c,.vali-ok,.vali-error,.search-btn i,a.next-btn ,.honor1,.honor2,.honor3,.login-u,.login-pwd{background:url('../images/icons.png') no-repeat;line-height:0;font-size:0;vertical-align: middle;}
+a.game-stage,a.game-stage-now{background:url('../images/icons1.png') no-repeat;line-height:0;font-size:0;vertical-align: middle;}
+
+/* 头部样式 linear-gradient(-90deg,#1e364d, #3b5d83)*/
+.header{background:#3F4B5C;height:75px;width:100%;min-width: 1080px;}
+.header1{height:75px;position:absolute;z-index:99;width:100%;left:0;top:0;min-width: 1080px;}
+.header-inner{width:1080px;margin:0 auto;}
+.logo{display:block;width:240px;height:50px;margin:12px 10px 0 10px;background:url('../images/logo.png') no-repeat;}
+/* 头部内容样式 */
+.main{width:1080px;margin:0 auto;overflow:hidden; background:#fff;min-height: 565px}
+.main-none{margin:20px auto;background:transparent}
+.menu{padding-top:23px;list-style:none;overflow: hidden;font-size:15px;}
+.menu li{float:left;padding: 0px 8px;line-height:36px;}
+.menu li.on{background: url('../images/header.png');background-repeat: no-repeat;color:#FFFFFF;background-position: center; background-size: 100% 100%}
+.menu li.on a{color:#FFFFFF}
+.menu li a{padding:0 9px;width:64px;
+    height:16px;
+    font-size:16px;
+    font-family:MicrosoftYaHei;
+    color:#BBC7D7;}
+/* 头部登陆 注册按钮样式 */
+.users{margin:30px 10px 0 0;}
+.actionstyle{font-size:12px;padding:5px 20px;margin-right:0px;width: 59px;
+    height: 30px;
+    background: rgba(95,109,129,1);
+    border-radius: 15px;}
+.users a{
+    color:#fff;
+}
+.users .logined{
+    float: left;
+    text-align: center;
+    width:83px;
+    height:30px;
+    overflow: hidden;
+    box-sizing: border-box;
+    border-radius: 5px;
+    line-height: 19px;
+}
+.logined span{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    max-width: 48px;
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+.logined_action{
+    display: none;
+    position: absolute;
+    top:30px;
+    left: 0;
+    background: white;
+    width: 83px;
+    text-align: center;
+    /* border: 1px solid #c3c3c3; */
+    box-sizing: content-box;
+    border-radius: 4px;
+    box-shadow: 0px 2px 7px #c3c3c3;
+}
+.logined_action_li{
+    padding:6px 0;
+    font-size: 12px;
+}
+
+.logined_action_li:hover a{
+    color:#4996ed
+}
+.logined_action_li a{
+    color: black;
+}
+
+/*底部footer样式linear-gradient(-90deg,#1e364d, #3b5d83)*/
+.footer {background:#3C3A47;min-width: 1080px;}
+.footer a {color:#fff;}
+.footer ul {list-style:none;float:left;margin:20px 140px 0 180px;line-height:28px;font-size: 12px;color:#b3bfc9;}
+.footer ul li:first-child {line-height:44px;}
+.footer .last {margin: 20px 0 0 411px;}
+.footer .last img {width:120px;height:120px;}
+.footer .poli {width:1080px;height:50px;font-size:12px;color:#b3bfc9;border-top:1px solid #656274;margin: 0 auto;box-sizing: border-box}
+/*登陆 注册 修改密码 input框提示样式*/
+.input-line .tip {width:228px;height:28px;color:#666;font-size:12px;}
+.input-line .tip i {height:16px;display:block;position:absolute;margin-top:6px;margin-left:10px;width:16px;}
+.input-line .error {border:1px solid #f7cebd;background-color:#fceee8;}
+.input-line .error i {background:url(../images/register_error.png) no-repeat;}
+.input-line .error span {margin-left:36px;margin-top:0;display:block;}
+.input-line .success i {background:url(../images/register_success.png) no-repeat;}
+
+
+/*兼容IE 10 11  由于不能支持条件注释语句，故添加该内容用于兼容IE10+*/
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    .input-field select{
+        padding: 0 0 0 1px !important;
+    }
+}
+/*弹窗*/
+.popupbg{
+    position: fixed;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background:#000000;
+    -webkit-opacity: 0.5;
+    /* Netscape and Older than Firefox 0.9 */
+    -moz-opacity: 0.5;
+    /* Safari 1.x (pre WebKit!) 老式khtml内核的Safari浏览器*/
+    -khtml-opacity: 0.5;
+    /* IE9 + etc...modern browsers */
+    opacity: .5;
+    /* IE 4-9 */
+    filter:alpha(opacity=50);
+    z-index: 99;
+    display: none;
+}
+.popupContent{
+    width: 552px;
+    position: fixed;
+    top:258px;
+    left:0;
+    right: 0;
+    margin:auto;
+    z-index: 100;
+    display: none;
+}
+.popupContentTitle{
+    box-sizing: border-box;
+    width: 100%;
+    background: #3F4B5C;
+    color: white;
+    font-size: 30px;
+    text-align: center;
+    position: relative;
+    line-height: 62px;
+}
+.closePopup{
+    width: 26px;
+    position: absolute;
+    top: 50%;
+    right:21px;
+    transform: translate(0, -50%);
+    cursor: pointer;
+}
+.markedWords{
+    width: 100%;
+    background: white;
+    text-align: center;
+    font-size: 14px;
+    overflow: hidden;
+    padding-bottom:34px;
+}
+.markedWords_title{
+    font-size:18px;
+    color:#D14E4E ;
+    margin-top:35px;
+    margin-bottom: 28px;
+}
+.markedWords p{
+    color:#666666;
+}
+.firsttip{
+    margin: 10px 0;
+}
+.secondtip{
+  margin-bottom: 6px;
+}
+.markedWords a{
+    text-decoration:underline;
+}
+.gobtn a{
+    text-decoration:none;
+    color:white;
+}
+.gobtn{
+    width:260px;
+    line-height: 50px;
+    font-size: 16px;
+    background: #D14E4E;
+    margin: 0 auto;
+    border-radius:25px;
+    margin-top:57px;
+}
+.goPersoninfo a{
+    color:#999999;
+    font-size: 14px;
+}
+.goPersoninfo a:hover{
+    color:#D14E4E;
+}
+.goPersoninfo {
+    margin-top:8px ;
+}

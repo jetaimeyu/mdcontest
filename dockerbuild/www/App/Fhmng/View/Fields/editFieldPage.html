@@ -1,0 +1,177 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>编辑字段</title>
+</block>
+<block name="body">
+<form id="myform" class="easyui-form myform" data-options="novalidate:false" method="post">
+	<table>
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>字段别名：</td>
+			<td>
+				<input id="field_alias"  name="field_alias" value={$field.field_alias} class="easyui-textbox" style="width:250px" data-options="required:true,validType:['length[0,20]']" ><span class="tip">例如：文章标题</span>
+				<input id="hdnModelId" type="hidden" name="model_id" value={$field.model_id}>
+				<input id="hdnId" type="hidden" name="id" value={$field.id}>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>字段名称：</td>
+			<td>
+				<input id="field_name"  name="field_name" value="{$field.field_name}" class="easyui-textbox" style="width:250px" data-options="required:true,validType:['length[0,20]','validFiledName','validFieldNameExist']" ><span class="tip">默认为字段别名的首字母</span>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td class="tip">只能由字母、数字和下划线组成且不能以下划线开头和结尾</td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>字段类型：</td>
+			<td>
+				<select id="field_type" name="field_type" class="easyui-combobox" style="width:145px"  data-options="value:'{$field.field_type}',url:'{:U('Fields/getFieldsType')}',editable:false,panelHeight:'auto',required:true,valueField:'dic_key',textField:'dic_value'" style="width:130px"></select>
+			</td>
+		</tr>
+		<in name="field.field_type" value="combobox,checkbox,radio">
+			<tr id="tr_dic_type_code">
+				<td class="text_right">参数值：</td>
+				<td>
+					<select id="dic_type_code" name="dic_type_code" class="easyui-combobox" style="width:150px"  data-options="value:'{$field.dic_type_code}',url:'{:U('Fields/getDicTypes')}',editable:false,panelHeight:'auto',valueField:'type_code',textField:'type_name'" style="width:130px"></select>
+					<span class="tip">作为下拉选项，可以在字典管理中配置</span>
+				</td>
+			</tr>
+		<else/>
+			<tr id="tr_dic_type_code" style="display:none">
+				<td class="text_right">参数值：</td>
+				<td>
+					<select id="dic_type_code" name="dic_type_code" class="easyui-combobox" style="width:150px"  data-options="url:'{:U('Fields/getDicTypes')}',editable:false,panelHeight:'auto',valueField:'type_code',textField:'type_name'" style="width:130px"></select>
+					<span class="tip">作为下拉选项，可以在字典管理中配置</span>
+				</td>
+			</tr>
+		</in>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>状态：</td>
+			<td>
+				<select name="status" class="easyui-combobox" style="width:150px" data-options="value:'{$field.status}',editable:false,panelHeight:'auto',required:true" style="width:130px">
+					<option value="1">启用</option>
+					<option value="0">禁用</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>排序号：</td>
+			<td>
+				<input id="order_no" name="order_no" class="easyui-numberspinner" style="width:150px" required="required" data-options="min:0,max:1000,editable:true,value:{$field.order_no}">
+				<span class="tip">（升序）</span>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right">描述：</td>
+			<td><textarea style="width:300px;height:100px" name="description" class="easyui-validatebox text-area" maxlength="200">{$field.description}</textarea></td>
+		</tr>
+	</table>
+</form>
+</block>
+<block name="script">
+<script src="__PUBLIC__/system/js/Spell.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	$(function(){
+		$("#myform").form({
+			url:"{:U('Fields/updateField')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var isValid  = $(this).form('validate');
+				if(isValid){
+					//验证通过提交，禁用提交按钮，防止多次提交
+					parent.$("#btnSubmit").linkbutton("disable");
+				}
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$.tipShow({
+						"message":"操作成功",
+						"color":"green",
+						"callback":function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":true,
+								"controlType":"datagrid",
+								"gridId":"fields_datagrid"
+							});
+						}
+					});
+				}else{
+					$.tipShow({
+						"message":"操作失败",
+						"color":"red"
+					});
+					parent.$("#btnSubmit").linkbutton("enable");
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败",
+					"color":"red"
+				});
+				
+				parent.$("#btnSubmit").linkbutton("enable");
+			}
+		});
+		
+		$("#field_alias").textbox({
+			"onChange":function(newValue,oldValue){
+				var spellObj = getSpell(newValue);
+				$("#field_name").textbox("setValue",spellObj.JianPin);
+			}
+		});
+		
+		$("#field_type").combobox({
+			"onChange":function(newValue,oldValue){
+				if((newValue=="combobox") || (newValue=="checkbox") || (newValue=="radio")){
+					$("#tr_dic_type_code").show();
+				}else{
+					$("#tr_dic_type_code").hide();
+				}
+			}
+		});
+		
+		$.extend($.fn.validatebox.defaults.rules, {    
+		    validFiledName:{
+		    	validator:function(value,param){
+		    		 //只有字母、数字和下划线且不能以下划线开头和结尾
+		    		 var reg=/^(?!_)(?!.*?_$)[a-zA-Z0-9_]+$/ 
+		    		 return reg.test(value);
+		    	},
+		    	message:"格式错误"
+		    },
+		    validFieldNameExist:{
+		    	validator:function(value,param){
+		    		var id = $("#hdnId").val();
+		    		var model_id = $("#hdnModelId").val();
+		    		var isValid = false;
+		    		$.ajax({
+		    			type:"post",
+		    			async:false,
+		    			data:{
+		    				"id":id,
+		    				"model_id":model_id,
+		    				"field_name":value
+		    			},
+		    			url:"{:U('Fields/validFieldNameExistByUpdate')}",
+		    			success:function(response){
+		    				var result = $.parseJSON(response);
+		    				isValid = !result.isExist;
+		    			},
+		    			error:function(){
+		    				isValid = false;
+		    			}
+		    		});
+		    		return isValid;
+		    	},
+		    	message:"该模型下，该字段名称已存在"
+		    }
+		}); 
+
+	});
+	</script>
+</block>

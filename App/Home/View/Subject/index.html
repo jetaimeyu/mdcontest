@@ -1,0 +1,136 @@
+<extend name='Public/base'/>
+<block name='style'>
+    <link rel="stylesheet" href="__PUBLIC__/home/css/subject.css">
+    <style>
+    .layui-layer-dialog{
+        min-height: 150px !important;
+    }
+    </style>
+</block>
+<block name='body'>
+    <div class="main main-none">
+        <volist name='list' id='vo'>
+            <div class='main-div'>
+                <div class='content-div'>
+                    <div class='info-div'>
+                        <div class='title'>{$vo.title}</div>
+                        <div class='description'>{$vo.description|cutStr=200}</div>
+                        <div class='counts'>参赛组数：{$vo.member_counts}</div>
+                    </div>
+                    <div class='foot-button'>
+                        <div class='button-div left' <neq name='isopen' value='1'>style='background:gray;'</neq> >
+                            <a href="javascript:;" <eq name='isopen' value='1'>class='subject'</eq> <eq name='isnotstart' value='1'>class='isnotstart'</eq> data-id='{$vo.id}'><span >我要参赛</span></a>
+                        </div>
+                        <div class='button-div right'>
+                            <a href="/Subject/detail/id/{$vo['id']}" target="_blanck" ><span >了解更多</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </volist>
+    </div>
+</block>
+<block name='script'>
+    <script src='__PUBLIC__/home/js/layer/layer.js'></script>
+    <script>
+        $(function(){
+            $('.isnotstart').on('click',function(){
+                layer.confirm('报名还未开始', {
+                                title:false,
+                                closeBtn:0,
+                                area:['300px','150px'],
+                                shadeClose:true,
+                                btn: ['确定'] //按钮
+                            })
+            })
+                $('.subject').on('click',function(){
+                    var that = $(this).parent('div');
+                    var tel = "{$tel}";
+                    var id = $(this).data('id');
+                    //加锁，防止重复提交
+                    var lock = false;
+                    if(tel){
+                            $.ajax({
+                            url:"{:U('checkOrder')}",
+                            data:{'value':tel,'key':'tel','sid':id},
+                            type:'post',
+                            async:false,
+                            success:function(res){
+                                var res = $.parseJSON(res);
+                                that.css({'background':'#4996ed'});
+                                if(res.state == 0){
+                                    //询问框
+                                    layer.confirm(res.msg, {
+                                        title:false,
+                                        closeBtn:0,
+                                        area:['300px','150px'],
+                                        shadeClose:false,
+                                        btn: ['个人中心','关闭'] //按钮
+                                    }, function(){
+                                        window.location.href = "/personinfo";
+                                    },function(){
+                                        that.css({'background':'#D14E4E'});
+                                    });
+                                }else if(res.state == 2){
+                                    //询问框
+                                    layer.confirm(res.msg, {
+                                        title:false,
+                                        closeBtn:0,
+                                        area:['300px','150px'],
+                                        shadeClose:false,
+                                        btn: ['报名','取消'] //按钮
+                                    }, function(index){
+                                        layer.close(index);
+                                        if(!lock){
+                                            $.ajax({
+                                            url:"{:U('saveMemberAnother')}",
+                                            data:{'tel':tel,'sid':id},
+                                            type:'post',
+                                            async:false,
+                                            success:function(res){
+                                                    var res = $.parseJSON(res);
+                                                    that.css({'background':'#D14E4E'});
+                                                    if(res.success == true){
+                                                        lock = true;
+                                                        var tipcontent = {
+                                                            'popupContentTitle':'恭喜您报名成功!',
+                                                            'firsttip':'凭借手机号登录大赛网站<a href="/index">shaangu.maidiyun.com</a>，可查看报名信息、竞赛作品提交。',
+                                                            'secondtip':'您已是设计宝用户，可直接登录<a href="http://www.maidiyun.com/help/mdsjb.html" target="_blank">设计宝</a>建立设计群组，进行技术交流。',
+                                                            'thirdtip':'再次感谢对本次大赛的鼎力支持，预祝您比赛顺利，金榜题名！',
+                                                            'btn':'<a href="/personinfo">好，去个人中心</a>',
+                                                        };
+                                                        openPopup(tipcontent,2);
+//                                                        layer.msg(res.msg,{
+//                                                            time:500
+//                                                        },function(){
+//                                                            window.location.href = "{:U('Personinfo/index')}";
+//                                                        });
+                                                    }else{
+                                                        lock = false;
+                                                        layer.msg(res.msg);
+                                                    }
+                                                }
+                                            })
+                                        }
+
+                                    },function(){
+                                        that.css({'background':'#D14E4E'});
+                                    });
+                                }else{
+                                    window.location.href = "{:U('signup')}?sid="+id;
+                                }
+                            }
+                        })
+                    }else{
+                        window.location.href = "/login";
+                    }
+                })
+
+        });
+        //点击关闭弹窗
+        $(".closePopup").click(function(){
+            closePopup();
+        });
+    </script>
+</block>
+

@@ -1,0 +1,247 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>权限管理</title>
+</block>
+<block name="body">
+	<div class="main-page">
+		<div class="easyui-layout" data-options="fit:true">
+			<div data-options="region:'center'">
+				<table id="treegrid"></table>
+				
+				<!--grid工具栏 -->
+				<div id="toolbar">
+					<div style="display:inline-block;">
+						<a id="btn_add" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-add'">新增</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_edit" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-edit'">修改</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_del" href="javascript:void(0)" data-status='3' class="easyui-linkbutton setStatus" data-options="plain:true,iconCls:'icon-extend-del'">删除</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_enable" href="javascript:void(0)" data-status='1' class="easyui-linkbutton setStatus" data-options="plain:true,iconCls:'icon-extend-enable'">启用</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_disable" href="javascript:void(0)" data-status='0' class="easyui-linkbutton setStatus" data-options="plain:true,iconCls:'icon-extend-disable'">禁用</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_refresh" href="javascript:void(0)" class="easyui-linkbutton " data-options="plain:true,iconCls:'pagination-load'">刷新</a>
+						<input id="hdnpid" value="" type="hidden">
+					</div>
+					<div style="display:inline-block;position:absolute;right:10px;top:3px">
+						权限名称：<input id="searchbox" data-options="prompt:'权限名称'">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+
+		
+/*=================================================================================*/		
+		//treegrid权限列表
+		$("#treegrid").datagrid({
+			border:true,
+			fit:true,
+			url:"{:U('Fhmng/AuthManage/getAuthlist')}",
+			pagination:true,
+			pageSize:20,//默认加载条数，必须是paseList内数据
+			pageList:[10,20,30,50],
+			striped:true,//是否显示斑马线效果
+			nowrap:false,//单元格不换行
+			rownumbers:true,//行号
+			singleSelect:false,
+			checkOnSelect:true,
+			toolbar:"#toolbar",
+			remoteSort:false,
+			idField:'id',
+			treeField:'pid',
+			columns:[[
+			    {field:"id",width:100,checkbox:true},
+			    {title:"权限名称",field:"auth_name",width:150,sortable:true},
+			    {title:"模块",field:"value",width:150,align:"center",sortable:true},
+				{title:"状态",field:"status",width:60,align:"center",sortable:true,formatter:function(value,row,index){
+					if(value==1){
+						return "<span style='color:green;font-weight:bold'>启用</span>";
+					}else{
+						return "<span style='color:gray;font-weight:bold'>禁用</span>";
+					}
+				}},
+
+				{title:"描述",field:"description",width:230,sortable:true,formatter:function(value,row,index){
+					var html="<span class='span-ellipsis' title='"+ value+"'>"+ value+"</span>";
+					return html;
+				}},
+			]],
+			onSelect:oncheckChange,
+			onUnselect:oncheckChange,
+			onSelectAll:oncheckChange,
+			onUnselectAll:oncheckChange,
+		});
+		//查询框
+		$("#searchbox").searchbox({
+			width:200,
+			searcher:function(value){
+				$("#treegrid").datagrid("clearSelections");
+				var selections = $("#treegrid").datagrid("getSelections");
+				if(selections.length==0||selections.length==1){
+						$("#btn_edit").linkbutton('enable');
+					
+				}else{
+						$("#btn_edit").linkbutton('disable');
+				}
+				$("#treegrid").datagrid('load',{
+					queryStr:$.trim(value),
+				});
+			}
+		});
+		//选择行改变处理方法
+		function oncheckChange(){
+			//取得选中的记录
+			var selections = $("#treegrid").datagrid("getSelections");
+			if(selections.length==0||selections.length==1){
+					$("#btn_edit").linkbutton('enable');
+				
+			}else{
+				//当选择的记录多余1条的时候启用按钮，
+				//注意：此处只是样式禁用，但是单击事件没有被禁用
+				
+					$("#btn_edit").linkbutton('disable');
+			}
+		}
+		//刷新
+		$("#btn_refresh").click(function(){
+			$("#btn_edit").linkbutton('enable');
+			$("#treegrid").datagrid("clearSelections");
+			$("#treegrid").datagrid("reload");
+		});
+		
+		//新增
+		$("#btn_add").click(function(){
+			var pid = $("#hdnpid").val();
+			openDialog({
+				windowId:"window",
+				title:"新增权限",
+				href:"{:U('AuthManage/editAuth')}?pid="+pid,
+				width:550,
+				height:400,
+				buttons:[
+					{
+						id:"btnSubmit",
+						text:"提交",
+						iconCls:"icon-ok",
+						handler:function(){
+							submitForm("myform");
+						}
+					},
+					{
+						text:"取消",
+iconCls:"icon-cancel",
+handler:function(){
+		closeDialog();
+}
+					}
+				]
+			});
+		});
+		
+		//修改
+		$("#btn_edit").click(function(){
+			//取得选中的记录
+			var selections = $("#treegrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			var id = selections[0].id;
+			var pid = $("#hdnpid").val();
+			openDialog({
+				windowId:"window",
+				title:"修改权限",
+				href:"{:U('AuthManage/editAuth')}?id="+id+"&pid="+pid,
+				width:550,
+				height:400,
+				buttons:[
+					{
+						text:"提交",
+						iconCls:"icon-ok",
+						handler:function(){
+							submitForm("myform");
+						}
+					},
+					{
+						text:"取消",
+iconCls:"icon-cancel",
+handler:function(){
+		closeDialog();
+}
+					}
+				]
+			});
+		});
+		
+		
+		//启用,禁用，删除
+		$(".setStatus").click(function(){
+			var status = $(this).data('status');
+			//取得选中的记录
+			var selections = $("#treegrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			//提示语
+			var alertstr = status==3?'确定删除吗？':(status==1?'确定启用吗？':'确定禁用吗？');
+
+			confirm('温馨提示',alertstr,function(flag){    
+			    if (flag){ 
+			    	var ids = new Array();
+					$.each(selections,function(i,item){
+						ids.push(item.id);
+					});
+					$.ajax({
+						url:"{:U('AuthManage/setStatus')}",
+						type:"post",
+						data:{
+							"ids":ids.join(","),
+							"status":status
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#treegrid").datagrid("clearSelections");
+
+								$("#btn_edit").linkbutton('enable');
+								$("#treegrid").datagrid("reload");
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }    
+			}); 
+		});
+		
+	});
+	</script>
+</block>

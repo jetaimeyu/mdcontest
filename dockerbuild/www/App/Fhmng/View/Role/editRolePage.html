@@ -1,0 +1,98 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>添加角色</title>
+</block>
+<block name="body">
+<form id="myform" class="easyui-form myform" data-options="novalidate:false" method="post">
+	<table>
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>角色名称：</td>
+			<td>
+				<input id="role_name"  name="role_name" value="{$role.role_name}" class="easyui-textbox"  style="width:250px;" data-options="validateOnCreate:false,delay:800,required:true,validType:['length[1,20]','validRoleNameByUpdate']" >
+				<input id="hdnRoleid" name="id" type="hidden" value="{$role.id}"/>
+			</td>
+		</tr>
+		<td class="text_right"><span class="mark">*</span>状态：</td>
+		<td>
+			<select name="status" class="easyui-combobox" data-options="value:{$role.status},editable:false,panelHeight:'auto',required:true" style="width:130px">
+				<option value="1">启用</option>
+				<option value="0">禁用</option>
+			</select>
+		</td>
+		</tr>
+		<tr>
+			<td class="text_right" style='width:103px'>描述(200字之内)：</td>
+			<td><textarea style="width:300px;height:100px" name="description" class="easyui-validatebox text-area" data-options="tipPosition:'left',validType:['length[0,200]']" maxlength="200">{$role.description}</textarea></td>
+		</tr>
+	</table>
+</form>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		$("#myform").form({
+			url:"{:U('Role/updateRole')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var isValid  = $(this).form('validate');
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$.tipShow({
+						"message":"操作成功",
+						"color":"green",
+						"callback":function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":true
+							});
+						}
+					});
+				}else{
+					$.tipShow({
+						"message":result.message,
+						"color":"red"
+					});
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败",
+					"color":"red"
+				});
+			}
+		});
+		
+		//验证密码与确认密码是否相同
+		$.extend($.fn.validatebox.defaults.rules, {    
+			validRoleNameByUpdate:{
+		    	validator:function(value,param){
+		    		var id = $("#hdnRoleid").val();
+		    		var isValid = false;
+		    		$.ajax({
+		    			type:"post",
+		    			async:false,
+		    			data:{
+		    				"id":id,
+		    				"role_name":$.trim(value)
+		    			},
+		    			url:"{:U('Role/validRoleNameByUpdate')}",
+		    			success:function(response){
+		    				var result = $.parseJSON(response);
+		    				isValid = !result.isExist;
+		    			},
+		    			error:function(){
+		    				isValid = false;
+		    			}
+		    		});
+		    		return isValid;
+		    	},
+		    	message:"该角色已存在"
+		    }
+		}); 
+	});
+	</script>
+</block>

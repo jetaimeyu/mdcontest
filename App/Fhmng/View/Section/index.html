@@ -1,0 +1,259 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>版块管理</title>
+	<style>
+		#toolbar label{
+			margin:0px 5px;
+		}
+	</style>
+</block>
+<block name="body">
+	<div class="main-page">
+		<table id="datagrid"></table>
+		<!--grid工具栏 -->
+		<div id="toolbar">
+			<div style="display:inline-block;">
+				<a id="btn_add" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-add'">新增</a>
+				<div class="toolbar-separator"></div>
+				<a id="btn_edit" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-edit'">修改</a>
+				<div class="toolbar-separator"></div>
+				<a id="btn_enable"  data-status='1' href="javascript:void(0)" class="easyui-linkbutton setStatus" data-options="plain:true,iconCls:'icon-extend-enable'">启用</a>
+				<div class="toolbar-separator"></div>
+				<a id="btn_disable"  data-status='0' href="javascript:void(0)" class="easyui-linkbutton setStatus" data-options="plain:true,iconCls:'icon-extend-disable'">禁用</a>
+				<div class="toolbar-separator"></div>
+				<a id="btn_del" data-status='3' href="javascript:void(0)" class="easyui-linkbutton setStatus" data-options="plain:true,iconCls:'icon-extend-del'">删除</a>
+				<a id="btn_refresh" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'pagination-load'">刷新</a>
+
+			</div>
+			<div style="display:inline-block;position:absolute;right:10px;top:3px">
+				版块名称：<input id="searchbox"  data-options="prompt:'版块名称'">
+			</div>
+		</div>
+	</div>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		//datagrid表格
+		$("#datagrid").datagrid({
+			border:true,
+			fit:true,
+			url:"{:U('getSectionlist')}",
+			pagination:true,
+			pageSize:20,//默认加载条数，必须是paseList内数据
+			pageList:[10,20,30,50],
+			striped:true,//是否显示斑马线效果
+			nowrap:true,//单元格不换行
+			rownumbers:true,//行号
+			singleSelect:false,
+			checkOnSelect:true,
+			toolbar:"#toolbar",
+			remoteSort:false,
+			columns:[[
+				{title:'全选',field:'id',checkbox:true},
+			    {title:"版块名称",field:"title",width:150,sortable:true},
+			    {title:"排序号",field:"order_no",width:150,sortable:true},
+			    {title:"管理员",field:"users",width:150,sortable:true,formatter: function(value,row,index){
+			    	if(value){
+							return "<span title='"+value+"'>"+value+"</span>";
+						}else{
+							return '';
+						}
+					}
+				},
+				{title:"版块URL",field:"url",width:150,sortable:true},
+			    {title:"描述",field:"intro",width:220,sortable:true,formatter: function(value,row,index){
+			    	if(value){
+							return "<span title='"+value+"'>"+value+"</span>";
+						}else{
+							return '';
+						}
+					}
+				},
+			   
+				{title:"状态",field:"status",width:100,sortable:true,formatter: function(value,row,index){
+						if(value==1){
+							return "<span style='color:green;font-weight:bold'>启用</span>";
+						}else if(value == 0){
+							return "<span style='color:gray;font-weight:bold'>禁用</span>";
+						}else if(value == 2){
+							return "<span style='color:gray;font-weight:bold'>隐藏</span>";
+						}
+					}
+				},
+			
+			]],
+			onSelect:oncheckChange,
+			onUnselect:oncheckChange,
+			onSelectAll:oncheckChange,
+			onUnselectAll:oncheckChange,
+		});
+		//选择行改变处理方法
+		function oncheckChange(){
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(selections.length==0||selections.length==1){
+					$("#btn_edit").linkbutton('enable');
+				
+			}else{
+				//当选择的记录多余1条的时候启用按钮，
+				//注意：此处只是样式禁用，但是单击事件没有被禁用
+				
+					$("#btn_edit").linkbutton('disable');
+			}
+		}
+		//查询框
+		$("#searchbox").searchbox({
+			width:200,
+			searcher:function(value){
+				$("#datagrid").datagrid("clearSelections");
+				var selections = $("#datagrid").datagrid("getSelections");
+				if(selections.length==0||selections.length==1){
+					$("#btn_edit").linkbutton('enable');
+				}else{
+					$("#btn_edit").linkbutton('disable');
+				}
+				$
+				$("#datagrid").datagrid('load',{
+					'like_title':$.trim(value)
+				});
+			}
+		});
+		//新增
+		$("#btn_add").click(function(){
+			openDialog({
+				windowId:"window",
+				title:"新增版块",
+				href:"{:U('edit')}",
+				width:620,
+				height:500,
+				buttons:[
+					{
+						id:"btnSubmit",
+						text:"提交",
+						iconCls:"icon-ok",
+						handler:function(){
+							submitForm("myform");
+						}
+					},
+					{
+						text:"取消",
+						iconCls:"icon-cancel",
+						handler:function(){
+								closeDialog();
+						}
+					}
+				]
+			});
+		});
+		//修改
+		$("#btn_edit").click(function(){
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			var id = selections[0].id;
+			openDialog({
+				windowId:"window",
+				title:"修改版块",
+				href:"{:U('edit')}?id="+id,
+				width:620,
+				height:500,
+				buttons:[
+					{
+						text:"提交",
+						iconCls:"icon-ok",
+						handler:function(){
+							submitForm("myform");
+						}
+					},
+					{
+						text:"取消",
+						iconCls:"icon-cancel",
+						handler:function(){
+								closeDialog();
+						}
+					}
+				]
+			});
+		});
+		//启用，禁用，删除
+		$(".setStatus").click(function(){
+			var status = parseInt($(this).data('status'));
+			//取得选中的记录
+			var selections = $("#datagrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			//提示语
+			var alertstr = status==3?'确定删除吗？':(status==1?'确定启用吗？':'确定禁用吗？')
+			
+			confirm('温馨提示',alertstr,function(flag){    
+			    if (flag){ 
+			    	var ids = new Array();
+					$.each(selections,function(i,item){
+						ids.push(item.id);
+					});
+					$.ajax({
+						url:"{:U('enableOrdisable')}",
+						type:"post",
+						data:{
+							"ids":ids.join(","),
+							'status':status,
+							'table':'forum_section'
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+
+							if(result.success){
+								
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#btn_edit").linkbutton('enable');
+								$("#datagrid").datagrid("reload");
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red",
+								});
+							}
+						}
+					});
+			    }    
+			});  
+		});
+		
+		//刷新
+		$("#btn_refresh").click(function(){
+			$("#datagrid").datagrid("clearSelections");
+			var selections = $("#datagrid").datagrid("getSelections");
+				if(selections.length==0||selections.length==1){
+						$("#btn_edit").linkbutton('enable');
+					
+				}else{
+						$("#btn_edit").linkbutton('disable');
+				}
+			$("#datagrid").datagrid("reload");
+		});
+	});
+	</script>
+</block>

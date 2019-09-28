@@ -1,0 +1,180 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>新增普通管理员</title>
+</block>
+<block name="body">
+<form id="myform" class="easyui-form myform" data-options="novalidate:false,validateOnCreate:false," method="post">
+	<table>
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>登录名：</td>
+			<td><input id="login_name"  name="login_name" class="easyui-textbox" style="width:250px;" data-options="validateOnCreate:false,delay:800,required:true,validType:['length[1,20]','existloginName'],max:'20'"></td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>密码：</td>
+			<td>
+			<input type="password" style="display:none">
+			<input type="password" id="pwd"  name="pwd"  class="easyui-textbox" style="width:250px;" data-options="validateOnCreate:false,required:true,tipPosition:'left',validType:['checkpwd','length[1,20]']"></td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>确认密码：</td>
+			<td><input type="password" name="confirmpwd" class="easyui-textbox" style="width:250px;" data-options="validateOnCreate:false,required:true" validType="equals['#pwd']"></td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>真实姓名：</td>
+			<td><input   name="true_name" class="easyui-textbox" style="width:250px;" data-options="validateOnCreate:false,required:true,validType:['length[1,100]'],"></td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px">手机号：</td>
+			<td><input type="text" maxlength="11" id="telephone" name="telephone"  class="easyui-textbox" style="width:250px;" data-options="validateOnCreate:false,validType:['telephone']"></td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:103px">地址(100字之内)：</td>
+			<td><input   name="adress" class="easyui-textbox" maxlength='100' style="width:250px;" data-options="validateOnCreate:false,tipPosition:'left',validType:['length[0,100]']"></td>
+		</tr>
+		
+		<tr>
+			<td id='role' class="text_right"><span class="mark">*</span>角色：</td>
+			<td >
+				<volist name='role_list' id='vo' empty='暂无'>
+					<input type='checkbox' name='role[]' value="{$vo.id}">{$vo.role_name}
+				</volist>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right">部门：</td>
+			<td><select id="drDepartment"   name="did"  class="easyui-combotree" style="width:250px" data-options="url:'{:U('Dep/getDepTree')}',valueField:'id',textField:'text',validateOnCreate:false,"></select></td>
+		</tr>
+		
+		<tr>
+			<td class="text_right"><span class="mark">*</span>状态：</td>
+			<td>
+				<select name="status" class="easyui-combobox" style="width:150px" data-options="editable:false,panelHeight:'auto',required:true" style="width:130px">
+					<option value="1" >启用</option>
+					<option value="0" >禁用</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+</form>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		$('#telephone').siblings('span').find('input').first().attr('maxlength',11);
+		
+		$("#myform").form({
+			url:"{:U('User/addUser')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var isValid  = $(this).form('validate');
+				
+				//角色验证
+				var role =  $("input[name='role[]']:checked").map(function () {
+						return $(this).val();
+           			}).get().join(',');
+				if(!role){
+					$('#role').tooltip({  
+						position: 'left', 
+						showDelay:0,
+						hideDelay:0, 
+						content: '<span>该输入项为必填项</span>',   
+						onShow: function(){    
+						$(this).tooltip('tip').css({        
+						color:"#000",borderColor:"#CC9933",backgroundColor:"#FFFFCC"   
+						});   
+					}});
+					$('#role').tooltip('show');
+					setTimeout("$('#role').tooltip('hide')",500);
+					isValid = false;
+				}
+				
+				if(isValid){
+					//验证通过提交，禁用提交按钮，防止多次提交
+					parent.$("#btnSubmit").linkbutton("disable");
+				}else{
+					// $('.validatebox-invalid').trigger('mouseover');
+					$('.validatebox-invalid').trigger('mouseenter');
+				}
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$.tipShow({
+						"message":"操作成功",
+						"color":"green",
+						"callback":function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":true
+							});
+						}
+					});
+				}else{
+					$.tipShow({
+						"message":"操作失败",
+						"color":"red"
+					});
+					
+					parent.$("#btnSubmit").linkbutton("enable");
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败",
+					"color":"red"
+				});
+				parent.$("#btnSubmit").linkbutton("enable");
+			}
+		});
+		
+		//验证密码与确认密码是否相同
+		$.extend($.fn.validatebox.defaults.rules, { 
+			checkpwd:{    
+		        validator: function(value,param){
+		        	var reg = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[.~!@#$%^&*?])[a-zA-Z\d.~!@#$%^&*?]+$/;
+		            return reg.test(value);    
+		        },    
+		        message: '数字+字母+特殊字符,长度8-20'   
+		    },
+		    equals: {    
+		        validator: function(value,param){
+		            return value == $(param[0]).val();    
+		        },    
+		        message: '两次输入密码不一致'   
+		    },
+		    existloginName:{
+		    	validator:function(value,param){
+		    		var isValid = false;
+		    		$.ajax({
+		    			type:"post",
+		    			async:false,
+		    			data:{
+		    				"login_name":$.trim(value)
+		    			},
+		    			url:"{:U('User/exsitLoginName')}",
+		    			success:function(response){
+		    				var result = $.parseJSON(response);
+		    				isValid = !result.isExist;
+		    			},
+		    			error:function(){
+		    				isValid = false;
+		    			}
+					});
+		    		return isValid;
+		    	},
+		    	message:"该用户已存在"
+		    }, 
+		    telephone:{
+		    	validator:function(value,param){
+		    		 var length = value.length;
+		    		 var mobile = /^(13[0-9]{9})|(18[0-9]{9})|(14[0-9]{9})|(17[0-9]{9})|(15[0-9]{9})$/;
+		    		 return (length == 11 && mobile.test(value));
+		    	},
+		    	message:"手机格式不正确"
+		    }
+		}); 
+	});
+	</script>
+</block>

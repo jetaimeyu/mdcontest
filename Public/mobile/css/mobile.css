@@ -1,0 +1,480 @@
+.redRequire{
+    color: #dd0000;
+}
+.img-container{
+    position: relative;
+}
+.go-bottom{
+    position: absolute;
+    width: 50%;
+    height: 20%;
+    background-color: transparent;
+    top: 73%;
+    left: 28%;
+}
+.content-title{
+    padding-top: 7px;
+    padding-bottom: 10.5px;
+    font-size: 14px;
+    color: #282D3C;
+    margin-left: 11px;
+    font-family: MicrosoftYaHei;
+    background-color: #EFEFEF;
+}
+.container{
+    background-color: #FFFFFF;
+    padding: 24px 21.5px 24.5px 17.5px;
+    display: flex;
+    display: -webkit-box;
+    display: -webkit-flex;
+    flex-wrap:wrap;
+    -webkit-flex-wrap: wrap;
+    -webkit-flex-direction: row;
+}
+.schedule-block{
+    display: flex;
+    display: -webkit-box;
+    display: -webkit-flex;
+    flex-wrap: nowrap;
+    -webkit-flex-wrap: nowrap;
+    text-align: center;
+    align-items:center;
+    -webkit-align-items: center;
+    margin-bottom: 10px;
+    justify-content:flex-start;
+    -webkit-justify-content: flex-start;
+    width: 33%;
+}
+.schedule-number{
+    font-size: 13px;
+    color: #D14E4E;
+    align-self:flex-start;
+    -webkit-align-self: flex-start;
+    margin-top: -4px;
+}
+.schedule-info{
+    display: flex;
+    display: -webkit-box;
+    display: -webkit-flex;
+    flex-direction: column;
+    -webkit-flex-direction: column;
+    align-self:flex-start;
+    -webkit-align-self: flex-start;
+    text-align: left;
+}
+.schedule-info-content{
+    font-size: 12px;
+    line-height: 15px;
+    color: #323232;
+    text-align: left;
+    height: 30px;
+    overflow: hidden;
+}
+.schedule-block:last-child .schedule-redirect{
+    display: none;
+}
+.schedule-content{
+    height: 27px;
+    font-size: 12px;
+    color:#323232;
+}
+.schedule-content div{
+    height: 12.5px;
+    line-height: 12.5px;
+}
+.schedule-time{
+    font-size: 10px;
+    color: #8A8F96;
+    height: 10px;
+    line-height: 10px;
+    margin-top: 6px;
+    align-self: stretch ;
+}
+.schedule-redirect{
+    float: left;
+    /*position: absolute;*/
+    /*top:50%;*/
+    /*left: 50%;*/
+    /*transform: translate(-50% -50%);*/
+}
+.subject-number{
+    font-size: 12px;
+    margin-left: 16.5px;
+    height: 12.5px;
+    color: #D14E4E;
+}
+.subject-name{
+    margin-left: 10px;
+    font-size: 16px;
+    line-height: 20px;
+    color: #D14E4E;
+}
+.subject-container{
+    padding: 10px 10px 4px 10px;
+}
+.subject-content-mark{
+    float: left;
+    width: 4px;
+    height: 4px;
+    background-color: #D14E4E;
+    border-radius: 50%;
+    position: absolute;
+    left: 25px;
+    top:11px;
+}
+.subject-content{
+    float: left;
+    font-size: 12px;
+    color: #8A8F96;
+    line-height: 16px;
+    padding-left: 35px;
+    margin-top: 7px;
+    width: 90%;
+    word-break: break-all;
+}
+.subject-image-content{
+    text-align: center;
+    position:absolute;
+    top:27%;
+    left: 95%;
+}
+.subject{
+    background-color: #EEF5FD;
+    border-radius: 10px;
+    /*height: 103.5px;*/
+    padding-bottom: 20.5px;
+    margin-bottom: 6px;
+    padding-top: 14px;
+    width: 100%;
+}
+.prize-content-info{
+    background: #fff;
+    padding-top: 16px;
+    padding-bottom: 16px;
+}
+.prize{
+    width: 50%;
+    float: left;
+    box-sizing: border-box;
+    /*height: 141px;*/
+    position: relative;
+}
+.prize-title{
+    text-align: center;
+    font-size: 16px;
+    color: #436082;
+    margin-bottom: 11px;
+    margin-top: 9px;
+}
+.prize-detail{
+    display: block;
+    text-align: center;
+    position: absolute;
+    top:35%;
+    left: 22%;
+    font-size: 15px;
+    color: #EB0D0D;
+}
+.prize-honor{
+    font-size: 12px;
+    text-align: left;
+    color: #363B49;
+    margin-bottom: 6.5px;
+    padding: 0;
+    line-height: 12px;
+}
+.prize-money{
+    margin-bottom: 17.5px;
+    line-height: 15px;
+}
+.prize-count{
+    line-height: 15px;
+    margin-bottom: 4px;
+    width: 98px;
+    text-align: center;
+}
+
+.title-info{
+    margin-right: 10.5px;
+    float: right;
+    font-size: 12px;
+    color: #8A8F96;
+}
+.entered-now{
+    width: 100%;
+    position: relative;
+    height: 90px;
+    text-align: center;
+    vertical-align: middle;
+    background-color: #EFEFEF;
+}
+.entered-btn{
+    height: 40px;
+    background-color: #D14E4E;
+    font-size: 16px;
+    color: #FFFFFF;
+    border-radius: 20px;
+    margin-top: 25px;
+    vertical-align: middle;
+    width: 145px;
+}
+.footer{
+    border-top: 1px solid #D3D7DD;
+    height: 40px;
+    font-size: 12px;
+    background-color: #EFEFEF;
+    text-align: center;
+    vertical-align: center;
+    line-height: 40px;
+}
+
+
+input:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
+    color: #949393;
+}
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+    color: #949393;
+}
+
+/*报名页面*/
+.verify-img{
+    width: 40%;
+}
+.submit-group-button{
+    width: 100%;
+    height: 38px;
+    text-align: center;
+    border-radius:3px;
+    background-color: #D14E4E;
+    color: #fff;
+    font-size: 15px;
+    line-height: 10px;
+}
+.submit-group-title{
+    font-size: 10px;
+    color: #666666;
+    margin-bottom: 8px;
+}
+.submit-card-info{
+    font-size: 9px;
+    line-height: 15px;
+    color: #949393;
+}
+.submit-form{
+    padding:  10px;
+}
+.submit-group-need{
+    color: red;
+}
+.submit-success-mask{
+    width:100%;
+    height:100%;
+    /*background-color:#000;*/
+    filter:alpha(opacity=50);
+    background: rgba(0,0,0,.7);
+    position:fixed;
+    left:0px;
+    top:0px;
+    display:none;
+    z-index:1000;
+}
+.mask-content{
+    z-index: 2000;
+    border-radius: 7px;
+    position: fixed;
+    top:18%;
+    left: 0;
+    right: 0;
+    margin: auto auto;
+    width:75%;
+    padding:20px;
+    z-index: 200;
+    text-align:left;
+    background:#fff;
+    opacity: 1;
+    /*transform: translate(-50%, -50%);*/
+    /*-webkit-transform:translate(-50%, -50%);*/
+}
+.mask-title{
+    text-align: center;
+    font-size: 12.5px;
+    line-height: 30px;
+    color:#D14E4E;
+    margin-bottom: 10px;
+}
+.mask-content-info{
+    font-size: 9px;
+    line-height: 15px;
+    padding: 14.5px;
+    border: 1px dotted #9AC9FF;
+    border-radius: 3px;
+    background:rgba(238,245,253,1);
+    /*font-family:MicrosoftYaHei;*/
+    color: #666;
+}
+.mask-content-button{
+    text-align: center;
+    margin-top: 16px;
+    color: #D14E4E;
+    font-size: 10px;
+    line-height: 15px;
+    width: 100%;
+    border-radius: 3px;
+    border:1px dotted #D14E4E;
+    height: 30px;
+}
+.mask-button-container{
+    text-align: center;
+}
+.mask-image-box{
+    text-align: center;
+}
+.mask-image{
+    width: 38px;
+    height: 38px;
+}
+.checkBoxItem{
+    width: 100%;
+    background: rgba(246,246,246,1);
+    height:50px;
+    font-size: 20px;
+    color: #BAB9B9;
+    line-height: 20px;
+    font-family:MicrosoftYaHei;
+    text-align: center;
+    vertical-align: middle;
+    margin-bottom: 13px;
+}
+.checkBoxItem.active{
+    background:rgba(225,225,225,1);
+    color: #666666;
+    font-weight:400;
+}
+.checkBoxItem span{
+    display: inline-block;
+    margin:16px 0;
+    margin-left: 18.5px;
+}
+/*我要参赛详情页*/
+.detail-title{
+    position: relative;
+    text-align: center;
+    height:44px;
+    background:rgba(63,75,92,1);
+}
+.detail-title-image-content{
+    position: absolute;
+    left: 0;
+    top:0;
+    height: 44px;
+    text-align: center;
+}
+.detail-title-image{
+    width: 17px;
+    height: 17px;
+    top: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    left: 50%;
+    text-align: center;
+    vertical-align: middle;
+    margin: 0 25px;
+}
+.detail-title-content{
+    line-height: 44px;
+    width: 100%;
+    height: 44px;
+    float: left;
+    font-size: 16px;
+    margin: 0 auto;
+    color: #ffffff;
+    text-align: center;
+}
+.detail-date{
+    font-size: 14px;
+    text-align: center;
+}
+.detail-date-title{
+    padding-top: 24px;
+    color: #3F4B5C;
+}
+.detail-date-content{
+    color: #666666;
+}
+.detail-subject{
+
+}
+.detail-subject-title{
+    font-size: 14px;
+    color: #3F4B5C;
+    text-align: center;
+    padding-top: 28px;
+}
+.detail-subject-content{
+    margin-top: 12px;
+    font-size: 12px;
+    line-height: 20px;
+    color: #8A8F96;
+}
+.detail-subject-content img{
+    width: 100%;
+    border: 0;
+}
+.detail-red-title{
+    color: #D14E4E;
+}
+.detail-score-title{
+    font-size: 14px;
+    color: #3F4B5C;
+    text-align: center;
+}
+.detail-score-content{
+    font-size: 12px;
+    color: #8A8F96;
+    line-height: 20px;
+}
+.detail-score-content-footer{
+    margin-top: 20px;
+}
+.detail-bottom-margin{
+    margin-bottom: 15px;
+}
+.detail-score-info{
+
+}
+
+select {
+    border: 1px solid rgba(0,0,0,.2) !important;
+}
+html, body{
+    height: 100%;
+}
+body{
+    background-color: #EFEFEF;
+    position: relative;
+}
+
+.checkBlockTap {
+    position: absolute;
+    /*top: 50%;*/
+    left: 0;
+    right: 0;
+    margin: auto;
+    height: 542px;
+    width: 100%;
+    padding: 20px;
+    /*transform: translate(0, -55%);*/
+    background-color: transparent
+}
+
+.blockTapInner{
+    border-radius: 10px;
+    background-color: #fff;
+    padding: 15px;
+}
+
+::-webkit-scrollbar{width:0;height:1px}
+::-webkit-scrollbar-thumb{border-radius:5px;-webkit-box-shadow:inset 0 0 5px rgba(0,0,0,.2);background:rgba(0,0,0,.2)}

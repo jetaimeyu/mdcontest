@@ -1,0 +1,590 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>菜单管理</title>
+</block>
+<block name="body">
+<script type="text/javascript">
+function searcher(value,name){
+		$("#treegrid").datagrid('load',$('#searchForm').serializeJson());
+}
+</script>
+	<div class="main-page">
+		<div class="easyui-layout" data-options="fit:true">
+			<div data-options="title:'一级菜单',region:'west',width:500,split:true,collapsible:true">
+				<table id="dicTypeGrid"></table>
+				<!--grid工具栏 -->
+				<div id="dictype_toolbar" >
+					<div style="display:inline-block;">
+						<a id="btn_typeadd" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-add'">新增</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_typeedit" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-edit'">修改</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_typedel" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-del'">删除</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_typeenable" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-enable'">启用</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_typedisable" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-disable'">禁用</a>
+					</div>
+				</div>
+			</div>
+			<div data-options="region:'center',title:'二级菜单'">
+				<table id="treegrid"></table>
+				
+				<!--grid工具栏 -->
+				<div id="toolbar">
+					<div style="display:inline-block;">
+						<a id="btn_add" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-add'">新增</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_edit" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-edit'">修改</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_del" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-del'">删除</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_enable" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-enable'">启用</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_disable" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-disable'">禁用</a>
+						<div class="toolbar-separator"></div>
+						<a id="btn_refresh" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'pagination-load'">刷新</a>
+					</div>
+					<div style="display:inline-block;position:absolute;right:10px;top:3px">
+					<form id="searchForm">
+					菜单名称：<input id="searchValue" name="searchValue" class="easyui-searchbox" style="width:150px" data-options="searcher:searcher,prompt:'菜单名称'"></input> 
+					<input id="pid" name="pid" value="" type="hidden">
+					</form>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		//类别
+		$("#dicTypeGrid").datagrid({
+			border:false,
+			fit:true,
+			url:"{:U('getlist')}",
+			striped:true,//是否显示斑马线效果
+			singleSelect:true,
+			toolbar:"#dictype_toolbar",
+			remoteSort:false,
+			columns:[[
+			    {title:"菜单名称",field:"menu_name",width:120,sortable:true,formatter:function(value,row,index){
+					return "<span class='span-ellipsis' title='"+ value+"'>"+ value +"</span>";
+				}},
+				{title:"英文名称",field:"name_en",width:120,sortable:true,formatter:function(value,row,index){
+					return "<span class='span-ellipsis' title='"+ value+"'>"+ value +"</span>";
+				}},
+			    {title:"关键字",field:"menu_code",width:100,sortable:true,formatter:function(value,row,index){
+					return "<span class='span-ellipsis' title='"+ value+"'>"+ value +"</span>";
+				}},
+				{title:"打开方式",field:"url_target",width:100,sortable:true,formatter:function(value,row,index){
+					return "<span class='span-ellipsis' title='"+ value+"'>"+ value +"</span>";
+				}},
+				{title:"状态",field:"status",width:60,align:"center",sortable:true,formatter:function(value,row,index){
+					if(value==1){
+						return "<span style='color:green;font-weight:bold'>启用</span>";
+					}else{
+						return "<span style='color:gray;font-weight:bold'>禁用</span>";
+					}
+				}}
+			]],
+			onLoadSuccess:function(data){
+				$("#dicTypeGrid").datagrid('selectRow',0);
+			},
+			onSelect:function(index,row){
+				var pid = row.id;
+				var url = "{:U('getContent')}";
+				$('#treegrid').datagrid({    
+				    url:url,    
+				    queryParams:{pid:pid},
+				    toolbar:"#toolbar",
+				    pagination:true,
+				    pagePosition:'bottom',
+				    singleSelect:true,
+				    fit:true,
+				    frozenColumns:[[
+  						{field:'menu_name',title:'标题',sortable:true,width:100,formatter:function(value,row,index){
+							return "<span class='span-ellipsis' title='"+ value+"'>"+ value +"</span>";
+						}},
+				    ]],
+				    columns:[[
+				        {field:'menu_code',title:'关键字',sortable:true,width:100,formatter:function(value,row,index){
+							return "<span class='span-ellipsis' title='"+ value+"'>"+ value +"</span>";
+						}},
+						{field:'menu_url',title:'链接',sortable:true,width:100,formatter:function(value,row,index){
+							return "<span class='span-ellipsis' title='"+ value+"'>"+ value +"</span>";
+						}},
+						{field:'order_no',title:'排序',sortable:true,width:100,formatter:function(value,row,index){
+							return "<span class='span-ellipsis' title='"+ value+"'>"+ value +"</span>";
+						}},
+						
+				        {field:'status',title:'状态',sortable:true,width:100,formatter:function(value){
+							if(value==1){
+								return "<span style='color:green;font-weight:bold'>启用</span>";
+							}else{
+								return "<span style='color:gray;font-weight:bold'>禁用</span>";
+							}
+						}},
+				    ]],
+				});
+				$("#pid").val(pid);
+				$('#searchValue').searchbox('setValue','');
+				
+			}
+		});
+		
+		//新增一级菜单
+		$("#btn_typeadd").click(function(){
+			openDialog({
+				windowId:"window",
+				title:"新增一级菜单",
+				href:"{:U('Fhmng/Menu/editOne')}",
+				width:520,
+				height:350,
+				buttons:[
+					{
+						id:"btnSubmit",
+						text:"提交",
+						iconCls:"icon-ok",
+						handler:function(){
+							submitForm("myform");
+						}
+					},
+					{
+						text:"取消",
+						iconCls:"icon-cancel",
+						handler:function(){
+								closeDialog();
+						}
+					}
+				]
+			});
+		});
+		
+		//修改
+		$("#btn_typeedit").click(function(){
+			//取得选中的记录
+			var selections = $("#dicTypeGrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			var id = selections[0].id;
+			openDialog({
+				windowId:"window",
+				title:"修改一级菜单",
+				href:"{:U('Fhmng/Menu/editOne')}?"+'id='+id,
+				width:520,
+				height:350,
+				buttons:[
+					{
+						text:"提交",
+						iconCls:"icon-ok",
+						handler:function(){
+							submitForm("myform");
+						}
+					},
+					{
+						text:"取消",
+						iconCls:"icon-cancel",
+						handler:function(){
+								closeDialog();
+						}
+					}
+				]
+			});
+		});
+		
+		//删除
+		$("#btn_typedel").click(function(){
+			//取得选中的记录
+			var selections = $("#dicTypeGrid").datagrid("getSelections");
+
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			var id = selections[0].id;
+			confirm('温馨提示','确定删除？',function(flag){    
+			    if (flag){ 
+					$.ajax({
+						url:"{:U('menu/del')}",
+						type:"post",
+						data:{
+							"id":id,
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								var rowindex = $("#dicTypeGrid").datagrid('getRowIndex',selections[0]);
+								$("#dicTypeGrid").datagrid("deleteRow",rowindex);
+								$("#dicTypeGrid").datagrid("selectRow",0);
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }    
+			});  
+		});
+		
+		//启用
+		$("#btn_typeenable").click(function(){
+			//取得选中的记录
+			var selections = $("#dicTypeGrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			confirm('温馨提示','确定启用？',function(flag){    
+			    if (flag){ 
+			 		var id = selections[0].id;
+					$.ajax({
+						url:"{:U('enableOrdisable')}",
+						type:"post",
+						data:{
+							"id":id,
+							"status":1,
+							'table':'menu',
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#dicTypeGrid").datagrid("updateRow",{
+									index:$('#dicTypeGrid').datagrid('getRowIndex',selections[0]),
+									row:{
+										'status':1
+									}
+								});
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }    
+			}); 
+		});
+		
+		//禁用
+		$("#btn_typedisable").click(function(){
+			//取得选中的记录
+			var selections = $("#dicTypeGrid").datagrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			confirm('温馨提示','确定禁用？',function(flag){    
+			    if (flag){ 
+			    	var id = selections[0].id;
+					$.ajax({
+						url:"{:U('enableOrdisable')}",
+						type:"post",
+						data:{
+							"id":id,
+							"status":0,
+							"table":'menu'
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#dicTypeGrid").datagrid("updateRow",{
+									index:$('#dicTypeGrid').datagrid('getRowIndex',selections[0]),
+									row:{
+										'status':0
+									}
+								});
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }
+			});
+		});
+		
+/*=================================================================================*/		
+	
+		//刷新
+		$("#btn_refresh").click(function(){
+			$("#treegrid").datagrid("reload");
+		});
+		
+		//新增
+		$("#btn_add").click(function(){
+			var pid = $("#pid").val();
+			openDialog({
+				windowId:"window",
+				title:"新增二级菜单",
+				href:"{:U('editContent')}?"+'pid='+pid,
+				width:550,
+				height:440,
+				buttons:[
+					{
+						id:"btnSubmit",
+						text:"提交",
+						iconCls:"icon-ok",
+						handler:function(){
+							submitForm("myform");
+						}
+					},
+					{
+						text:"取消",
+						iconCls:"icon-cancel",
+						handler:function(){
+								closeDialog();
+						}
+					}
+				]
+			});
+		});
+		
+		//修改
+		$("#btn_edit").click(function(){
+			//取得选中的记录
+			var selections = $("#treegrid").treegrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			var id = selections[0].id;
+			var pid = $("#pid").val();
+			openDialog({
+				windowId:"window",
+				title:"修改字段",
+				href:"{:U('editContent')}?"+'pid='+pid+'&id='+id,
+				width:550,
+				height:450,
+				buttons:[
+					{
+						text:"提交",
+						iconCls:"icon-ok",
+						handler:function(){
+							submitForm("myform");
+						}
+					},
+					{
+						text:"取消",
+						iconCls:"icon-cancel",
+						handler:function(){
+								closeDialog();
+						}
+					}
+				]
+			});
+		});
+		
+		//删除
+		$("#btn_del").click(function(){
+			//取得选中的记录
+			var selections = $("#treegrid").treegrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			
+			confirm('温馨提示','确定删除？',function(flag){    
+			    if (flag){ 
+			    	var id = selections[0].id;
+					$.ajax({
+						url:"{:U('enableOrdisable')}",
+						type:"post",
+						data:{
+							"id":id,
+							"status":3,
+							"table":'menu'
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#treegrid").datagrid("reload");
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }    
+			});  
+		});
+		
+		//启用
+		$("#btn_enable").click(function(){
+			//取得选中的记录
+			var selections = $("#treegrid").treegrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			confirm('温馨提示','确定启用？',function(flag){    
+			    if (flag){ 
+			    	var id = 0;
+			    	for(var i = 0;i<selections.length;i++){
+			    		id = id+','+selections[i].id;
+			    	}
+					$.ajax({
+						url:"{:U('enableOrdisable')}",
+						type:"post",
+						data:{
+							"id":id,
+							"status":1,
+							"table":'menu'
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#treegrid").datagrid("updateRow",{
+									index:$('#treegrid').datagrid('getRowIndex',selections[0]),
+									row:{
+										'status':1
+									}
+								});
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }    
+			}); 
+		});
+		
+		//禁用
+		$("#btn_disable").click(function(){
+			//取得选中的记录
+			var selections = $("#treegrid").treegrid("getSelections");
+			if(!selections.length){
+				$.tipShow({
+					"message":"请选择需要操作的记录",
+					"color":"yellow"
+				});
+				return;
+			}
+			
+			//判断是否被禁用,若禁用直接返回
+			if($(this).linkbutton('options').disabled){
+				return;
+			}
+			
+			confirm('温馨提示','确定禁用？',function(flag){    
+			    if (flag){ 
+			    	var id = selections[0].id;
+					$.ajax({
+						url:"{:U('enableOrdisable')}",
+						type:"post",
+						data:{
+							"id":id,
+							"status":0,
+							"table":'onepage'
+						},
+						success:function(response){
+							var result = $.parseJSON(response);
+							if(result.success){
+								$.tipShow({
+									"message":result.message,
+									"color":"green"
+								});
+								$("#treegrid").datagrid("updateRow",{
+									index:$('#treegrid').datagrid('getRowIndex',selections[0]),
+									row:{
+										'status':0
+									}
+								});
+							}else{
+								$.tipShow({
+									"message":result.message,
+									"color":"red"
+								});
+							}
+						}
+					});
+			    }     
+			}); 
+			
+		});
+	});
+	</script>
+</block>

@@ -1,0 +1,91 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>系统配置</title>
+</block>
+<block name="body">
+	<div class="main-page">
+		<table id="propertygrid"></table>
+		<!--grid工具栏 -->
+		<div id="toolbar">
+			<div style="display:inline-block;">
+				<a id="btn_save" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-save'">保存</a>
+				<div class="toolbar-separator"></div>
+				<a id="btn_refresh" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'pagination-load'">刷新</a>
+			</div>
+		</div>
+	</div>
+	
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		$("#propertygrid").propertygrid({
+			border:false,
+			fit:true,
+			url:"{:U('Fhmng/SysConfig/getConfigData')}",
+			showGroup: true,
+			groupField:"group",
+			toolbar:"#toolbar",
+			columns:[[
+			    {title:"配置项名称",field:"name",width:150,sortable:true},
+			    {title:"配置项值",field:"value",width:150,sortable:true},
+			    {title:"配置参数编码",field:"config_code",width:130,sortable:true},
+				{title:"描述",field:"description",width:400,sortable:true,formatter:function(value,row,index){
+					var html="<span class='span-ellipsis' title='"+ value+"'>"+ value+"</span>";
+					return html;
+				}}
+			]],
+		});
+		
+		//刷新
+		$("#btn_refresh").click(function(){
+			$("#propertygrid").propertygrid("reload");
+		});
+		
+		//保存
+		$("#btn_save").click(function(){
+			var updateRows = $("#propertygrid").propertygrid('getChanges','updated');
+			if(updateRows.length==0){
+				$.tipShow({
+					"message":"没有需要保存的数据",
+					"color":"yellow"
+				});
+				return;
+			}
+			var changes=[];
+			$.each(updateRows,function(i,item){
+				var configItem={
+						"id":item.id,
+						"value":item.value,
+						"config_code":item.config_code
+				}
+				changes.push(configItem);
+			});
+			
+			$.ajax({
+				type:"post",				
+				url:"{:U('Fhmng/SysConfig/saveConfigData')}",
+				datatype: "json",
+				data:{
+					changes:JSON.stringify(changes)
+				},
+				success:function(response){
+					var result = $.parseJSON(response);
+					if(result.success){
+						$("#propertygrid").propertygrid('reload');
+						$.tipShow({
+							"message":result.message,
+							"color":"green"
+						});
+					}else{
+						$.tipShow({
+							"message":result.message,
+							"color":"red"
+						});
+					}
+				}
+			}); 
+		});
+	});
+	</script>
+</block>

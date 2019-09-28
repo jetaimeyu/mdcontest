@@ -1,0 +1,33 @@
+<volist name="childMenus" id="menu" key="index">
+	<if condition="$index eq 1">
+		<eq name="menu.pid" value="$systemid">
+			<div class="menu-box">
+				<div class="menu-header menu-header-selected">
+					{$menu.func_name}
+				</div>
+				<ul>
+					<volist name="childMenus" id="menu2" key="index">
+						<eq name="menu2.pid" value="$menu.id">
+							<li><a id="link_{$menu2.id}" class="link" href="javascript:void(0)" data='<notempty name="menu2.func_url">{:U($menu2["func_url"])}<else/>{:U("MessagePage/Page_404")}</notempty>'>{$menu2.func_name}</a></li>
+						</eq>
+					</volist>
+				</ul>
+			</div>
+		</eq>
+	<else/>
+		<eq name="menu.pid" value="$systemid">
+			<div class="menu-box">
+				<div class="menu-header">
+					{$menu.func_name}
+				</div>
+				<ul style="display:none">
+					<volist name="childMenus" id="menu2" key="index">
+						<eq name="menu2.pid" value="$menu.id">
+							<li><a id="link_{$menu2.id}" class="link" href="javascript:void(0)" data='<notempty name="menu2.func_url">{:U($menu2["func_url"])}<else/>{:U("MessagePage/Page_404")}</notempty>'>{$menu2.func_name}</a></li>
+						</eq>
+					</volist>
+				</ul>
+			</div>
+		</eq>
+	</if>
+</volist>

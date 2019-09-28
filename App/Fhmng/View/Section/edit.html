@@ -1,0 +1,164 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>修改会议</title>
+<style>
+.myform td{width: 120px;}
+</style>
+</block>
+<block name="body">
+<form id="myform" class="easyui-form myform" data-options="novalidate:false" method="post">
+	<table>
+		<input id="meetingid" name="id" type="hidden" value="{$data.id}"/>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>版块名称：</td>
+			<td><input  name="title" value="{$data.title}" class="easyui-textbox" style="width:250px;" data-options="validateOnCreate:false,required:true,validType:['length[1,40]']"></td>
+		</tr>
+		<tr>
+		<td class="text_right">版块管理员：</td>
+			<td><span id="adminlist">{$data.adminlist}</span><a id="btn_set" href="javascript:void(0)" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-extend-usergroup'">分配</a></td>
+
+		</tr>
+		<td class="text_right">版块URL：</td>
+			<td><input  name="url" class="easyui-textbox" style="width:250px;" data-options="value:'{$data.url}',validateOnCreate:false,min:0,max:1000,editable:true,"></td>
+
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>排序号：</td>
+			<td>
+				<input  name="order_no" class="easyui-numberspinner" style="width:100px;" required="required" data-options="value:'{$data.order_no}',validateOnCreate:false,min:0,max:1000,editable:true,">
+				<span class="tip">（升序）</span>
+			</td>
+		</tr>
+			<tr>
+			<td class="text_right">描述(200字之内)：</td>
+			<td><textarea style="width:300px;height:100px" name="intro" class="easyui-validatebox text-area" data-options="tipPosition:'left',validType:['length[0,200]']"  maxlength="200">{$data.intro}</textarea></td>
+		</tr>
+		
+		<tr>
+			<td class="text_right"><span class="mark">*</span>状态：</td>
+			<td>
+				<select name="status" value="{$data.status}" class="easyui-combobox" style="width:80px" data-options="validateOnCreate:false,editable:false,panelHeight:'auto',required:true" style="width:130px">
+					<option value="1" <eq name="data.status" value='1'>selected='true'</eq>>启用</option>
+					<option value="0" <eq name="data.status" value='0'>selected='true'</eq>>禁用</option>
+					<option value="2" <eq name="data.status" value='2'>selected='true'</eq>>隐藏</option>
+				</select>
+			</td>
+		</tr>
+		<input name="users" type="hidden" id="usersinput" value="{$data.users}">  
+	</table>
+</form>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		$("#myform").form({
+			url:"{:U('edit')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var isValid  = $(this).form('validate');
+				if(isValid){
+					//验证通过提交，禁用提交按钮，防止多次提交
+					parent.$("#btnSubmit").linkbutton("disable");
+				}else{
+					// $('.validatebox-invalid').trigger('mouseover');
+					$('.validatebox-invalid').trigger('mouseenter');
+				}
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$.tipShow({
+						"message":"操作成功",
+						"color":"green",
+						"callback":function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":true
+							});
+						}
+					});
+				}else{
+					$.tipShow({
+						"message":"操作失败",
+						"color":"red"
+					});
+					
+					parent.$("#btnSubmit").linkbutton("enable");
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败",
+					"color":"red"
+				});
+				parent.$("#btnSubmit").linkbutton("enable");
+			}
+		});
+
+	});
+	//设置角色人员
+		$("#btn_set").click(function(){
+			//取得选中的记录
+			var id = "{:I('get.id')}";
+			var users = $('#usersinput').val();
+			var url = "{:U('setadmin')}";
+			if(id){
+				url+= '?seid='+id
+			}
+			openDialog({
+				windowId:"window_sub",
+				title:"分配管理员",
+				href:url,
+				width:650,
+				height:500,
+				buttons:[
+					{
+						text:"确定",
+						iconCls:"icon-ok",
+						handler:function(){
+							//选择的用户id串，逗号隔开
+							var selectedUserIdStr = parent.$("#window_sub iframe")[0].contentWindow.$("#hdnSelectedIds").val();
+							$('#usersinput').val(selectedUserIdStr);
+							$.ajax({
+								type:"post",
+								data:{
+									uidStr:selectedUserIdStr,
+								},
+								dataType:'json',
+								url:"{:U('getuserinfo')}",
+								success:function(data){
+									var html = '';
+									for(var i= 0;i<data.length;i++){
+										html +=data[i].true_name;
+										if(i+1 != data.length){
+											html+="，";
+										}
+									}
+									$('#usersinput').val(selectedUserIdStr);
+									$('#adminlist').text(html);
+									closeDialog({
+										"windowId":"window_sub",
+										"needRefresh":false
+									});
+								}
+							});
+						}
+					},
+					{
+						text:"取消",
+						iconCls:"icon-redo",
+						handler:function(){
+							closeDialog({
+								"windowId":"window_sub",
+								"needRefresh":false
+							});
+						}
+					}
+				]
+			});
+		});
+		
+	</script>
+</block>

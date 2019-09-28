@@ -1,0 +1,202 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>添加友情链接</title>
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/plugins/uploadify/uploadify.css"/>
+</block>
+<block name="body">
+<form id="myform" enctype="multipart/form-data"  class="easyui-form myform" data-options="novalidate:false" method="post">
+	<table>
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>链接标题：</td>
+			<td>
+				<input id="link_title"  name="link_title" class="easyui-textbox" style="width:250px" data-options="required:true,validType:['length[0,20]']">
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>链接网址：</td>
+			<td><input id="link_url"  name="link_url" class="easyui-textbox" style="width:250px" data-options="prompt:'链接格式，如：http://www.baidu.com',required:true,validType:['length[0,200]','url']"></td>
+		</tr>
+		<tr>
+			<td class="text_right" style="width:80px">logo：</td>
+			<td>
+				<input type="file" id="btn_upload">
+				<input id="hdnlinklogo" type="hidden" name="link_logo">
+				<div class="upload-img-box" style="display:none;position: absolute;right: 135px;top: 75px;">
+					<div class="upload-pre-item">
+						<span class="upload-img-remove" title="点击删除"></span>
+						<img id="imglogoPre">
+					</div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>状态：</td>
+			<td>
+				<select name="status" class="easyui-combobox" data-options="editable:false,panelHeight:'auto',required:true" style="width:130px">
+					<option value="1">启用</option>
+					<option value="0">禁用</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>排序号：</td>
+			<td>
+				<input id="order_no" name="order_no" class="easyui-numberspinner" style="width:145px;" required="required" data-options="min:0,max:1000,editable:true,value:0">
+				<span class="tip">（升序）</span>
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right">描述：</td>
+			<td><textarea style="width:300px;height:100px" name="description" class="easyui-validatebox text-area" maxlength="200"></textarea></td>
+		</tr>
+	</table>
+</form>
+</block>
+<block name="script">
+<script type="text/javascript" src="__LOCALPUBLIC__/plugins/uploadify/jquery.uploadify.js"></script>
+	<script type="text/javascript">
+	$(function(){
+		$("#myform").form({
+			url:"{:U('FriendlyLink/addFriendlyLink')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var isValid  = $(this).form('validate');
+				if(isValid){
+					//验证通过提交，禁用提交按钮，防止多次提交
+					parent.$("#btnSubmit").linkbutton("disable");
+				}
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$.tipShow({
+						"message":"操作成功",
+						"color":"green",
+						"callback":function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":true
+							});
+						}
+					});
+				}else{
+					$.tipShow({
+						"message":"操作失败",
+						"color":"red"
+					});
+					
+					parent.$("#btnSubmit").linkbutton("enable");
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败",
+					"color":"red"
+				});
+				parent.$("#btnSubmit").linkbutton("enable");
+			}
+		});
+		
+		var uploadify_onSelectError = function(file, errorCode, errorMsg){
+			var msgText="";
+	        switch (errorCode) {  
+	            case SWFUpload.QUEUE_ERROR.QUEUE_LIMIT_EXCEEDED:  
+	                //this.queueData.errorMsg = "每次最多上传 " + this.settings.queueSizeLimit + "个文件";  
+	                msgText += "每次最多上传 " + this.settings.queueSizeLimit + "个文件";  
+	                break;  
+	            case SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT:  
+	                msgText += "文件大小超过限制( " + this.settings.fileSizeLimit + " )";  
+	                break;  
+	            case SWFUpload.QUEUE_ERROR.ZERO_BYTE_FILE:  
+	                msgText += "文件大小为0";  
+	                break;  
+	            case SWFUpload.QUEUE_ERROR.INVALID_FILETYPE:  
+	                msgText += "文件格式不正确，仅限 " + this.settings.fileTypeExts;  
+	                break;  
+	            default:  
+	                msgText += "错误代码：" + errorCode + "\n" + errorMsg;  
+	        }  
+	        $.tipShow({
+				"message":msgText,
+				"color":"red"
+			});
+	    };  	   
+	    
+		//上传图片
+	    /* 初始化上传插件 */
+	    var sid = '{:session_id()}';
+		$("#btn_upload").uploadify({
+			"formData":{
+				"session_id":sid//需要传递session_id，否则火狐报302错误
+			},
+			"buttonClass":"btn-upload",
+	        "swf":"__LOCALPUBLIC__/plugins/uploadify/uploadify.swf",
+	        "buttonText":"上传图片",
+	        "uploader":"{:U('FriendlyLink/uploadLogo')}",
+	        "width":100,
+	        "removeTimeout":1,
+	        "fileTypeExts":"*.jpg; *.png; *.gif;",
+	        "onSelectError":uploadify_onSelectError,
+	        "onUploadStart":function(file){
+	        	var data = $(".upload-img-remove").attr("data");
+	        	//判断是否已经含有了原图片，如果有则需要先删除原图片
+	        	if(data){
+	        		$("#btn_upload").uploadify("settings","formData",{"path":data});
+	        	}
+	        },
+	        "onUploadSuccess":function(file, data, response){
+	        	//var result = $.parseJSON(data);
+	        	var result = eval("("+ data +")");
+	        	if(result.success){
+	        		$("#hdnlinklogo").val(result.savefile);
+	        		var imgSrc = "__UPLOADS__"+result.savefile;
+	        		$("#imglogoPre").attr("src",imgSrc);
+	        		$(".upload-img-remove").attr("data",result.savefile);
+	        		$(".upload-img-box").slideDown();
+	        	}
+	        },
+	        'onFallback':function() {
+	            alert('未检测到兼容版本的Flash.');
+	        }
+	    });
+		//删除图片
+		$(".upload-img-remove").click(function(){
+			var path = $(this).attr("data");
+			if(!path){
+				return;
+			}
+			confirm('温馨提示','确定删除该图片？',function(flag){
+				 if (flag){ 
+					 $.ajax({
+							type:"post",
+							data:{
+								"path":path
+							},
+							url:"{:U('Fhmng/FriendlyLink/removeLogo')}",
+							success:function(response){
+								var result = $.parseJSON(response);
+								if(result.success){
+									$(".upload-img-box").slideUp("normal",function(){
+										$("#imglogoPre").attr("src","");
+									});
+									$("#hdnlinklogo").val("");
+									 $.tipShow({
+										"message":result.message,
+										"color":"green"
+									});
+								}else{
+									$.tipShow({
+										"message":result.message,
+										"color":"red"
+									});
+								}
+							}
+					  });
+				 }
+			});
+		})
+	});
+	</script>
+</block>

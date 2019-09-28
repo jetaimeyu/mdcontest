@@ -1,0 +1,198 @@
+@CHARSET "UTF-8";
+* {
+	padding: 0px;
+	margin: 0px;
+}
+html, body {
+	width: 100%;
+	font-size:12px;
+}
+img{
+	border:none;
+}
+.span-ellipsis{
+	width:99%;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+.myform{
+	margin:10px;
+}
+.myform table{
+	/* width:95%; */
+}
+.myform td {
+    padding: 5px 0;
+}
+.tip{
+	color:gray;
+}
+.font_bold {
+    font-weight: bold;
+}
+.text_right {
+    text-align: right;
+}
+.mark{
+	color:red;
+	margin-left:5px;
+	font-weight:bold;
+}
+.hand {
+    cursor: pointer;
+}
+
+.text-area {
+    border: 0 none;
+    border-radius: 5px;
+    font-size: 12px;
+    margin: 0;
+    outline-style: none;
+    padding: 4px;
+    vertical-align: top;
+	
+	background-color: #fff;
+    border: 1px solid #95b8e7;
+    border-radius: 5px;
+    display: inline-block;
+    margin: 0;
+    padding: 3px;
+    position: relative;
+    vertical-align: middle;
+}
+
+.main-page{
+	position:absolute;
+	top:1px;
+	bottom:1px;
+	left:1px;
+	right:1px;
+}
+.main-page2{
+	position:absolute;
+	top:29px;
+	bottom:40px;
+	left:1px;
+	right:1px;
+}
+/*工具栏分隔符*/
+.toolbar-separator {
+	display: inline-block;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #fff;
+	height: 15px;
+    margin: 2px 1px;
+	vertical-align: middle;
+}
+
+/*tip消息框*/
+.tip-message-box{
+    position: absolute;
+	left:400px;
+	top:0px;
+    width: 240px;
+    z-index: 9999;
+	cursor: pointer;
+	
+}
+.tip-message-box .message{
+	color:#fff;
+	height:24px;
+	line-height:24px;
+	font-weight:bold;
+	text-align:center;
+}
+.tip-message-box .yellow{
+	background-color:#E6A800;
+	border:1px dashed #fff;
+}
+.tip-message-box .green{
+	background-color:#16960e;
+	border:1px dashed #fff;
+}
+.tip-message-box .red{
+	background-color:#d90000;
+	border:1px dashed #fff;
+}
+
+/*角色分配*/
+.role_box{
+	position:absolute;
+	left:0px;
+	right:0px;
+	top:0px;
+	bottom:0px;
+	overflow-y:auto;
+}
+.role_box ul{
+	list-style:none;
+	padding:0px 10px;
+}
+.role_box ul li{
+	margin:5px 0px;
+	line-height:20px;
+}
+
+
+/*上传按钮*/
+.btn-upload{
+	text-indent: 25px;
+	background-color:gray;
+	border: 1px solid #bbb;
+    border-radius: 5px;
+    color: #444;
+	/* background: rgba(0, 0, 0, 0) linear-gradient(to bottom, #ffffff 0px, #eeeeee 100%) repeat-x scroll 0 0; */
+	background:url('../../easyui/themes/icons_extend/upload-start.gif') no-repeat 7px center;
+	background-color:#F8F8F8;
+}
+
+/*图片预览*/
+.upload-img-box {
+    margin-top: 4px;
+}
+.upload-img-box .upload-pre-item {
+	position:relative;
+    padding: 1px;
+    width: 120px;
+    max-height: 120px;
+    overflow: hidden;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    transition: all .3s linear;
+}
+.upload-img-box .upload-pre-item .upload-img-remove{
+	position:absolute;
+	right:3px;
+	top:3px;
+	display:block;
+	width:16px;
+	height:16px;
+	background:url(../images/delete.gif) no-repeat;
+}
+.upload-img-box .upload-pre-item .upload-img-remove:hover{
+	background:url(../images/delete-hover.gif) no-repeat;
+}
+.upload-img-box .upload-pre-item img {
+    vertical-align: top;
+	max-width:120px;
+}
+/*清除*/
+.link_clear{
+	color:blue;
+	font-weight:bold;
+}
+.link_clear:hover{
+	color:red;
+}
+
+.gridrowtoolbar a{
+	font-weight:bold;
+	color:blue;
+}
+.gridrowtoolbar a:hover{
+	color:red;
+}
+
+.file { opacity:0; filter:alpha(opacity=0);}

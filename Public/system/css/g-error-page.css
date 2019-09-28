@@ -1,0 +1,20 @@
+*{ margin:0;padding:0}
+ul li{ list-style:none outside none}
+h1,h2,h3,h4,h5{ font-size:12px; font-weight:normal}
+html,body{
+	width:100%;
+	background:#fff;
+}
+body {
+    font-size:12px;
+} 
+.box_warp{ width:750px; margin:20px auto 0}
+.box_left{ padding-left:1px; background:url(../images/error_box_border.jpg) no-repeat  left top}
+.box_right{ padding-right:1px; background:url(../images/error_box_border.jpg) no-repeat right top}
+.box_content{ background:url(../images/error_box_bg.jpg) left top; width:748px; height:226px; overflow:hidden; border-top:1px solid #cecece}
+.box_content h1{ width:630px; color:#333; text-indent:150px; margin:30px auto 0; height:70px; background-image:url(../images/023.png) ; background-repeat: no-repeat; background-position:70px top; line-height:70px; font-size:26px; font-weight:bold; border-bottom:1px dashed #cccccc}
+.note{line-height:25px; width:450px; margin:10px auto 0;padding-left:124px;}
+.note h2{ font-size:12px; font-weight:bold;   }
+.box_content .succe{ background-position:70px bottom}
+.note a:link,.note a:visited{color:#0656aa; text-decoration:none;}
+.note a:hover{ color:#888d91; text-decoration:underline}

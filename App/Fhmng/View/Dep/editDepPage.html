@@ -1,0 +1,122 @@
+<extend name="./App/Fhmng/Common/View/base.html"/>
+<block name="head">
+	<title>编辑部门</title>
+</block>
+<block name="body">
+<form id="myform" class="easyui-form myform" data-options="novalidate:false" method="post">
+	<table>
+		<tr>
+			<td class="text_right" style="width:80px"><span class="mark">*</span>部门名称：</td>
+			<td>
+				<input id="dep_name"  name="dep_name" value="{$dep.dep_name}" class="easyui-textbox" style="width:250px;" data-options="validateOnCreate:false,delay:800,required:true,validType:['length[1,20]','validDepName']" >
+				<input id="hdnDepid" name="dep_id" type="hidden" value="{$dep.id}">
+			</td>
+		</tr>
+		<tr>
+			<td class="text_right"><span class="mark">*</span>上级部门：</td>
+			<td>
+				<input id="drDepartment" name="dep_pid" class="easyui-combotree" style="width:250px" data-options="validateOnCreate:false,value:{$dep.pid},url:'{:U('Dep/getPidDepTree')}',required:true,valueField:'id',textField:'text',queryParams:{id:'{$dep.id}'}"/>
+			</td>
+		</tr>
+		
+		<tr>
+			<td class="text_right"><span class="mark">*</span>状态：</td>
+			<td>
+				<select name="status" class="easyui-combobox" data-options="validateOnCreate:false,value:{$dep.status},editable:false,panelHeight:'auto',required:true" style="width:145px">
+					<option value="1">启用</option>
+					<option value="0">禁用</option>
+				</select>
+			</td>
+		</tr>
+		<!-- <tr>
+			<td class="text_right"><span class="mark">*</span>排序号：</td>
+			<td>
+				<input id="order_no" name="order_no" class="easyui-numberspinner" style="width:145px;" required="required" data-options="min:0,max:1000,editable:true,value:{$dep.order_no}">
+				<span class="tip">（升序）</span>
+			</td>
+		</tr> -->
+		<tr>
+			<td class="text_right" style='width:103px;'>描述(200字之内)：</td>
+			<td><textarea style="width:300px;height:100px" name="description" class="easyui-validatebox text-area" data-options="tipPosition:'left',validType:['length[0,200]']" maxlength="200">{$dep.description}</textarea></td>
+		</tr>
+	</table>
+</form>
+</block>
+<block name="script">
+	<script type="text/javascript">
+	$(function(){
+		$("#myform").form({
+			url:"{:U('Dep/updateDep')}",
+			iframe:false,
+			ajax:true,
+			onSubmit:function(param){
+				var isValid  = $(this).form('validate');
+				if(isValid){
+					//验证通过提交，禁用提交按钮，防止多次提交
+					parent.$("#btnSubmit").linkbutton("disable");
+				}else{
+					// $('.validatebox-invalid').trigger('mouseover');
+					$('.validatebox-invalid').trigger('mouseenter');
+				}
+				return isValid ;
+			},
+			success:function(response){
+				var result = $.parseJSON(response);
+				if(result.success){
+					$.tipShow({
+						"message":"操作成功",
+						"color":"green",
+						"callback":function(){
+							closeDialog({
+								"windowId":"window",
+								"needRefresh":true,
+								"controlType":"treegrid",
+								"gridId":"treegrid"
+							});
+						}
+					});
+				}else{
+					$.tipShow({
+						"message":"操作失败",
+						"color":"red"
+					});
+				}
+			},
+			error:function(){
+				$.tipShow({
+					"message":"操作失败",
+					"color":"red"
+				});
+			}
+		});
+		
+		//验证密码与确认密码是否相同
+		$.extend($.fn.validatebox.defaults.rules, {    
+			validDepName:{
+		    	validator:function(value,param){
+		    		var id = $("#hdnDepid").val();
+		    		var isValid = false;
+		    		$.ajax({
+		    			type:"post",
+		    			async:false,
+		    			data:{
+		    				"dep_id":id,
+		    				"dep_name":$.trim(value)
+		    			},
+		    			url:"{:U('Dep/validDepNameByUpdate')}",
+		    			success:function(response){
+		    				var result = $.parseJSON(response);
+		    				isValid = !result.isExist;
+		    			},
+		    			error:function(){
+		    				isValid = false;
+		    			}
+		    		});
+		    		return isValid;
+		    	},
+		    	message:"该部门名称已存在"
+		    }
+		}); 
+	});
+	</script>
+</block>

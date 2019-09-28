@@ -1,0 +1,35 @@
+<extend name='Public/base'/>
+<block name='style'>
+    <link rel="stylesheet" href="__PUBLIC__/home/css/aboutus.css">
+</block>
+<block name='body'>
+    <div class="main main-none" style='margin: 20px auto 0 auto;'>
+       
+        <div id="slideAll" class="slide-all" style="width: 1080px;">
+            <div class="slide-hd">
+                <volist name='data.content' id='vo' key="ko">
+                <a href="javascript:void(0)" <eq name="ko" value="1">class="on"</eq> menu_index="{$vo.id}" >{$vo.title}</a>
+                </volist>
+            </div>
+            <div class="slide-bd">
+                <volist name="data.content" id="vo" key="ko">
+                    <div style="word-break: break-all;padding: 20px;" class="one-bd <eq name="ko" value="1">on</eq> " menu_index="{$vo.id}">{$vo.content|htmlspecialchars_decode|html_entity_decode}</div>
+                </volist>
+            </div>
+        </div>
+    </div>
+</block>
+<block name='script'>
+    <script>
+        $(function(){
+            
+            $(".slide-hd a").click(function(){
+                var menu_index = $(this).attr('menu_index');
+                $(this).addClass("on");
+                $(this).siblings("a").removeClass("on");
+                $(".slide-bd .one-bd[menu_index="+menu_index+"]").addClass("on");
+                $(".slide-bd .one-bd[menu_index="+menu_index+"]").siblings(".one-bd").removeClass("on");
+            })
+        })
+    </script>
+</block>

@@ -1,0 +1,82 @@
+ <extend name='Public/base' />
+<block name="style">
+    <link rel="stylesheet" href="__PUBLIC__/home/css/work.css">
+</block>
+<block name='body'>
+    <if condition="$isAllTop eq 1">
+        <div class="main main-none">
+            <div style='text-align: center;'>
+                <img src="__PUBLIC__/home/images/wzp.png" alt="暂无作品">
+            </div>
+        </div>
+        <else />
+        <div class="main main-none">
+            <div class="main-left">
+                    <div class="tabInfo left-tab">
+                        <a class="tab active" href="{:U('Home/Works/workTopList',['type'=> 0])}" target="workTopList" workType="all">全部</a>
+                        <volist name="titleName" id="val">
+                            <a class="tab" href="{:U('Home/Works/workTopList',['type'=>$val['id']])}"  target="workTopList"  workType="{$val['id']}">{$val['title']}</a>
+                        </volist>
+                    </div>
+                    <iframe src="{:U('Home/Works/workTopList',['type'=>0])}"  style="width: 100%;height: 1000px;" name="workTopList" id="workTopList" frameborder="0"></iframe>
+                </div>
+
+                <div class="main-right ">
+                    <div class="tabInfo right-tab">
+                        <volist name="titleName" id="val">
+                            <div class="ltab <eq name="i" value="1">active</eq>" workType="{$val['id']}">{$val['title']}</div>
+                    </volist>
+                </div>
+                <li class="toptitle">
+                    <div class="top">排名</div>
+                    <div class="worksName">作品名称</div>
+                    <div class="bonus">奖金及荣誉</div>
+                </li>
+                <volist name="toplist" id="val" key='k'>
+                    <div class="scroll topscroll" style="<neq name="k" value="1">display:none</neq>" workType="{$key}">
+                        <ul class="topContent">
+                            <volist name="toplist[$key]" id="value">
+                                <li class="topInfo">
+                                    <div class="info-top">{$value.toptitle}</div>
+                                    <div class="info-worksName">{$value.workname}</div>
+                                    <div class="info-bonus"><span class="money">{$value.money}元</span><span class="honor">荣誉证书 荣誉称号</span></div>
+                                </li>
+                            </volist>
+                        </ul>
+                    </div>
+                </volist>
+            </div>
+        </div>
+    </if>
+    <!-- <div class="main main-none">
+        <div style='text-align: center;'>
+            <img src="__PUBLIC__/home/images/wzp.png" alt="暂无作品">
+        </div>
+      </div> -->
+
+</block>
+<block name='script'>
+    <script>
+        $(function(){
+            // 右侧排名tab页签点击
+            $(".ltab").click(function(){
+                var that = this;
+                $(that).siblings().removeClass("active");
+                $(that).addClass("active");
+                for(var i = 0;i<$('.topscroll').length;i++){
+                    if( $($('.topscroll')[i]).attr("workType") == $(that).attr("workType")){
+                        $($('.topscroll')[i]).show()
+                    }else{
+                        $($('.topscroll')[i]).hide()
+                    }
+                }
+            })
+            // 左侧获奖作品展示的页签点击
+           $(".left-tab .tab").click(function(){
+               var that = this;
+               $(that).siblings().removeClass("active");
+               $(that).addClass("active");
+           })
+        })
+    </script>
+</block>
